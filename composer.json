@@ -1,5 +1,8 @@
 {
     "require": {
         "lusitanian/oauth": "0.8.x"
+    },
+    "require-dev": {
+        "codegyre/robo": "*"
     }
 }
