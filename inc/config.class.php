@@ -48,6 +48,8 @@ class PluginPreludeConfig extends CommonDBTM {
    }
 
    static function showConfigForm($item) {
+      global $CFG_GLPI;
+
       $config = self::getInstance();
       $options = ['colspan' => 1,
                   'candel'  => false];
@@ -59,6 +61,17 @@ class PluginPreludeConfig extends CommonDBTM {
       echo Html::input('api_url', array('value'       => $config->fields['api_url'],
                                         'placeholder' => "http://path/to/prelude/api",
                                         'style'       => 'width: 90%'));
+      if (!empty($config->fields['api_url'])) {
+         $color_png = "redbutton.png";
+         $title     = __("We failed to connect to Prelude API", 'prelude');
+         if (PluginPreludeAPI::Status()) {
+            $color_png = "greenbutton.png";
+            $title     = __("Connection to Prelude API ok");
+         }
+         echo Html::image($CFG_GLPI['url_base']."/pics/$color_png",
+                          array('title' => $title,
+                                'style' => 'cursor: help;'));
+      }
       echo "</td>";
       echo "</tr>";
 
