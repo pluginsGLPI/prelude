@@ -38,6 +38,16 @@ function plugin_init_prelude() {
    global $PLUGIN_HOOKS;
 
    $PLUGIN_HOOKS['csrf_compliant']['prelude'] = true;
+
+   $plugin = new Plugin();
+   if (isset($_SESSION['glpiID'])
+       &&$plugin->isInstalled('prelude')
+       && $plugin->isActivated('prelude')) {
+
+      // Add a link in the main menu plugins for technician and admin panel
+      Plugin::registerClass('PluginPreludeConfig', array('addtabon' => 'Config'));
+      $PLUGIN_HOOKS['config_page']['prelude'] = 'front/config.form.php';
+   }
 }
 
 
@@ -49,10 +59,10 @@ function plugin_init_prelude() {
  */
 function plugin_version_prelude() {
    return [
-      'name'           => 'prelude',
+      'name'           => 'Prelude Siem',
       'version'        => PLUGIN_PRELUDE_VERSION,
       'author'         => '<a href="http://www.teclib.com">Teclib\'</a>',
-      'license'        => '',
+      'license'        => 'GPL2',
       'homepage'       => '',
       'minGlpiVersion' => '9.1'
    ];
