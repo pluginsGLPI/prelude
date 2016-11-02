@@ -1,0 +1,8 @@
+{
+    "require-dev": {
+        "codegyre/robo": "*"
+    },
+    "require": {
+        "guzzlehttp/guzzle": "6.x"
+    }
+}

@@ -48,19 +48,58 @@ class PluginPreludeConfig extends CommonDBTM {
    }
 
    static function showConfigForm($item) {
+      global $CFG_GLPI;
+
       $config = self::getInstance();
       $options = ['colspan' => 1,
                   'candel'  => false];
       $config->showFormHeader($options);
 
       echo "<tr class='tab_bg_1'>";
-      echo "<td style='width: 15%'>".__("Api URL", "behaviors")."</td>";
+      echo "<td style='width: 15%'>".__("Prelude URL", 'prelude')."</td>";
       echo "<td>";
-      echo Html::input('api_url', array('value'       => $config->fields['api_url'],
-                                        'placeholder' => "http://path/to/prelude/api",
-                                        'style'       => 'width: 90%'));
+      echo Html::input('prelude_url', array('value'       => $config->fields['prelude_url'],
+                                            'placeholder' => "http://path/to/prelude",
+                                            'style'       => 'width: 90%'));
       echo "</td>";
       echo "</tr>";
+
+      echo "<tr class='tab_bg_1'>";
+      echo "<td style='width: 15%'>".__("API Token", 'prelude')."</td>";
+      echo "<td>";
+      echo Html::input('api_token', array('value' => $config->fields['api_token'],
+                                          'style' => 'width: 90%'));
+      echo "</td>";
+      echo "</tr>";
+
+      echo "<tr class='tab_bg_1'>";
+      echo "<td style='width: 15%'>".__("API Refresh yoken", 'prelude')."</td>";
+      echo "<td>";
+      echo Html::input('api_refresh_token', array('value' => $config->fields['api_refresh_token'],
+                                                  'style' => 'width: 90%'));
+      echo "</td>";
+      echo "</tr>";
+
+
+      if (!empty($config->fields['prelude_url'])) {
+
+         echo "<tr class='headerRow'>";
+         echo "<th colspan='2'>".__('API Status')."</th>";
+         echo "</tr>";
+
+         foreach(PluginPreludeAPI::status() as $status_label => $status) {
+            echo "<tr class='tab_bg_1'>";
+            echo "<td style='width: 15%'>$status_label</td>";
+            echo "<td>";
+            $color_png = "redbutton.png";
+            if ($status) {
+               $color_png = "greenbutton.png";
+            }
+            echo Html::image($CFG_GLPI['url_base']."/pics/$color_png");
+            echo "</td>";
+            echo "</tr>";
+         }
+      }
 
       $config->showFormButtons($options);
    }
@@ -81,9 +120,11 @@ class PluginPreludeConfig extends CommonDBTM {
 
          // Create Forms table
          $query = "CREATE TABLE IF NOT EXISTS `$table` (
-               `id`       INT(11) NOT NULL,
-               `api_url`  TEXT COLLATE utf8_unicode_ci,
-               `date_mod` DATETIME default NULL,
+               `id`            INT(11) NOT NULL,
+               `prelude_url`   TEXT COLLATE utf8_unicode_ci,
+               `token`         VARCHAR(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+               `refresh_token` VARCHAR(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+               `date_mod`      DATETIME default NULL,
                PRIMARY KEY (`id`)
             )
             ENGINE = MyISAM
