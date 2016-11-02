@@ -1,8 +1,8 @@
 {
-    "require": {
-        "lusitanian/oauth": "0.8.x"
-    },
     "require-dev": {
         "codegyre/robo": "*"
+    },
+    "require": {
+        "guzzlehttp/guzzle": "6.x"
     }
 }

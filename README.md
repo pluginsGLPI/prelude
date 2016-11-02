@@ -1,3 +1,8 @@
+# prerequisites
+
+* PHP 5.5.0
+* 'allow_url_fopen' in your php.ini or php-curl extension
+
 # Prelude configuration
 
 ## Prelude API

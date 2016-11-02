@@ -44,6 +44,9 @@ function plugin_init_prelude() {
        &&$plugin->isInstalled('prelude')
        && $plugin->isActivated('prelude')) {
 
+      // include composer autoload
+      require_once(__DIR__ . '/vendor/autoload.php');
+
       // Add a link in the main menu plugins for technician and admin panel
       Plugin::registerClass('PluginPreludeConfig', array('addtabon' => 'Config'));
       $PLUGIN_HOOKS['config_page']['prelude'] = 'front/config.form.php';
