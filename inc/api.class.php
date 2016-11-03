@@ -21,6 +21,7 @@ class PluginPreludeAPI extends CommonGLPI {
          'method'          => 'GET',
          'resource'        => '',
          'allow_redirects' => false,
+         'connect_timeout' => 5,
          'query'           => [], // url parameter
          'body'            => '', // raw data to send in body
          'json'            => '', // json data to send
@@ -31,7 +32,8 @@ class PluginPreludeAPI extends CommonGLPI {
 
       // prepare http params for guzzle
       $http_params = ['allow_redirects' => $params['allow_redirects'],
-                      'headers'         => $params['headers']];
+                      'headers'         => $params['headers'],
+                      'connect_timeout' => $params['connect_timeout']];
       if (count($params['query']) > 0) {
          $http_params['query'] = $params['query'];
       }
