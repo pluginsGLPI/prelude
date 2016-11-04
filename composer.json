@@ -3,6 +3,7 @@
         "codegyre/robo": "*"
     },
     "require": {
-        "guzzlehttp/guzzle": "6.x"
+        "league/oauth2-client": "^1.4",
+        "guzzlehttp/guzzle": "^6.2"
     }
 }
