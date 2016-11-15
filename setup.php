@@ -47,12 +47,17 @@ function plugin_init_prelude() {
 
    $plugin = new Plugin();
    if (isset($_SESSION['glpiID'])
-       &&$plugin->isInstalled('prelude')
+       && $plugin->isInstalled('prelude')
        && $plugin->isActivated('prelude')) {
 
       // Add a link in the main menu plugins for technician and admin panel
       Plugin::registerClass('PluginPreludeConfig', array('addtabon' => 'Config'));
       $PLUGIN_HOOKS['config_page']['prelude'] = 'front/config.form.php';
+
+      // add a new tab to tickets who replace item_ticket
+      Plugin::registerClass('PluginPreludeItem_Ticket', array('addtabon' => 'Ticket'));
+      $PLUGIN_HOOKS['add_javascript']['prelude'][] = "js/hide_items_tickets.js.php";
+
    }
 }
 
