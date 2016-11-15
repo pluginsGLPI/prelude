@@ -38,7 +38,7 @@ require_once(__DIR__ . '/vendor/autoload.php');
  * @return void
  */
 function plugin_init_prelude() {
-   global $PLUGIN_HOOKS;
+   global $PLUGIN_HOOKS, $CFG_GLPI;
 
    $PLUGIN_HOOKS['csrf_compliant']['prelude'] = true;
 
@@ -55,8 +55,10 @@ function plugin_init_prelude() {
       $PLUGIN_HOOKS['config_page']['prelude'] = 'front/config.form.php';
 
       // add a new tab to tickets who replace item_ticket
-      Plugin::registerClass('PluginPreludeItem_Ticket', array('addtabon' => 'Ticket'));
-      $PLUGIN_HOOKS['add_javascript']['prelude'][] = "js/hide_items_tickets.js.php";
+      if (true || $CFG_GLPI['prelude_replace_items_tickets']) {
+         Plugin::registerClass('PluginPreludeItem_Ticket', array('addtabon' => 'Ticket'));
+         $PLUGIN_HOOKS['add_javascript']['prelude'][] = "js/hide_items_tickets.js.php";
+      }
 
    }
 }
