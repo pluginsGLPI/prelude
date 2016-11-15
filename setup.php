@@ -26,7 +26,7 @@
  --------------------------------------------------------------------------
  */
 
-define('PLUGIN_PRELUDE_VERSION', '0.0.1');
+define('PLUGIN_PRELUDE_VERSION', '0.0.2');
 
 // include composer autoload
 require_once(__DIR__ . '/vendor/autoload.php');
@@ -41,6 +41,9 @@ function plugin_init_prelude() {
    global $PLUGIN_HOOKS;
 
    $PLUGIN_HOOKS['csrf_compliant']['prelude'] = true;
+
+   // include composer autoload
+   require_once(__DIR__ . '/vendor/autoload.php');
 
    $plugin = new Plugin();
    if (isset($_SESSION['glpiID'])
