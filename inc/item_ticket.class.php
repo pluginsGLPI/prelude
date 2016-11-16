@@ -9,7 +9,7 @@ if (!defined('GLPI_ROOT')) {
  *
  *  Relation between Tickets and Items
 **/
-class pluginPreludeItem_Ticket extends Item_Ticket{
+class PluginPreludeItem_Ticket extends Item_Ticket{
 
 
    // From CommonDBRelation
@@ -54,8 +54,6 @@ class pluginPreludeItem_Ticket extends Item_Ticket{
       $instID = $ticket->fields['id'];
       $table  = self::getTable();
 
-      echo "== prelude ==";
-
       if (!$ticket->can($instID, READ)) {
          return false;
       }
@@ -95,6 +93,7 @@ class pluginPreludeItem_Ticket extends Item_Ticket{
          }
 
          if ($dev_user_id > 0) {
+            echo "<label>".__("My devices")."</label><br>";
             self::dropdownMyDevices($dev_user_id, $ticket->fields["entities_id"], null, 0, array('tickets_id' => $instID));
          }
 
@@ -108,6 +107,11 @@ class pluginPreludeItem_Ticket extends Item_Ticket{
 
          self::dropdownAllDevices("itemtype", null, 0, 1, $dev_user_id, $ticket->fields["entities_id"], array('tickets_id' => $instID));
          echo "<span id='item_ticket_selection_information'></span>";
+
+
+         echo "<label>".__("Type of link", 'prelude')."</label><br>";
+         PluginPreludeLinktype::dropdown();
+
          echo "</td><td class='center' width='30%'>";
          echo "<input type='submit' name='add' value=\""._sx('button', 'Add')."\" class='submit'>";
          echo "<input type='hidden' name='tickets_id' value='$instID'>";
@@ -135,6 +139,7 @@ class pluginPreludeItem_Ticket extends Item_Ticket{
          $header_bottom .= "</th>";
       }
       $header_end .= "<th>".__('Type')."</th>";
+      $header_end .= "<th>".__("Type of link", 'prelude')."</th>";
       $header_end .= "<th>".__('Entity')."</th>";
       $header_end .= "<th>".__('Name')."</th>";
       $header_end .= "<th>".__('Serial number')."</th>";
@@ -156,6 +161,7 @@ class pluginPreludeItem_Ticket extends Item_Ticket{
             $itemtable = getTableForItemType($itemtype);
             $query = "SELECT `$itemtable`.*,
                              `$table`.`id` AS IDD,
+                             `$table`.`plugin_prelude_linktypes_id`,
                              `glpi_entities`.`id` AS entity
                       FROM `$table`,
                            `$itemtable`";
@@ -204,6 +210,9 @@ class pluginPreludeItem_Ticket extends Item_Ticket{
                   echo "<td class='center top' rowspan='$nb'>".
                          (($nb > 1) ? sprintf(__('%1$s: %2$s'), $typename, $nb) : $typename)."</td>";
                }
+               echo "<td class='center'>";
+               echo Dropdown::getDropdownName("glpi_plugin_prelude_linktypes",
+                                               $data['plugin_prelude_linktypes_id'])."</td>";
                echo "<td class='center'>";
                echo Dropdown::getDropdownName("glpi_entities", $data['entity'])."</td>";
                echo "<td class='center".
