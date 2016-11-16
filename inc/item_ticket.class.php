@@ -247,6 +247,10 @@ class PluginPreludeItem_Ticket extends Item_Ticket{
       echo "</div>";
    }
 
+   static function showForAsset(CommonDBTM $item) {
+      return Ticket::showListForItem($item);
+   }
+
 
    function getTabNameForItem(CommonGLPI $item, $withtemplate=0) {
 
@@ -254,27 +258,30 @@ class PluginPreludeItem_Ticket extends Item_Ticket{
          return '';
       }
       $nb = 0;
-      switch ($item->getType()) {
-         case 'Ticket' :
-            if (($_SESSION["glpiactiveprofile"]["helpdesk_hardware"] != 0)
-                && (count($_SESSION["glpiactiveprofile"]["helpdesk_item_type"]) > 0)) {
-               if ($_SESSION['glpishow_count_on_tabs']) {
-                  $nb = countElementsInTable(self::getTable(),
-                                             "`tickets_id` = '".$item->getID()."'");
-               }
-               return self::createTabEntry(self::getTypeName(2), $nb);
-            }
+      if ($item->getType() == 'Ticket') {
+         if (($_SESSION["glpiactiveprofile"]["helpdesk_hardware"] != 0)
+             && (count($_SESSION["glpiactiveprofile"]["helpdesk_item_type"]) > 0)) {
+            $nb = countElementsInTable(self::getTable(),
+                                       "`tickets_id` = '".$item->getID()."'");
+            return self::createTabEntry(self::getTypeName($nb), $nb);
+         }
+
+      } else if (in_array($item->getType(), Ticket::getAllTypesForHelpdesk())) {
+         $nb = countElementsInTable(self::getTable(),
+                                    "`items_id` = '".$item->getID()."'
+                                     AND `itemtype` = '".$item->getType()."'");
+         return self::createTabEntry(_n("Prelude ticket", "Prelude tickets", $nb), $nb);
       }
+
       return '';
    }
 
 
    static function displayTabContentForItem(CommonGLPI $item, $tabnum=1, $withtemplate=0) {
-
-      switch ($item->getType()) {
-         case 'Ticket' :
-            self::showForTicket($item);
-            break;
+      if ($item->getType() == 'Ticket') {
+         self::showForTicket($item);
+      } else if (in_array($item->getType(), Ticket::getAllTypesForHelpdesk())) {
+         self::showForAsset($item);
       }
       return true;
    }

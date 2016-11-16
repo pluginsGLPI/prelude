@@ -49,6 +49,8 @@ function plugin_init_prelude() {
    if (isset($_SESSION['glpiID'])
        && $plugin->isActivated('prelude')) {
 
+      $PLUGIN_HOOKS['add_javascript']['prelude'][] = "js/tabs.js";
+
       // get the plugin config
       $prelude_config = PluginPreludeConfig::getConfig();
 
@@ -58,8 +60,12 @@ function plugin_init_prelude() {
 
       // add a new tab to tickets who replace item_ticket
       if ($prelude_config['replace_items_tickets']) {
-         Plugin::registerClass('PluginPreludeItem_Ticket', array('addtabon' => 'Ticket'));
          $PLUGIN_HOOKS['add_javascript']['prelude'][] = "js/hide_items_tickets.js.php";
+
+         Plugin::registerClass('PluginPreludeItem_Ticket', array('addtabon' => 'Ticket'));
+         foreach(Ticket::getAllTypesForHelpdesk() as $type) {
+            Plugin::registerClass('PluginPreludeItem_Ticket', array('addtabon' => $type));
+         }
       }
 
    }
