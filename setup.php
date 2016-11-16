@@ -28,6 +28,9 @@
 
 define('PLUGIN_PRELUDE_VERSION', '0.0.1');
 
+// include composer autoload
+require_once(__DIR__ . '/vendor/autoload.php');
+
 /**
  * Init hooks of the plugin.
  * REQUIRED
@@ -43,9 +46,6 @@ function plugin_init_prelude() {
    if (isset($_SESSION['glpiID'])
        &&$plugin->isInstalled('prelude')
        && $plugin->isActivated('prelude')) {
-
-      // include composer autoload
-      require_once(__DIR__ . '/vendor/autoload.php');
 
       // Add a link in the main menu plugins for technician and admin panel
       Plugin::registerClass('PluginPreludeConfig', array('addtabon' => 'Config'));
