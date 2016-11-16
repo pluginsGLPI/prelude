@@ -4,10 +4,11 @@ if (!defined('GLPI_ROOT')) {
    die("Sorry. You can't access this file directly");
 }
 
+use League\OAuth2\Client\Token\AccessToken;
 
 class PluginPreludeConfig extends CommonDBTM {
-   static private $_instance = NULL;
    static $rightname         = 'config';
+   static protected $notable = true;
 
    static function getTypeName($nb=0) {
       return __('Setup');
@@ -17,18 +18,8 @@ class PluginPreludeConfig extends CommonDBTM {
       return __('Prelude configuration', 'prelude');
    }
 
-   /**
-    * Singleton for the unique config record
-    */
-   static function getInstance() {
-
-      if (!isset(self::$_instance)) {
-         self::$_instance = new self();
-         if (!self::$_instance->getFromDB(1)) {
-            self::$_instance->getEmpty();
-         }
-      }
-      return self::$_instance;
+   static function getConfig() {
+      return Config::getConfigurationValues('plugin:Prelude');
    }
 
    function getTabNameForItem(CommonGLPI $item, $withtemplate=0) {
@@ -50,42 +41,51 @@ class PluginPreludeConfig extends CommonDBTM {
    static function showConfigForm($item) {
       global $CFG_GLPI;
 
-      $config = self::getInstance();
-      $options = ['colspan' => 1,
-                  'candel'  => false];
-      $config->showFormHeader($options);
+      $current_config = self::getConfig();
+
+      echo "<form name='form' action=\"".Toolbox::getItemTypeFormURL('Config')."\" method='post'>";
+      echo "<input type='hidden' name='config_class' value='".__CLASS__."'>";
+      echo "<input type='hidden' name='config_context' value='plugin:Prelude'>";
+      echo "<div class='center' id='tabsbody'>";
+      echo "<table class='tab_cadre_fixe'>";
 
       echo "<tr class='tab_bg_1'>";
       echo "<td style='width: 15%'>".__("Prelude URL", 'prelude')."</td>";
       echo "<td>";
-      echo Html::input('prelude_url', array('value'       => $config->fields['prelude_url'],
+      echo Html::input('prelude_url', array('value'       => $current_config['prelude_url'],
                                             'placeholder' => "http://path/to/prelude",
                                             'style'       => 'width: 90%'));
       echo "</td>";
       echo "</tr>";
 
       echo "<tr class='tab_bg_1'>";
-      echo "<td style='width: 15%'>".__("API Token", 'prelude')."</td>";
+      echo "<td style='width: 15%'>".__("API Client ID", 'prelude')."</td>";
       echo "<td>";
-      echo Html::input('api_token', array('value' => $config->fields['api_token'],
-                                          'style' => 'width: 90%'));
+      echo Html::input('api_client_id', array('value' => $current_config['api_client_id'],
+                                              'style' => 'width: 90%'));
       echo "</td>";
       echo "</tr>";
 
       echo "<tr class='tab_bg_1'>";
-      echo "<td style='width: 15%'>".__("API Refresh yoken", 'prelude')."</td>";
+      echo "<td style='width: 15%'>".__("API Client Secret", 'prelude')."</td>";
       echo "<td>";
-      echo Html::input('api_refresh_token', array('value' => $config->fields['api_refresh_token'],
+      echo Html::input('api_client_secret', array('value' => $current_config['api_client_secret'],
                                                   'style' => 'width: 90%'));
       echo "</td>";
       echo "</tr>";
 
 
-      if (!empty($config->fields['prelude_url'])) {
+      echo "<tr class='tab_bg_2'>";
+      echo "<td colspan='4' class='center'>";
+      echo "<input type='submit' name='update' class='submit' value=\""._sx('button','Save')."\">";
+      echo "</td></tr>";
+
+      if (!empty($current_config['prelude_url'])) {
 
          echo "<tr class='headerRow'>";
          echo "<th colspan='2'>".__('API Status')."</th>";
          echo "</tr>";
+
 
          foreach(PluginPreludeAPI::status() as $status_label => $status) {
             echo "<tr class='tab_bg_1'>";
@@ -99,9 +99,42 @@ class PluginPreludeConfig extends CommonDBTM {
             echo "</td>";
             echo "</tr>";
          }
+
+         if (empty($current_config['api_refresh_token'])) {
+            echo "<tr class='tab_bg_1'>";
+            echo "<td colspan='2'>";
+            echo Html::submit(__("Connect to Prelude API", 'prelude'),
+                              array('name' => 'connect_api'));
+            echo "</td>";
+            echo "</tr>";
+         }
       }
 
-      $config->showFormButtons($options);
+      echo "</table></div>";
+      Html::closeForm();
+   }
+
+   static function storeAccessToken(AccessToken $access_token) {
+      $config = new self;
+      return $config->update(array('id'               => 1,
+                                   'api_access_token' => $access_token->jsonSerialize()));
+   }
+
+   static function retrieveAccessToken() {
+      $prelude_config = self::getConfig();
+      if ($access_token_array = json_decode($prelude_config['api_access_token'], true)) {
+         return new AccessToken($access_token_array);
+      }
+
+      return false;
+   }
+
+   static function getCurrentAccessToken() {
+     if ($access_token = self::retrieveAccessToken()) {
+         return $access_token->__toString();
+      }
+
+      return false;
    }
 
    /**
@@ -110,36 +143,19 @@ class PluginPreludeConfig extends CommonDBTM {
     * @param Migration $migration
     * @return boolean True on success
     */
-   public static function install(Migration $migration) {
-      global $DB;
+   static function install(Migration $migration) {
+      global $CFG_GLPI;
 
-      $table = self::getTable();
-
-      if (!TableExists($table)) {
-         $migration->displayMessage("Installing $table");
-
-         // Create Forms table
-         $query = "CREATE TABLE IF NOT EXISTS `$table` (
-               `id`            INT(11) NOT NULL,
-               `prelude_url`   TEXT COLLATE utf8_unicode_ci,
-               `token`         VARCHAR(255) COLLATE utf8_unicode_ci DEFAULT NULL,
-               `refresh_token` VARCHAR(255) COLLATE utf8_unicode_ci DEFAULT NULL,
-               `date_mod`      DATETIME default NULL,
-               PRIMARY KEY (`id`)
-            )
-            ENGINE = MyISAM
-            DEFAULT CHARACTER SET = utf8
-            COLLATE = utf8_unicode_ci;";
-         $DB->queryOrDie($query, __('Error in creating glpi_plugin_prelude_configs', 'prelude').
-                                "<br>".$DB->error());
-
-         $query = "INSERT INTO `$table`
-                     (id, date_mod)
-                   VALUES
-                     (1, NOW())";
-         $DB->queryOrDie($query, __('Error when filling glpi_plugin_prelude_configs', 'prelude').
-                                "<br>".$DB->error());
-      }
+      $current_config = self::getConfig;
+      $config         = new Config();
+      isset($current_config['prelude_url'])
+         ? $config->setConfigurationValues('plugin:Prelude', array('prelude_url' => '')) : '';
+      isset($current_config['api_client_id'])
+         ? $config->setConfigurationValues('plugin:Prelude', array('api_client_id' => '')) : '';
+      isset($current_config['api_client_secret'])
+         ? $config->setConfigurationValues('plugin:Prelude', array('api_client_secret' => '')) : '';
+      isset($current_config['api_access_token'])
+         ? $config->setConfigurationValues('plugin:Prelude', array('api_access_token' => '')) : '';
    }
 
    /**
@@ -147,14 +163,11 @@ class PluginPreludeConfig extends CommonDBTM {
     *
     * @return boolean True on success
     */
-   public static function uninstall() {
+   static function uninstall() {
       global $DB;
 
-      $obj = new self();
-      $DB->query('DROP TABLE IF EXISTS `'.$obj->getTable().'`');
-
-      // Delete logs of the plugin
-      $DB->query("DELETE FROM `glpi_logs` WHERE itemtype = '".__CLASS__."'");
+      $config = new Config();
+      $config->deleteByCriteria("`context` = 'plugin:Prelude'");
 
       return true;
    }
