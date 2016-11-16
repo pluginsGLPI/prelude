@@ -14,17 +14,24 @@ $split_view = CommonGLPI::isLayoutWithMain()
               && !CommonGLPI::isLayoutExcludedPage()
                   ? "true"
                   : "false";
+$url_base   = $CFG_GLPI['url_base'];
 
 $JS = <<<JAVASCRIPT
 $(function() {
-   var item_tab = $('li[role=tab]:has(a[href*=\\\\=Item_Ticket\\\\$1])');
+   var current_page = document.location.href
+                        .replace('$url_base', '')
+                        .replace(document.location.search, '');
 
-   //$('.ui-tabs').tabs('disable', item_tab.index());
-   item_tab.remove();
+   // remove item tab in ticket form
+   if (current_page == 'front/ticket.form.php') {
+      var item_tab = $('li[role=tab]:has(a[href*=\\\\=Item_Ticket\\\\$1])');
+      item_tab.remove();
+      $('.ui-tabs').tabs( "refresh" );
 
-   $('.ui-tabs').tabs( "refresh" );
-   if ($split_view) {
-      $('.ui-tabs').scrollabletabs();
+      // for split view, reinit srolltabs lib
+      if ($split_view) {
+         $('.ui-tabs').scrollabletabs();
+      }
    }
 });
 JAVASCRIPT;
