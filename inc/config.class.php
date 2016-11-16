@@ -41,6 +41,12 @@ class PluginPreludeConfig extends CommonDBTM {
    static function showConfigForm($item) {
       global $CFG_GLPI;
 
+      $plugin = new Plugin();
+      if (!$plugin->isInstalled('prelude')) {
+         echo __("Please enable the prelude plugin", 'prelude');
+         return false;
+      }
+
       $current_config = self::getConfig();
 
       echo "<form name='form' action=\"".Toolbox::getItemTypeFormURL('Config')."\" method='post'>";
@@ -48,6 +54,23 @@ class PluginPreludeConfig extends CommonDBTM {
       echo "<input type='hidden' name='config_context' value='plugin:Prelude'>";
       echo "<div class='center' id='tabsbody'>";
       echo "<table class='tab_cadre_fixe'>";
+
+      echo "<tr class='tab_bg_1'>";
+      echo "<th colspan='2'>".__("Plugin's features", 'prelude')."</th>";
+      echo "</tr>";
+
+      echo "<tr class='tab_bg_1'>";
+      echo "<td style='width: 15%'>".__("Replace ticket's items association", 'prelude')."</td>";
+      echo "<td>";
+      Html::showCheckbox(array('name'    => 'replace_items_tickets',
+                               'value'   => true,
+                               'checked' => $current_config['replace_items_tickets']));
+      echo "</td>";
+      echo "</tr>";
+
+      echo "<tr class='tab_bg_1'>";
+      echo "<th colspan='2'>".__("API Access", 'prelude')."</th>";
+      echo "</tr>";
 
       echo "<tr class='tab_bg_1'>";
       echo "<td style='width: 15%'>".__("Prelude URL", 'prelude')."</td>";
@@ -146,16 +169,23 @@ class PluginPreludeConfig extends CommonDBTM {
    static function install(Migration $migration) {
       global $CFG_GLPI;
 
-      $current_config = self::getConfig;
+      $current_config = self::getConfig();
       $config         = new Config();
-      isset($current_config['prelude_url'])
+
+      // api access
+      !isset($current_config['prelude_url'])
          ? $config->setConfigurationValues('plugin:Prelude', array('prelude_url' => '')) : '';
-      isset($current_config['api_client_id'])
+      !isset($current_config['api_client_id'])
          ? $config->setConfigurationValues('plugin:Prelude', array('api_client_id' => '')) : '';
-      isset($current_config['api_client_secret'])
+      !isset($current_config['api_client_secret'])
          ? $config->setConfigurationValues('plugin:Prelude', array('api_client_secret' => '')) : '';
-      isset($current_config['api_access_token'])
+      !isset($current_config['api_access_token'])
          ? $config->setConfigurationValues('plugin:Prelude', array('api_access_token' => '')) : '';
+
+      // plugin features
+      !isset($current_config['replace_items_tickets'])
+         ? $config->setConfigurationValues('plugin:Prelude', array('replace_items_tickets' => true))
+         : '';
    }
 
    /**

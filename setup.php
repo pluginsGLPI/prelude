@@ -50,12 +50,15 @@ function plugin_init_prelude() {
        && $plugin->isInstalled('prelude')
        && $plugin->isActivated('prelude')) {
 
+      // get the plugin config
+      $prelude_config = PluginPreludeConfig::getConfig();
+
       // Add a link in the main menu plugins for technician and admin panel
       Plugin::registerClass('PluginPreludeConfig', array('addtabon' => 'Config'));
       $PLUGIN_HOOKS['config_page']['prelude'] = 'front/config.form.php';
 
       // add a new tab to tickets who replace item_ticket
-      if (true || $CFG_GLPI['prelude_replace_items_tickets']) {
+      if ($prelude_config['replace_items_tickets']) {
          Plugin::registerClass('PluginPreludeItem_Ticket', array('addtabon' => 'Ticket'));
          $PLUGIN_HOOKS['add_javascript']['prelude'][] = "js/hide_items_tickets.js.php";
       }
