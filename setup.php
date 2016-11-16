@@ -47,7 +47,6 @@ function plugin_init_prelude() {
 
    $plugin = new Plugin();
    if (isset($_SESSION['glpiID'])
-       && $plugin->isInstalled('prelude')
        && $plugin->isActivated('prelude')) {
 
       // get the plugin config

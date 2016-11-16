@@ -5,8 +5,7 @@ include ("../../../inc/includes.php");
 //change mimetype
 header("Content-type: application/javascript");
 
-if (!$plugin->isInstalled("prelude")
-   || !$plugin->isActivated("prelude")) {
+if (!$plugin->isActivated("prelude")) {
    exit;
 }
 
