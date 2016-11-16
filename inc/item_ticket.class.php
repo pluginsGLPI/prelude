@@ -286,6 +286,38 @@ class PluginPreludeItem_Ticket extends Item_Ticket{
       return true;
    }
 
+   function post_addItem() {
+      $item_ticket = new item_Ticket;
+      $fields = $this->fields;
+      unset($fields['id']);
+      $item_ticket->add($fields);
+   }
+
+   function post_updateItem($history=1) {
+      $item_ticket = new item_Ticket;
+      $old_fields  = array_merge($this->fields, $this->oldvalues);
+      $found       = $item_ticket->find("`itemtype`       = '".$old_fields['itemtype']."'
+                                         AND `items_id`   = '".$old_fields['items_id']."'
+                                         AND `tickets_id` = '".$old_fields['tickets_id']."'");
+
+      foreach($found as $current) {
+         $fields = $item_ticket->fields;
+         $fields['id'] = $current;
+         $item_ticket->update($fields);
+      }
+   }
+
+   function post_deleteItem() {
+      $item_ticket = new item_Ticket;
+      $found       = $item_ticket->find("`itemtype`       = '".$this->fields['itemtype']."'
+                                         AND `items_id`   = '".$this->fields['items_id']."'
+                                         AND `tickets_id` = '".$this->fields['tickets_id']."'");
+
+      foreach($found as $current) {
+         $item_ticket->delete($current);
+      }
+   }
+
 
    /**
     * Database table installation for the item type
