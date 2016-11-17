@@ -26,7 +26,7 @@
  --------------------------------------------------------------------------
  */
 
-define('PLUGIN_PRELUDE_VERSION', '0.0.2');
+define('PLUGIN_PRELUDE_VERSION', '0.0.3');
 
 // include composer autoload
 require_once(__DIR__ . '/vendor/autoload.php');

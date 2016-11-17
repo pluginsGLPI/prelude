@@ -56,24 +56,30 @@ class PluginPreludeConfig extends CommonDBTM {
       echo "<table class='tab_cadre_fixe'>";
 
       echo "<tr class='tab_bg_1'>";
-      echo "<th colspan='2'>".__("Plugin's features", 'prelude')."</th>";
+      echo "<th colspan='4'>".__("Plugin's features", 'prelude')."</th>";
       echo "</tr>";
 
       echo "<tr class='tab_bg_1'>";
-      echo "<td style='width: 15%'>".__("Replace ticket's items association", 'prelude')."</td>";
+      echo "<td style='width: 25%'>".__("Replace ticket's items association", 'prelude')."</td>";
       echo "<td>";
       Html::showCheckbox(array('name'    => 'replace_items_tickets',
                                'value'   => true,
                                'checked' => $current_config['replace_items_tickets']));
       echo "</td>";
+      echo "<td style='width: 25%'>".__("Show prelude alerts in tickets", 'prelude')."</td>";
+      echo "<td>";
+      Html::showCheckbox(array('name'    => 'ticket_alerts',
+                               'value'   => true,
+                               'checked' => $current_config['ticket_alerts']));
+      echo "</td>";
       echo "</tr>";
 
       echo "<tr class='tab_bg_1'>";
-      echo "<th colspan='2'>".__("API Access", 'prelude')."</th>";
+      echo "<th colspan='4'>".__("API Access", 'prelude')."</th>";
       echo "</tr>";
 
       echo "<tr class='tab_bg_1'>";
-      echo "<td style='width: 15%'>".__("Prelude URL", 'prelude')."</td>";
+      echo "<td>".__("Prelude URL", 'prelude')."</td>";
       echo "<td>";
       echo Html::input('prelude_url', array('value'       => $current_config['prelude_url'],
                                             'placeholder' => "http://path/to/prelude",
@@ -82,7 +88,7 @@ class PluginPreludeConfig extends CommonDBTM {
       echo "</tr>";
 
       echo "<tr class='tab_bg_1'>";
-      echo "<td style='width: 15%'>".__("API Client ID", 'prelude')."</td>";
+      echo "<td>".__("API Client ID", 'prelude')."</td>";
       echo "<td>";
       echo Html::input('api_client_id', array('value' => $current_config['api_client_id'],
                                               'style' => 'width: 90%'));
@@ -90,7 +96,7 @@ class PluginPreludeConfig extends CommonDBTM {
       echo "</tr>";
 
       echo "<tr class='tab_bg_1'>";
-      echo "<td style='width: 15%'>".__("API Client Secret", 'prelude')."</td>";
+      echo "<td>".__("API Client Secret", 'prelude')."</td>";
       echo "<td>";
       echo Html::input('api_client_secret', array('value' => $current_config['api_client_secret'],
                                                   'style' => 'width: 90%'));
@@ -101,18 +107,19 @@ class PluginPreludeConfig extends CommonDBTM {
       echo "<tr class='tab_bg_2'>";
       echo "<td colspan='4' class='center'>";
       echo "<input type='submit' name='update' class='submit' value=\""._sx('button','Save')."\">";
+      echo "<br><br><br>";
       echo "</td></tr>";
 
       if (!empty($current_config['prelude_url'])) {
 
          echo "<tr class='headerRow'>";
-         echo "<th colspan='2'>".__('API Status')."</th>";
+         echo "<th colspan='4'>".__('API Status')."</th>";
          echo "</tr>";
 
 
          foreach(PluginPreludeAPI::status() as $status_label => $status) {
             echo "<tr class='tab_bg_1'>";
-            echo "<td style='width: 15%'>$status_label</td>";
+            echo "<td>$status_label</td>";
             echo "<td>";
             $color_png = "redbutton.png";
             if ($status) {
@@ -125,7 +132,7 @@ class PluginPreludeConfig extends CommonDBTM {
 
          if (empty($current_config['api_refresh_token'])) {
             echo "<tr class='tab_bg_1'>";
-            echo "<td colspan='2'>";
+            echo "<td colspan='4'>";
             echo "<a href='".Toolbox::getItemTypeFormURL(__CLASS__)."?connect_api' class='submit'>".
                  __("Connect to Prelude API", 'prelude')."</a>";
             echo "</td>";
@@ -185,6 +192,9 @@ class PluginPreludeConfig extends CommonDBTM {
       // plugin features
       !isset($current_config['replace_items_tickets'])
          ? $config->setConfigurationValues('plugin:Prelude', array('replace_items_tickets' => true))
+         : '';
+      !isset($current_config['ticket_alerts'])
+         ? $config->setConfigurationValues('plugin:Prelude', array('ticket_alerts' => true))
          : '';
    }
 
