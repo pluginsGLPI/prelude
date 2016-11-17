@@ -26,7 +26,7 @@
  --------------------------------------------------------------------------
  */
 
-define('PLUGIN_PRELUDE_VERSION', '0.0.1');
+define('PLUGIN_PRELUDE_VERSION', '0.0.2');
 
 // include composer autoload
 require_once(__DIR__ . '/vendor/autoload.php');
@@ -38,18 +38,51 @@ require_once(__DIR__ . '/vendor/autoload.php');
  * @return void
  */
 function plugin_init_prelude() {
-   global $PLUGIN_HOOKS;
+   global $PLUGIN_HOOKS, $CFG_GLPI;
 
    $PLUGIN_HOOKS['csrf_compliant']['prelude'] = true;
 
+   // include composer autoload
+   require_once(__DIR__ . '/vendor/autoload.php');
+
    $plugin = new Plugin();
    if (isset($_SESSION['glpiID'])
-       &&$plugin->isInstalled('prelude')
        && $plugin->isActivated('prelude')) {
+
+      $PLUGIN_HOOKS['add_javascript']['prelude'][] = "js/tabs.js";
+
+      // get the plugin config
+      $prelude_config = PluginPreludeConfig::getConfig();
 
       // Add a link in the main menu plugins for technician and admin panel
       Plugin::registerClass('PluginPreludeConfig', array('addtabon' => 'Config'));
       $PLUGIN_HOOKS['config_page']['prelude'] = 'front/config.form.php';
+
+      // add a new tab to tickets who replace item_ticket
+      if ($prelude_config['replace_items_tickets']) {
+         $PLUGIN_HOOKS['add_javascript']['prelude'][] = "js/hide_items_tickets.js.php";
+
+         $PLUGIN_HOOKS['item_add']['prelude'] = array('Item_Ticket' =>
+                                                       array('PluginPreludeItem_Ticket',
+                                                             'item_Ticket_AfterAdd'));
+         $PLUGIN_HOOKS['item_update']['prelude'] = array('Item_Ticket' =>
+                                                          array('PluginPreludeItem_Ticket',
+                                                                'item_Ticket_AfterUpdate'));
+         $PLUGIN_HOOKS['item_delete']['prelude'] = array('Item_Ticket' =>
+                                                          array('PluginPreludeItem_Ticket',
+                                                                'item_Ticket_AfterDelete'));
+         $PLUGIN_HOOKS['item_purge']['prelude'] = array('Item_Ticket' =>
+                                                         array('PluginPreludeItem_Ticket',
+                                                               'item_Ticket_AfterPurge'));
+
+
+
+         Plugin::registerClass('PluginPreludeItem_Ticket', array('addtabon' => 'Ticket'));
+         foreach(Ticket::getAllTypesForHelpdesk() as $itemtype => $label) {
+            Plugin::registerClass('PluginPreludeItem_Ticket', array('addtabon' => $itemtype));
+         }
+      }
+
    }
 }
 

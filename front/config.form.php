@@ -3,12 +3,7 @@
 include ("../../../inc/includes.php");
 
 $config = new PluginPreludeConfig();
-if (isset($_REQUEST["update"])) {
-   $config->check($_REQUEST['id'], UPDATE);
-   $config->update($_REQUEST);
-   Html::back();
-
-} else if (isset($_REQUEST["connect_api"])) {
+if (isset($_REQUEST["connect_api"])) {
    PluginPreludeAPI::connect($_REQUEST);
 }
 
