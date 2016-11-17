@@ -83,6 +83,10 @@ function plugin_init_prelude() {
          }
       }
 
+      // add a new tab to tickets to perform actions relative to prelude
+      if ($prelude_config['replace_items_tickets']) {
+         Plugin::registerClass('PluginPreludeTicket', array('addtabon' => 'Ticket'));
+      }
    }
 }
 

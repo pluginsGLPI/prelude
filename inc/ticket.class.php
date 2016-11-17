@@ -5,6 +5,49 @@ if (!defined('GLPI_ROOT')) {
 }
 
 class PluginPreludeTicket extends CommonDBTM {
+   static $rightname = 'ticket';
+
+
+   static function getTypeName($nb=0) {
+      return __("Prelude", 'prelude');
+   }
+
+   function getTabNameForItem(CommonGLPI $item, $withtemplate=0) {
+
+      if ($withtemplate) {
+         return '';
+      }
+      if ($item->getType() == 'Ticket') {
+         $nb = countElementsInTable(self::getTable(),
+                                    "`tickets_id` = '".$item->getID()."'");
+         return self::createTabEntry(self::getTypeName($nb), $nb);
+      }
+
+      return '';
+   }
+
+
+   static function displayTabContentForItem(CommonGLPI $item, $tabnum=1, $withtemplate=0) {
+      if ($item->getType() == 'Ticket') {
+         self::showForTicket($item);
+      }
+      return true;
+   }
+
+   /**
+    * Print the HTML array for Items linked to a ticket
+    *
+    * @param $ticket Ticket object
+    *
+    * @return Nothing (display)
+   **/
+   static function showForTicket(Ticket $ticket) {
+      echo "<a class='submit' href='".Toolbox::getItemTypeFormURL('Problem').
+                                    "?tickets_id=".$ticket->getID()."'>";
+         _e('Create a problem from this ticket');
+         echo "</a>";
+   }
+
    /**
     * Database table installation for the item type
     *
