@@ -97,7 +97,7 @@ class PluginPreludeItem_Ticket extends Item_Ticket{
             self::dropdownMyDevices($dev_user_id, $ticket->fields["entities_id"], null, 0, array('tickets_id' => $instID));
          }
 
-         $data =  array_keys(getAllDatasFromTable('$table'));
+         $data =  array_keys(getAllDatasFromTable($table));
          $used = array();
          if (!empty($data)) {
             foreach ($data as $val) {
