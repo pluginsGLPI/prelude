@@ -286,35 +286,114 @@ class PluginPreludeItem_Ticket extends Item_Ticket{
       return true;
    }
 
+   /**
+    * When adding a prelude_item_ticket, replicate to glpi_item_ticket
+    */
    function post_addItem() {
-      $item_ticket = new item_Ticket;
-      $fields = $this->fields;
-      unset($fields['id']);
-      $item_ticket->add($fields);
+      $item_ticket = new Item_Ticket;
+      self::addItem($this, $item_ticket);
    }
 
+   /**
+    * When updating a prelude_item_ticket, replicate to glpi_item_ticket
+    */
    function post_updateItem($history=1) {
-      $item_ticket = new item_Ticket;
-      $old_fields  = array_merge($this->fields, $this->oldvalues);
-      $found       = $item_ticket->find("`itemtype`       = '".$old_fields['itemtype']."'
+      $item_ticket = new Item_Ticket;
+      self::updateItem($this, $item_ticket, $history);
+   }
+
+   /**
+    * When purging a prelude_item_ticket, replicate to glpi_item_ticket
+    */
+   function post_purgeItem() {
+      $item_ticket = new Item_Ticket;
+      self::deleteItem($this, $item_ticket, true);
+   }
+
+   /**
+    * When deleting a prelude_item_ticket, replicate to glpi_item_ticket
+    */
+   function post_deleteItem() {
+      $item_ticket = new Item_Ticket;
+      self::deleteItem($this, $item_ticket, false);
+   }
+
+   /**
+    * When adding a glpi_item_ticket, replicate to prelude_item_ticket
+    */
+   static function item_Ticket_AfterAdd(CommonDBTM $item_ticket) {
+      $prelude_item_ticket = new self;
+      self::addItem($item_ticket, $prelude_item_ticket);
+   }
+
+   /**
+    * When updating a glpi_item_ticket, replicate to prelude_item_ticket
+    */
+   static function item_Ticket_AfterUpdate(CommonDBTM $item_ticket) {
+      $prelude_item_ticket = new self;
+      self::updateItem($item_ticket, $prelude_item_ticket);
+   }
+
+   /**
+    * When deleting a prelude_item_ticket, replicate to glpi_item_ticket
+    */
+   static function item_Ticket_AfterDelete(CommonDBTM $item_ticket) {
+      $prelude_item_ticket = new self;
+      self::deleteItem($item_ticket, $prelude_item_ticket, false);
+   }
+
+   /**
+    * When purging a glpi_item_ticket, replicate to prelude_item_ticket
+    */
+   static function item_Ticket_AfterPurge(CommonDBTM $item_ticket) {
+      $prelude_item_ticket = new self;
+      self::deleteItem($item_ticket, $prelude_item_ticket, true);
+   }
+
+   /**
+    * add new_item corresponding to old_item
+    *
+    * @param CommonDBTM $old_item object added
+    * @param CommonDBTM $new_item object to add
+    */
+   static function addItem(CommonDBTM $old_item, CommonDBTM $new_item) {
+      $fields = $old_item->fields;
+      unset($fields['id']);
+      $new_item->add($fields);
+   }
+
+   /**
+    * update new_item corresponding to old_item
+    *
+    * @param CommonDBTM $old_item object updated
+    * @param CommonDBTM $new_item object to update
+    */
+   static function updateItem(CommonDBTM $old_item, CommonDBTM $new_item, $history = 1) {
+      $old_fields  = array_merge($old_item->fields, $old_item->oldvalues);
+      $found       = $new_item->find("`itemtype`       = '".$old_fields['itemtype']."'
                                          AND `items_id`   = '".$old_fields['items_id']."'
                                          AND `tickets_id` = '".$old_fields['tickets_id']."'");
 
       foreach($found as $current) {
-         $fields = $item_ticket->fields;
+         $fields = $new_item->fields;
          $fields['id'] = $current;
-         $item_ticket->update($fields);
+         $new_item->update($fields, $history);
       }
    }
 
-   function post_deleteItem() {
-      $item_ticket = new item_Ticket;
-      $found       = $item_ticket->find("`itemtype`       = '".$this->fields['itemtype']."'
-                                         AND `items_id`   = '".$this->fields['items_id']."'
-                                         AND `tickets_id` = '".$this->fields['tickets_id']."'");
-
+   /**
+    * Remove new_item corresponding to old_item
+    *
+    * @param CommonDBTM $old_item object deleted
+    * @param CommonDBTM $new_item object to delete
+    * @param boolean $forced do we purge (true) or delete (false) the item
+    */
+   static function deleteItem(CommonDBTM $old_item, CommonDBTM $new_item, $forced = false) {
+      $found = $new_item->find("`itemtype`       = '".$old_item->fields['itemtype']."'
+                                AND `items_id`   = '".$old_item->fields['items_id']."'
+                                AND `tickets_id` = '".$old_item->fields['tickets_id']."'");
       foreach($found as $current) {
-         $item_ticket->delete($current);
+         $new_item->delete($current, $forced);
       }
    }
 

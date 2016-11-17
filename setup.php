@@ -62,6 +62,21 @@ function plugin_init_prelude() {
       if ($prelude_config['replace_items_tickets']) {
          $PLUGIN_HOOKS['add_javascript']['prelude'][] = "js/hide_items_tickets.js.php";
 
+         $PLUGIN_HOOKS['item_add']['prelude'] = array('Item_Ticket' =>
+                                                       array('PluginPreludeItem_Ticket',
+                                                             'item_Ticket_AfterAdd'));
+         $PLUGIN_HOOKS['item_update']['prelude'] = array('Item_Ticket' =>
+                                                          array('PluginPreludeItem_Ticket',
+                                                                'item_Ticket_AfterUpdate'));
+         $PLUGIN_HOOKS['item_delete']['prelude'] = array('Item_Ticket' =>
+                                                          array('PluginPreludeItem_Ticket',
+                                                                'item_Ticket_AfterDelete'));
+         $PLUGIN_HOOKS['item_purge']['prelude'] = array('Item_Ticket' =>
+                                                         array('PluginPreludeItem_Ticket',
+                                                               'item_Ticket_AfterPurge'));
+
+
+
          Plugin::registerClass('PluginPreludeItem_Ticket', array('addtabon' => 'Ticket'));
          foreach(Ticket::getAllTypesForHelpdesk() as $itemtype => $label) {
             Plugin::registerClass('PluginPreludeItem_Ticket', array('addtabon' => $itemtype));
