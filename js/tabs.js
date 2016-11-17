@@ -1,14 +1,23 @@
 var refresh_tabs = function(split_view = false) {
-   $('.ui-tabs').tabs('refresh');
+   $('div:not(.debug) > .ui-tabs').tabs('refresh');
 
    // for split view, reinit srolltabs lib
    if (split_view) {
-      $('.ui-tabs').scrollabletabs();
+      // remove parts of previous scollable tabs
+      $.when($('div:not(.debug) > .ui-tabs .listTab').remove(),
+             $('div:not(.debug) > .ui-tabs .stNavMain').remove())
+      .done(function () {
+         // reinit scrollable tabs
+         $('div:not(.debug) > .ui-tabs').scrollabletabs();
+      });
    }
 }
 
-var remove_tab = function(tabname, split_view = false) {
-   $('li[role=tab]:has(a[href*=\\='+tabname+'\\$1])')
+var remove_tab = function(tabname) {
+   get_tab(tabname)
       .remove();
-   refresh_tabs(split_view);
+}
+
+var get_tab = function(tabname) {
+   return $('div:not(.debug) > .ui-tabs li[role=tab]:has(a[href*=\\='+tabname+'\\$1])').first();
 }

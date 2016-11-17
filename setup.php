@@ -63,8 +63,8 @@ function plugin_init_prelude() {
          $PLUGIN_HOOKS['add_javascript']['prelude'][] = "js/hide_items_tickets.js.php";
 
          Plugin::registerClass('PluginPreludeItem_Ticket', array('addtabon' => 'Ticket'));
-         foreach(Ticket::getAllTypesForHelpdesk() as $type) {
-            Plugin::registerClass('PluginPreludeItem_Ticket', array('addtabon' => $type));
+         foreach(Ticket::getAllTypesForHelpdesk() as $itemtype => $label) {
+            Plugin::registerClass('PluginPreludeItem_Ticket', array('addtabon' => $itemtype));
          }
       }
 

@@ -16,8 +16,8 @@ $split_view       = CommonGLPI::isLayoutWithMain()
                         : "false";
 $url_base         = $CFG_GLPI['url_base'];
 $url_ticket_types = array();
-foreach(Ticket::getAllTypesForHelpdesk() as $type) {
-   $url_ticket_types[] = Toolbox::getItemTypeFormURL($type, false);
+foreach(Ticket::getAllTypesForHelpdesk() as $itemtype => $label) {
+   $url_ticket_types[] = Toolbox::getItemTypeFormURL($itemtype, false);
 }
 $url_ticket_types = json_encode($url_ticket_types);
 
@@ -29,12 +29,26 @@ $(function() {
 
    // remove item tab in ticket form
    if (current_page == 'front/ticket.form.php') {
-      remove_tab('Item_Ticket', $split_view);
+      remove_tab('Item_Ticket');
+
+      // move prelude tab after validation tab
+      get_tab('PluginPreludeItem_Ticket')
+         .insertAfter(get_tab('TicketValidation').first());
+
+      // refresh jquery-ui tabs
+      refresh_tabs($split_view);
    }
 
    // for assets forms, we remove the ticket tab
    if ($url_ticket_types.indexOf('/'+current_page) !== -1) {
-      remove_tab('Ticket', $split_view);
+      remove_tab('Ticket');
+
+      // move prelude tab after antivirus tab
+      get_tab('PluginPreludeItem_Ticket')
+         .insertAfter(get_tab('ComputerAntivirus').first());
+
+      // refresh jquery-ui tabs
+      refresh_tabs($split_view);
    }
 });
 JAVASCRIPT;

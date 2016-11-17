@@ -266,7 +266,7 @@ class PluginPreludeItem_Ticket extends Item_Ticket{
             return self::createTabEntry(self::getTypeName($nb), $nb);
          }
 
-      } else if (in_array($item->getType(), Ticket::getAllTypesForHelpdesk())) {
+      } else if (array_key_exists($item->getType(), Ticket::getAllTypesForHelpdesk())) {
          $nb = countElementsInTable(self::getTable(),
                                     "`items_id` = '".$item->getID()."'
                                      AND `itemtype` = '".$item->getType()."'");
@@ -280,7 +280,7 @@ class PluginPreludeItem_Ticket extends Item_Ticket{
    static function displayTabContentForItem(CommonGLPI $item, $tabnum=1, $withtemplate=0) {
       if ($item->getType() == 'Ticket') {
          self::showForTicket($item);
-      } else if (in_array($item->getType(), Ticket::getAllTypesForHelpdesk())) {
+      } else if (array_key_exists($item->getType(), Ticket::getAllTypesForHelpdesk())) {
          self::showForAsset($item);
       }
       return true;
