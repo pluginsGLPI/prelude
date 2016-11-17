@@ -42,7 +42,7 @@ class PluginPreludeTicket extends CommonDBTM {
     * @return Nothing (display)
    **/
    static function showForTicket(Ticket $ticket) {
-      echo "<a class='submit' href='".Toolbox::getItemTypeFormURL('Problem').
+      echo "<a class='vsubmit' href='".Toolbox::getItemTypeFormURL('Problem').
                                     "?tickets_id=".$ticket->getID()."'>";
          _e('Create a problem from this ticket');
          echo "</a>";

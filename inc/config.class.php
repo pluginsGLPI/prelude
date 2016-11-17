@@ -133,7 +133,7 @@ class PluginPreludeConfig extends CommonDBTM {
          if (empty($current_config['api_refresh_token'])) {
             echo "<tr class='tab_bg_1'>";
             echo "<td colspan='4'>";
-            echo "<a href='".Toolbox::getItemTypeFormURL(__CLASS__)."?connect_api' class='submit'>".
+            echo "<a href='".Toolbox::getItemTypeFormURL(__CLASS__)."?connect_api' class='vsubmit'>".
                  __("Connect to Prelude API", 'prelude')."</a>";
             echo "</td>";
             echo "</tr>";
