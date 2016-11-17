@@ -98,6 +98,12 @@ class PluginPreludeConfig extends CommonDBTM {
       echo "</tr>";
 
 
+      echo "<tr class='tab_bg_1'>";
+      echo "<td style='width: 15%'>".__("API Access token", 'prelude')."</td>";
+      echo "<td>".$current_config['api_access_token']."</td>";
+      echo "</tr>";
+
+
       echo "<tr class='tab_bg_2'>";
       echo "<td colspan='4' class='center'>";
       echo "<input type='submit' name='update' class='submit' value=\""._sx('button','Save')."\">";
