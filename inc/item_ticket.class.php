@@ -22,7 +22,7 @@ class PluginPreludeItem_Ticket extends Item_Ticket{
 
 
    static function getTypeName($nb=0) {
-      return _n('Item (prelude)', 'Items (prelude)', $nb);
+      return _n('Item', 'Items', $nb);
    }
 
 
@@ -270,7 +270,7 @@ class PluginPreludeItem_Ticket extends Item_Ticket{
          $nb = countElementsInTable(self::getTable(),
                                     "`items_id` = '".$item->getID()."'
                                      AND `itemtype` = '".$item->getType()."'");
-         return self::createTabEntry(_n("Prelude ticket", "Prelude tickets", $nb), $nb);
+         return self::createTabEntry(_n("Ticket", "Tickets", $nb), $nb);
       }
 
       return '';
