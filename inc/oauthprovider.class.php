@@ -106,21 +106,21 @@ class PluginPreludeOauthProvider extends AbstractProvider {
       }
    }
 
-   static function refreshToken() {
-      $provider = self::getInstance();
-      if ($prev_access_token = PluginPreludeConfig::retrieveAccessToken()) {
+   /**
+    * check if the access token stored in db is valid and not expired
+    * if fail, send a refresh query to get a new access token
+    */
+   static function checkAccessToken() {
+      if ($prev_access_token = PluginPreludeConfig::retrieveToken()) {
          if ($prev_access_token->hasExpired()) {
+            $provider = self::getInstance();
             $new_access_token = $provider->getAccessToken('refresh_token', [
                'refresh_token' => $prev_access_token->getRefreshToken()
             ]);
 
             PluginPreludeConfig::storeAccessToken($new_access_token);
-
-            return $new_access_token->__toString();
          }
       }
-
-      return false;
    }
 
 }

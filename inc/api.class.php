@@ -28,6 +28,8 @@ class PluginPreludeAPI extends CommonGLPI {
    }
 
    public static function getLogs($params = array()) {
+      PluginPreludeOauthProvider::checkAccessToken();
+
       $default_params = [
          'query' => [
             'action'  => 'retrieve',
@@ -46,6 +48,8 @@ class PluginPreludeAPI extends CommonGLPI {
    }
 
    public static function getAlerts($params = array()) {
+      PluginPreludeOauthProvider::checkAccessToken();
+
       $default_params = [
          'query' => [
             'action'  => 'retrieve',
