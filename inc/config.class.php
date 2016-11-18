@@ -84,6 +84,10 @@ class PluginPreludeConfig extends CommonDBTM {
       echo Html::input('prelude_url', array('value'       => $current_config['prelude_url'],
                                             'placeholder' => "http://path/to/prelude",
                                             'style'       => 'width: 90%'));
+      echo Html::image(PRELUDE_ROOTDOC."/pics/link.png",
+                             array('class' => 'pointer',
+                                   'title' => __("Go to prelude", 'prelude'),
+                                   'url'   => $current_config['prelude_url']));
       echo "</td>";
       echo "</tr>";
 
