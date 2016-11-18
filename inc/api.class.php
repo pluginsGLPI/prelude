@@ -23,6 +23,10 @@ class PluginPreludeAPI extends CommonGLPI {
                   => is_array(self::getLogs())];
    }
 
+   static function globalStatus() {
+      return !in_array(false, self::status());
+   }
+
    public static function getLogs($params = array()) {
       $default_params = [
          'query' => [
