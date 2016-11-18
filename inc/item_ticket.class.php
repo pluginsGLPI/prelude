@@ -21,6 +21,9 @@ class PluginPreludeItem_Ticket extends Item_Ticket{
    static public $checkItem_2_Rights  = self::HAVE_VIEW_RIGHT_ON_ITEM;
 
 
+   /**
+    * {@inheritDoc}
+    */
    static function getTypeName($nb=0) {
       return _n('Item', 'Items', $nb);
    }
@@ -42,12 +45,8 @@ class PluginPreludeItem_Ticket extends Item_Ticket{
    }
 
    /**
-    * Print the HTML array for Items linked to a ticket
-    *
-    * @param $ticket Ticket object
-    *
-    * @return Nothing (display)
-   **/
+    * {@inheritDoc}
+    */
    static function showForTicket(Ticket $ticket) {
       global $DB, $CFG_GLPI;
 
@@ -247,11 +246,19 @@ class PluginPreludeItem_Ticket extends Item_Ticket{
       echo "</div>";
    }
 
+   /**
+    * Print the HTML array for tickets linked to the items
+    *
+    * @param $ticket Ticket object
+   **/
    static function showForAsset(CommonDBTM $item) {
       return Ticket::showListForItem($item);
    }
 
 
+   /**
+    * {@inheritDoc}
+    */
    function getTabNameForItem(CommonGLPI $item, $withtemplate=0) {
 
       if ($withtemplate) {
@@ -277,6 +284,9 @@ class PluginPreludeItem_Ticket extends Item_Ticket{
    }
 
 
+   /**
+    * {@inheritDoc}
+    */
    static function displayTabContentForItem(CommonGLPI $item, $tabnum=1, $withtemplate=0) {
       if ($item->getType() == 'Ticket') {
          self::showForTicket($item);

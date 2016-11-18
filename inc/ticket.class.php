@@ -8,10 +8,16 @@ class PluginPreludeTicket extends CommonDBTM {
    static $rightname = 'ticket';
 
 
+   /**
+    * {@inheritDoc}
+    */
    static function getTypeName($nb=0) {
       return __("Prelude", 'prelude');
    }
 
+   /**
+    * {@inheritDoc}
+    */
    function getTabNameForItem(CommonGLPI $item, $withtemplate=0) {
 
       if ($withtemplate) {
@@ -25,7 +31,9 @@ class PluginPreludeTicket extends CommonDBTM {
       return '';
    }
 
-
+   /**
+    * {@inheritDoc}
+    */
    static function displayTabContentForItem(CommonGLPI $item, $tabnum=1, $withtemplate=0) {
       if ($item->getType() == 'Ticket') {
          self::showForTicket($item);

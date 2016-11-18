@@ -10,35 +10,47 @@ class PluginPreludeConfig extends CommonDBTM {
    static $rightname         = 'config';
    static protected $notable = true;
 
+   /**
+    * {@inheritDoc}
+    */
    static function getTypeName($nb=0) {
-      return __('Setup');
-   }
-
-   function getName($with_comment=0) {
       return __('Prelude configuration', 'prelude');
    }
 
+   /**
+    * Return the current config of the plugin store in the glpi config table
+    * @return array config with keys => values
+    */
    static function getConfig() {
       return Config::getConfigurationValues('plugin:Prelude');
    }
 
+   /**
+    * {@inheritDoc}
+    */
    function getTabNameForItem(CommonGLPI $item, $withtemplate=0) {
 
       if ($item->getType()=='Config') {
-            return self::getName();
+            return self::getTypeName();
       }
       return '';
    }
 
+   /**
+    * {@inheritDoc}
+    */
    static function displayTabContentForItem(CommonGLPI $item, $tabnum=1, $withtemplate=0) {
 
       if ($item->getType()=='Config') {
-         self::showConfigForm($item);
+         self::showConfigForm();
       }
       return true;
    }
 
-   static function showConfigForm($item) {
+   /**
+    * Display Html form to configurate the plugin parameters.
+    */
+   static function showConfigForm() {
       global $CFG_GLPI;
 
       $plugin = new Plugin();
@@ -161,11 +173,22 @@ class PluginPreludeConfig extends CommonDBTM {
       Html::closeForm();
    }
 
+   /**
+    * Store an outh access token in plugin config
+    * @param  AccessToken $token instance of a token
+    *                            provided by League\OAuth2\Client\Token\AccessToken
+    * @return boolean
+    */
    static function storeToken(AccessToken $token) {
       return Config::setConfigurationValues('plugin:Prelude',
                                             array('api_token' => $token->jsonSerialize()));
    }
 
+   /**
+    * Retrieve the current access token from the plugin config
+    * @return mixed false if we fail to retrieve the token
+    *               or an instance of League\OAuth2\Client\Token\AccessToken
+    */
    static function retrieveToken() {
       $prelude_config = self::getConfig();
       if ($access_token_array = json_decode($prelude_config['api_token'], true)) {
@@ -175,6 +198,11 @@ class PluginPreludeConfig extends CommonDBTM {
       return false;
    }
 
+   /**
+    * get the access token in string
+    * @return mixed false if we fail to retrieve the token
+    *               of the token in string
+    */
    static function getCurrentAccessToken() {
      if ($token = self::retrieveToken()) {
          return $token->getToken();
@@ -194,22 +222,20 @@ class PluginPreludeConfig extends CommonDBTM {
 
       $current_config = self::getConfig();
       // api access
-      !isset($current_config['prelude_url'])
-         ? Config::setConfigurationValues('plugin:Prelude', array('prelude_url' => '')) : '';
-      !isset($current_config['api_client_id'])
-         ? Config::setConfigurationValues('plugin:Prelude', array('api_client_id' => '')) : '';
-      !isset($current_config['api_client_secret'])
-         ? Config::setConfigurationValues('plugin:Prelude', array('api_client_secret' => '')) : '';
-      !isset($current_config['api_token'])
-         ? Config::setConfigurationValues('plugin:Prelude', array('api_token' => '')) : '';
+      if (!isset($current_config['prelude_url']))
+         Config::setConfigurationValues('plugin:Prelude', array('prelude_url' => ''));
+      if (!isset($current_config['api_client_id']))
+         Config::setConfigurationValues('plugin:Prelude', array('api_client_id' => ''));
+      if (!isset($current_config['api_client_secret']))
+         Config::setConfigurationValues('plugin:Prelude', array('api_client_secret' => ''));
+      if (!isset($current_config['api_token']))
+         Config::setConfigurationValues('plugin:Prelude', array('api_token' => ''));
 
       // plugin features
-      !isset($current_config['replace_items_tickets'])
-         ? Config::setConfigurationValues('plugin:Prelude', array('replace_items_tickets' => true))
-         : '';
-      !isset($current_config['ticket_alerts'])
-         ? Config::setConfigurationValues('plugin:Prelude', array('ticket_alerts' => true))
-         : '';
+      if (!isset($current_config['replace_items_tickets']))
+         Config::setConfigurationValues('plugin:Prelude', array('replace_items_tickets' => true));
+      if (!isset($current_config['ticket_alerts']))
+         Config::setConfigurationValues('plugin:Prelude', array('ticket_alerts' => true));
    }
 
    /**

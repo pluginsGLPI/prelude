@@ -10,10 +10,18 @@ use GuzzleHttp\Exception\RequestException;
 
 class PluginPreludeAPI extends CommonGLPI {
 
-   static function connect($params) {
-      PluginPreludeOauthProvider::connect($params);
+   /**
+    * Connect to prelude API
+    * @param  array $params [description]
+    */
+   static function connect($params = array()) {
+      return PluginPreludeOauthProvider::connect($params);
    }
 
+   /**
+    * check all api endpoints
+    * @return array list of label -> boolean
+    */
    static function status() {
       return [__("Prelude access token", 'prelude')
                   => is_string(PluginPreludeConfig::getCurrentAccessToken()),
@@ -23,10 +31,19 @@ class PluginPreludeAPI extends CommonGLPI {
                   => is_array(self::getLogs())];
    }
 
+   /**
+    * check api status
+    * @return boolean true if all endpoints success to connect
+    */
    static function globalStatus() {
       return !in_array(false, self::status());
    }
 
+   /**
+    * Retrieve logs within prelude api
+    * @param  array  $params
+    * @return array  the logs
+    */
    public static function getLogs($params = array()) {
       PluginPreludeOauthProvider::checkAccessToken();
 
@@ -47,6 +64,11 @@ class PluginPreludeAPI extends CommonGLPI {
       return $logs;
    }
 
+   /**
+    * Retrieve alerts within prelude api
+    * @param  array  $params
+    * @return array  the alerts
+    */
    public static function getAlerts($params = array()) {
       PluginPreludeOauthProvider::checkAccessToken();
 
@@ -54,9 +76,9 @@ class PluginPreludeAPI extends CommonGLPI {
          'query' => [
             'action'  => 'retrieve',
             'request' => ['path' => ['alert.create_time',
-                                     'alert.classification.text']/*,
+                                     'alert.classification.text'],
                           'limit' =>  100,
-                          'offset' => 0*/],
+                          'offset' => 0],
          ]
       ];
       $params = array_merge($default_params, $params);
@@ -67,6 +89,21 @@ class PluginPreludeAPI extends CommonGLPI {
       return $alerts;
    }
 
+   /**
+    * Send an http query with guzzle library and manage the return
+    * @param  string $method      HTTP method (GET/POST/etc),
+    *                             see https://en.wikipedia.org/wiki/HTTP#Request_methods
+    * @param  string $ressource   the endpoint to access (after the api base url)
+    * @param  array  $http_params some parameter to send with the query, here is the default keys:
+    *                              - allow_redirects (default false),
+    *                                 permit server to autoredirect the http call.
+    *                              - query: parameters send in url.
+    *                              - body: raw data to append to the query body.
+    *                              - json: json data to append to the query body.
+    *                                      This option cannot be used with body option.
+    *                              - headers: parameters to send in http query headers
+    * @return mixed               the output returned by the http query
+    */
    private static function sendHttpRequest($method = 'GET', $ressource = '', $http_params = array()) {
       // init stuff
       $prelude_config   = PluginPreludeConfig::getConfig();
