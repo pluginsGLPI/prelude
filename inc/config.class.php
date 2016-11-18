@@ -107,11 +107,18 @@ class PluginPreludeConfig extends CommonDBTM {
       echo "</td>";
       echo "</tr>";
 
+      // token informations
+      if ($token = self::retrieveToken()) {
+         echo "<tr class='tab_bg_1'>";
+         echo "<td style='width: 15%'>".__("API Access token", 'prelude')."</td>";
+         echo "<td>".$token->getToken()."</td>";
+         echo "</tr>";
 
-      echo "<tr class='tab_bg_1'>";
-      echo "<td style='width: 15%'>".__("API Access token", 'prelude')."</td>";
-      echo "<td>".$current_config['api_access_token']."</td>";
-      echo "</tr>";
+         echo "<tr class='tab_bg_1'>";
+         echo "<td style='width: 15%'>".__("API Refresh token", 'prelude')."</td>";
+         echo "<td>".$token->getRefreshToken()."</td>";
+         echo "</tr>";
+      }
 
 
       echo "<tr class='tab_bg_2'>";
@@ -154,15 +161,14 @@ class PluginPreludeConfig extends CommonDBTM {
       Html::closeForm();
    }
 
-   static function storeAccessToken(AccessToken $access_token) {
-      $config = new self;
-      return $config->update(array('id'               => 1,
-                                   'api_access_token' => $access_token->jsonSerialize()));
+   static function storeToken(AccessToken $token) {
+      return Config::setConfigurationValues('plugin:Prelude',
+                                            array('api_token' => $token->jsonSerialize()));
    }
 
-   static function retrieveAccessToken() {
+   static function retrieveToken() {
       $prelude_config = self::getConfig();
-      if ($access_token_array = json_decode($prelude_config['api_access_token'], true)) {
+      if ($access_token_array = json_decode($prelude_config['api_token'], true)) {
          return new AccessToken($access_token_array);
       }
 
@@ -170,8 +176,8 @@ class PluginPreludeConfig extends CommonDBTM {
    }
 
    static function getCurrentAccessToken() {
-     if ($access_token = self::retrieveAccessToken()) {
-         return $access_token->__toString();
+     if ($token = self::retrieveToken()) {
+         return $token->getToken();
       }
 
       return false;
@@ -187,24 +193,22 @@ class PluginPreludeConfig extends CommonDBTM {
       global $CFG_GLPI;
 
       $current_config = self::getConfig();
-      $config         = new Config();
-
       // api access
       !isset($current_config['prelude_url'])
-         ? $config->setConfigurationValues('plugin:Prelude', array('prelude_url' => '')) : '';
+         ? Config::setConfigurationValues('plugin:Prelude', array('prelude_url' => '')) : '';
       !isset($current_config['api_client_id'])
-         ? $config->setConfigurationValues('plugin:Prelude', array('api_client_id' => '')) : '';
+         ? Config::setConfigurationValues('plugin:Prelude', array('api_client_id' => '')) : '';
       !isset($current_config['api_client_secret'])
-         ? $config->setConfigurationValues('plugin:Prelude', array('api_client_secret' => '')) : '';
-      !isset($current_config['api_access_token'])
-         ? $config->setConfigurationValues('plugin:Prelude', array('api_access_token' => '')) : '';
+         ? Config::setConfigurationValues('plugin:Prelude', array('api_client_secret' => '')) : '';
+      !isset($current_config['api_token'])
+         ? Config::setConfigurationValues('plugin:Prelude', array('api_token' => '')) : '';
 
       // plugin features
       !isset($current_config['replace_items_tickets'])
-         ? $config->setConfigurationValues('plugin:Prelude', array('replace_items_tickets' => true))
+         ? Config::setConfigurationValues('plugin:Prelude', array('replace_items_tickets' => true))
          : '';
       !isset($current_config['ticket_alerts'])
-         ? $config->setConfigurationValues('plugin:Prelude', array('ticket_alerts' => true))
+         ? Config::setConfigurationValues('plugin:Prelude', array('ticket_alerts' => true))
          : '';
    }
 

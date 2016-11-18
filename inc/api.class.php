@@ -39,7 +39,10 @@ class PluginPreludeAPI extends CommonGLPI {
       ];
       $params = array_merge($default_params, $params);
       $params['query']['request'] = json_encode($params['query']['request']);
-      return self::sendHttpRequest('GET', '', $params);
+      $logs_json = self::sendHttpRequest('GET', '', $params);
+      $logs      = json_decode($logs_json, true);
+
+      return $logs;
    }
 
    public static function getAlerts($params = array()) {
@@ -47,14 +50,17 @@ class PluginPreludeAPI extends CommonGLPI {
          'query' => [
             'action'  => 'retrieve',
             'request' => ['path' => ['alert.create_time',
-                                     'alert.classification.text'],
+                                     'alert.classification.text']/*,
                           'limit' =>  100,
-                          'offset' => 0],
+                          'offset' => 0*/],
          ]
       ];
       $params = array_merge($default_params, $params);
       $params['query']['request'] = json_encode($params['query']['request']);
-      return self::sendHttpRequest('GET', '', $params);
+      $alerts_json = self::sendHttpRequest('GET', '', $params);
+      $alerts      = json_decode($alerts_json, true);
+
+      return $alerts;
    }
 
    private static function sendHttpRequest($method = 'GET', $ressource = '', $http_params = array()) {
@@ -78,6 +84,11 @@ class PluginPreludeAPI extends CommonGLPI {
                                'Authorization' => 'Bearer '.$access_token_str],
       ];
       $http_params = array_merge($default_params, $http_params);
+
+      //remove empty values
+      $http_params = array_filter($http_params, function($value) {
+         return $value !== "";
+      });
 
       // send http request
       try {
