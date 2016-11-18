@@ -60,6 +60,14 @@ class PluginPreludeTicket extends CommonDBTM {
       echo "<form name='ticket_form$rand' id='ticket_form$rand' method='post'
              action='".Toolbox::getItemTypeFormURL(__CLASS__)."'>";
 
+      if (!PluginPreludeAPI::globalStatus()) {
+         $message = __("Prelude API is not connected, click to display configuration");
+         echo "<a href='".PRELUDE_CONFIG_URL."'>";
+         Html::displayTitle($CFG_GLPI['root_doc']."/pics/warning.png", $message, $message);
+         echo "</a>";
+         return false;
+      }
+
       $found = self::getForticket($ticket);
       if (count($found) <= 0) {
          _e("No alerts found  for this ticket", 'prelude');
