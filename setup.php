@@ -25,8 +25,9 @@
  along with prelude. If not, see <http://www.gnu.org/licenses/>.
  --------------------------------------------------------------------------
  */
-
+global $CFG_GLPI;
 define('PLUGIN_PRELUDE_VERSION', '0.0.3');
+define('PRELUDE_ROOTDOC', $CFG_GLPI['root_doc']."/plugins/prelude");
 
 // include composer autoload
 require_once(__DIR__ . '/vendor/autoload.php');
@@ -50,6 +51,7 @@ function plugin_init_prelude() {
        && $plugin->isActivated('prelude')) {
 
       $PLUGIN_HOOKS['add_javascript']['prelude'][] = "js/tabs.js";
+      $PLUGIN_HOOKS['add_css']['prelude'][] = "css/common.css";
 
       // get the plugin config
       $prelude_config = PluginPreludeConfig::getConfig();

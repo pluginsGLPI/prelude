@@ -18,8 +18,7 @@ class PluginPreludeTicket extends CommonDBTM {
          return '';
       }
       if ($item->getType() == 'Ticket') {
-         $nb = countElementsInTable(self::getTable(),
-                                    "`tickets_id` = '".$item->getID()."'");
+         $nb = count(self::getForticket($item));
          return self::createTabEntry(self::getTypeName($nb), $nb);
       }
 
@@ -34,6 +33,11 @@ class PluginPreludeTicket extends CommonDBTM {
       return true;
    }
 
+   static function getForTicket(Ticket $ticket) {
+      $prelude_ticket = new self;
+      return $prelude_ticket->find("`tickets_id` = ".$ticket->getID());
+   }
+
    /**
     * Print the HTML array for Items linked to a ticket
     *
@@ -42,10 +46,42 @@ class PluginPreludeTicket extends CommonDBTM {
     * @return Nothing (display)
    **/
    static function showForTicket(Ticket $ticket) {
+      global $CFG_GLPI;
+
+      $rand           = mt_rand();
+      $url            = Toolbox::getItemTypeFormURL(__CLASS__);
+
       echo "<a class='vsubmit' href='".Toolbox::getItemTypeFormURL('Problem').
                                     "?tickets_id=".$ticket->getID()."'>";
-         _e('Create a problem from this ticket');
-         echo "</a>";
+      _e('Create a problem from this ticket');
+      echo "</a>";
+      echo "<br><br>";
+
+      echo "<form name='ticket_form$rand' id='ticket_form$rand' method='post'
+             action='".Toolbox::getItemTypeFormURL(__CLASS__)."'>";
+
+      $found = self::getForticket($ticket);
+      if (count($found) <= 0) {
+         _e("No alerts found  for this ticket", 'prelude');
+      } else {
+         echo "<table class='tab_cadre_fixe'>";
+         echo "<tr class='tab_bg_2'><th colspan='2'>".__('Alerts', 'prelude')."</th></tr>";
+
+         foreach ($found as $prelude_tickets_id => $current) {
+            echo "<tr class='tab_bg_2'><th colspan='2'>";
+            echo $current['name']."&nbsp;";
+            echo Html::image(PRELUDE_ROOTDOC."/pics/link.png",
+                             array('class' => 'pointer',
+                                   'title' => __("View theses alerts in prelude", 'prelude'),
+                                   'url'   => $current['condition_url']));
+            echo Html::image(PRELUDE_ROOTDOC."/pics/delete.png",
+                             array('class' => 'pointer prelude-delete-bloc',
+                                   'title' => __("delete this link", 'prelude'),
+                                   'url'   => $url."?delete_link&id=$prelude_tickets_id"));
+            echo "</th></tr>";
+         }
+         echo "</table>";
+      }
    }
 
    /**
@@ -65,7 +101,9 @@ class PluginPreludeTicket extends CommonDBTM {
          $query = "CREATE TABLE IF NOT EXISTS `$table` (
                `id`            INT(11) NOT NULL AUTO_INCREMENT,
                `tickets_id`    INT(11) NOT NULL DEFAULT '0',
+               `name`          VARCHAR(255) COLLATE utf8_unicode_ci DEFAULT NULL,
                `condition_url` TEXT COLLATE utf8_unicode_ci,
+               `condition_api` TEXT COLLATE utf8_unicode_ci,
                PRIMARY KEY (`id`),
                KEY `tickets_id` (`tickets_id`)
             )
