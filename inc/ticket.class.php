@@ -51,15 +51,6 @@ class PluginPreludeTicket extends CommonDBTM {
       $rand           = mt_rand();
       $url            = Toolbox::getItemTypeFormURL(__CLASS__);
 
-      echo "<a class='vsubmit' href='".Toolbox::getItemTypeFormURL('Problem').
-                                    "?tickets_id=".$ticket->getID()."'>";
-      _e('Create a problem from this ticket');
-      echo "</a>";
-      echo "<br><br>";
-
-      echo "<form name='ticket_form$rand' id='ticket_form$rand' method='post'
-             action='".Toolbox::getItemTypeFormURL(__CLASS__)."'>";
-
       if (!PluginPreludeAPI::globalStatus()) {
          $message = __("Prelude API is not connected, click to display configuration");
          echo "<a href='".PRELUDE_CONFIG_URL."'>";
@@ -68,6 +59,14 @@ class PluginPreludeTicket extends CommonDBTM {
          return false;
       }
 
+      echo "<a class='vsubmit' href='".Toolbox::getItemTypeFormURL('Problem').
+                                    "?tickets_id=".$ticket->getID()."'>";
+      _e('Create a problem from this ticket');
+      echo "</a>";
+      echo "<br><br>";
+
+      echo "<form name='ticket_form$rand' id='ticket_form$rand' method='post'
+             action='".Toolbox::getItemTypeFormURL(__CLASS__)."'>";
       $found = self::getForticket($ticket);
       if (count($found) <= 0) {
          _e("No alerts found  for this ticket", 'prelude');
