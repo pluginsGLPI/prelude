@@ -133,15 +133,15 @@ class PluginPreludeConfig extends CommonDBTM {
       if ($token = PluginPreludeAPI::retrieveToken()) {
          echo "<tr class='tab_bg_1'>";
          echo "<td style='width: 15%'>".__("API Access token", 'prelude')."</td>";
-         echo "<td>".$token->getToken()."</td>";
+         echo "<td>".$token->getToken();
+         echo Html::image(PRELUDE_ROOTDOC."/pics/delete.png",
+                          array('url' => PRELUDE_ROOTDOC."/front/config.form.php?delete_token"));
+         echo "</td>";
          echo "</tr>";
 
          echo "<tr class='tab_bg_1'>";
          echo "<td style='width: 15%'>".__("API Refresh token", 'prelude')."</td>";
-         echo "<td>".$token->getRefreshToken();
-         echo Html::image(PRELUDE_ROOTDOC."/pics/delete.png",
-                          array('url' => PRELUDE_ROOTDOC."/front/config.form.php?delete_token"));
-         echo "</td>";
+         echo "<td>".$token->getRefreshToken()."</td>";
          echo "</tr>";
       }
 
