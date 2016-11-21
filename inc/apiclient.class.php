@@ -82,7 +82,8 @@ class PluginPreludeAPIClient extends CommonGLPI {
          'query' => [
             'action'  => 'retrieve',
             'request' => ['path' => ['log.timestamp',
-                                     'log.host'],
+                                     'log.host',
+                                    ],
                           'limit' =>  100,
                           'offset' => 0],
          ]
@@ -107,7 +108,10 @@ class PluginPreludeAPIClient extends CommonGLPI {
          'query' => [
             'action'  => 'retrieve',
             'request' => ['path' => ['alert.create_time',
-                                     'alert.classification.text'],
+                                     'alert.detect_time',
+                                     'alert.analyzer_time',
+                                     'alert.classification.text',
+                                    ],
                           'limit' =>  100,
                           'offset' => 0],
          ]
