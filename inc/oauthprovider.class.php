@@ -34,7 +34,6 @@ class PluginPreludeOauthProvider extends AbstractProvider {
    }
 
    protected function getDefaultScopes() {
-      return [];
    }
 
    protected function checkResponse(ResponseInterface $response, $data) {
