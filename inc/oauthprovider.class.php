@@ -34,7 +34,6 @@ class PluginPreludeOauthProvider extends AbstractProvider {
    }
 
    protected function getDefaultScopes() {
-      return [];
    }
 
    protected function checkResponse(ResponseInterface $response, $data) {
@@ -45,7 +44,7 @@ class PluginPreludeOauthProvider extends AbstractProvider {
 
    }
 
-   private static function getInstance() {
+   static function getInstance() {
       $prelude_config = PluginPreludeConfig::getConfig();
       $provider = new self([
          'baseuri'      => $prelude_config['prelude_url'],
@@ -86,17 +85,7 @@ class PluginPreludeOauthProvider extends AbstractProvider {
                                                    ['code' => $params['code']]);
 
          // We have an access token, and we can store it
-         PluginPreludeConfig::storeAccessToken($access_token);
-
-
-         // The provider provides a way to get an authenticated API request for
-         // the service, using the access token; it returns an object conforming
-         // to Psr\Http\Message\RequestInterface.
-         $request = $provider->getAuthenticatedRequest(
-            'GET',
-            'http://brentertainment.com/oauth2/lockdin/resource',
-            $access_token
-         );
+         PluginPreludeAPI::storeToken($access_token);
 
       } catch (\League\OAuth2\Client\Provider\Exception\IdentityProviderException $e) {
 
@@ -104,23 +93,6 @@ class PluginPreludeOauthProvider extends AbstractProvider {
          exit($e->getMessage());
 
       }
-   }
-
-   static function refreshToken() {
-      $provider = self::getInstance();
-      if ($prev_access_token = PluginPreludeConfig::retrieveAccessToken()) {
-         if ($prev_access_token->hasExpired()) {
-            $new_access_token = $provider->getAccessToken('refresh_token', [
-               'refresh_token' => $prev_access_token->getRefreshToken()
-            ]);
-
-            PluginPreludeConfig::storeAccessToken($new_access_token);
-
-            return $new_access_token->__toString();
-         }
-      }
-
-      return false;
    }
 
 }

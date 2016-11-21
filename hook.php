@@ -32,7 +32,7 @@
  * @return boolean
  */
 function plugin_prelude_install() {
-   $version   = plugin_version_formcreator();
+   $version   = plugin_version_prelude();
    $migration = new Migration($version['version']);
 
    // Parse inc directory

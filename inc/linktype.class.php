@@ -16,6 +16,9 @@ class PluginPreludeLinktype extends CommonDropdown {
 
    static $rightname          = 'ticket';
 
+   /**
+    * {@inheritDoc}
+    */
    static function getTypeName($nb=0) {
       return _n('Link type', 'Link types', $nb);
    }
