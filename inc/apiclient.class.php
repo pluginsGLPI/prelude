@@ -81,10 +81,10 @@ class PluginPreludeAPIClient extends CommonGLPI {
       $default_params = [
          'query' => [
             'action'  => 'retrieve',
-            'request' => ['path' => ['log.timestamp',
-                                     'log.host',
-                                    ],
-                          'limit' =>  100,
+            'request' => ['path'   => ['log.timestamp',
+                                       'log.host',
+                                      ],
+                          'limit'  =>  100,
                           'offset' => 0],
          ]
       ];
@@ -104,22 +104,42 @@ class PluginPreludeAPIClient extends CommonGLPI {
    public static function getAlerts($params = array()) {
       self::checkAccessToken();
 
+      $keys = ['alert.create_time',
+               'alert.detect_time',
+               'alert.analyzer_time',
+               'alert.messageid',
+               'alert.classification.text',
+               'alert.assessment.impact.description',
+               'alert.assessment.impact.severity',
+               'alert.assessment.impact.completion',
+               'alert.assessment.impact.type',
+               'alert.source'
+              ];
+
+
       $default_params = [
          'query' => [
             'action'  => 'retrieve',
-            'request' => ['path' => ['alert.create_time',
-                                     'alert.detect_time',
-                                     'alert.analyzer_time',
-                                     'alert.classification.text',
-                                    ],
-                          'limit' =>  100,
-                          'offset' => 0],
+            'request' => ['path'     => $keys,
+                          'limit'    =>  100,
+                          'offset'   => 0,
+                          'criteria' => ["alert.messageid = '2062831c-afdc-11e6-9fc8'"]
+                         ],
          ]
       ];
       $params = array_merge($default_params, $params);
       $params['query']['request'] = json_encode($params['query']['request']);
       $alerts_json = self::sendHttpRequest('GET', '', $params);
       $alerts      = json_decode($alerts_json, true);
+
+      // merges key for response (otherwise he will have indexed keys)
+      if (isset($alerts['response'])) {
+         foreach($alerts['response'] as &$response) {
+            $response = array_combine($keys, $response);
+         }
+      }
+
+      Toolbox::logDebug($alerts);
 
       return $alerts;
    }
