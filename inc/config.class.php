@@ -4,8 +4,6 @@ if (!defined('GLPI_ROOT')) {
    die("Sorry. You can't access this file directly");
 }
 
-use League\OAuth2\Client\Token\AccessToken;
-
 class PluginPreludeConfig extends CommonDBTM {
    static $rightname         = 'config';
    static protected $notable = true;
@@ -95,11 +93,23 @@ class PluginPreludeConfig extends CommonDBTM {
       echo "<td>";
       echo Html::input('prelude_url', array('value'       => $current_config['prelude_url'],
                                             'placeholder' => "http://path/to/prelude",
-                                            'style'       => 'width: 90%'));
-      echo Html::image(PRELUDE_ROOTDOC."/pics/link.png",
-                             array('class' => 'pointer',
-                                   'title' => __("Go to prelude", 'prelude'),
-                                   'url'   => $current_config['prelude_url']));
+                                            'style'       => 'width: 80%'));
+      if ($current_config['prelude_url']) {
+         $color_png = "redbutton.png";
+         $status = PluginPreludeAPI::preludeStatus();
+         if ($status) {
+            $color_png = "greenbutton.png";
+         }
+         echo "&nbsp;".Html::image($CFG_GLPI['url_base']."/pics/$color_png");
+
+         if ($status) {
+            echo Html::image(PRELUDE_ROOTDOC."/pics/link.png",
+                                      array('class' => 'pointer',
+                                            'title' => __("Go to prelude", 'prelude'),
+                                            'url'   => $current_config['prelude_url']));
+         }
+      }
+
       echo "</td>";
       echo "</tr>";
 
@@ -120,7 +130,7 @@ class PluginPreludeConfig extends CommonDBTM {
       echo "</tr>";
 
       // token informations
-      if ($token = self::retrieveToken()) {
+      if ($token = PluginPreludeAPI::retrieveToken()) {
          echo "<tr class='tab_bg_1'>";
          echo "<td style='width: 15%'>".__("API Access token", 'prelude')."</td>";
          echo "<td>".$token->getToken()."</td>";
@@ -128,7 +138,10 @@ class PluginPreludeConfig extends CommonDBTM {
 
          echo "<tr class='tab_bg_1'>";
          echo "<td style='width: 15%'>".__("API Refresh token", 'prelude')."</td>";
-         echo "<td>".$token->getRefreshToken()."</td>";
+         echo "<td>".$token->getRefreshToken();
+         echo Html::image(PRELUDE_ROOTDOC."/pics/delete.png",
+                          array('url' => PRELUDE_ROOTDOC."/front/config.form.php?delete_token"));
+         echo "</td>";
          echo "</tr>";
       }
 
@@ -159,7 +172,8 @@ class PluginPreludeConfig extends CommonDBTM {
             echo "</tr>";
          }
 
-         if (empty($current_config['api_refresh_token'])) {
+         if (!$token
+             || !$token->getRefreshToken()) {
             echo "<tr class='tab_bg_1'>";
             echo "<td colspan='4'>";
             echo "<a href='".Toolbox::getItemTypeFormURL(__CLASS__)."?connect_api' class='vsubmit'>".
@@ -171,44 +185,6 @@ class PluginPreludeConfig extends CommonDBTM {
 
       echo "</table></div>";
       Html::closeForm();
-   }
-
-   /**
-    * Store an outh access token in plugin config
-    * @param  AccessToken $token instance of a token
-    *                            provided by League\OAuth2\Client\Token\AccessToken
-    * @return boolean
-    */
-   static function storeToken(AccessToken $token) {
-      return Config::setConfigurationValues('plugin:Prelude',
-                                            array('api_token' => $token->jsonSerialize()));
-   }
-
-   /**
-    * Retrieve the current access token from the plugin config
-    * @return mixed false if we fail to retrieve the token
-    *               or an instance of League\OAuth2\Client\Token\AccessToken
-    */
-   static function retrieveToken() {
-      $prelude_config = self::getConfig();
-      if ($access_token_array = json_decode($prelude_config['api_token'], true)) {
-         return new AccessToken($access_token_array);
-      }
-
-      return false;
-   }
-
-   /**
-    * get the access token in string
-    * @return mixed false if we fail to retrieve the token
-    *               of the token in string
-    */
-   static function getCurrentAccessToken() {
-     if ($token = self::retrieveToken()) {
-         return $token->getToken();
-      }
-
-      return false;
    }
 
    /**

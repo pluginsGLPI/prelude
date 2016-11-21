@@ -7,8 +7,18 @@ if (!defined('GLPI_ROOT')) {
 use GuzzleHttp\Client;
 use GuzzleHttp\Psr7;
 use GuzzleHttp\Exception\RequestException;
+use League\OAuth2\Client\Token\AccessToken;
 
 class PluginPreludeAPI extends CommonGLPI {
+
+   /**
+    * Return the prelude API base uri
+    * @return string the uri
+    */
+   static function getAPIBaseUri() {
+      $prelude_config = PluginPreludeConfig::getConfig();
+      return trim($prelude_config['prelude_url'], '/').'/api';
+   }
 
    /**
     * Connect to prelude API
@@ -23,8 +33,10 @@ class PluginPreludeAPI extends CommonGLPI {
     * @return array list of label -> boolean
     */
    static function status() {
-      return [__("Prelude access token", 'prelude')
-                  => is_string(PluginPreludeConfig::getCurrentAccessToken()),
+      return [__("Prelude", 'prelude')
+                  => self::preludeStatus(),
+              __("Prelude access token", 'prelude')
+                  => is_string(self::getCurrentAccessToken()),
               __("Prelude alerts", 'prelude')
                   => is_array(self::getAlerts()),
               __("Prelude logs", 'prelude')
@@ -40,12 +52,31 @@ class PluginPreludeAPI extends CommonGLPI {
    }
 
    /**
+    * Check presence of prelude application
+    * @return boolean
+    */
+   static function preludeStatus() {
+      $http_client = new \GuzzleHttp\Client(['base_uri' => self::getAPIBaseUri()]);
+      $params      = [
+         'http_errors' => false,
+      ];
+      $response    = $http_client->request('', '', $params);
+      $code        = $response->getStatusCode();
+
+      if (!in_array($code, [200, 403])) {
+         return false;
+      }
+
+      return true;
+   }
+
+   /**
     * Retrieve logs within prelude api
     * @param  array  $params
     * @return array  the logs
     */
    public static function getLogs($params = array()) {
-      PluginPreludeOauthProvider::checkAccessToken();
+      self::checkAccessToken();
 
       $default_params = [
          'query' => [
@@ -70,7 +101,7 @@ class PluginPreludeAPI extends CommonGLPI {
     * @return array  the alerts
     */
    public static function getAlerts($params = array()) {
-      PluginPreludeOauthProvider::checkAccessToken();
+      self::checkAccessToken();
 
       $default_params = [
          'query' => [
@@ -106,12 +137,10 @@ class PluginPreludeAPI extends CommonGLPI {
     */
    private static function sendHttpRequest($method = 'GET', $ressource = '', $http_params = array()) {
       // init stuff
-      $prelude_config   = PluginPreludeConfig::getConfig();
-      $base_uri         = trim($prelude_config['prelude_url'], '/').'/api';
-      $http_client      = new \GuzzleHttp\Client(['base_uri' => $base_uri]);
+      $http_client = new \GuzzleHttp\Client(['base_uri' => self::getAPIBaseUri()]);
 
       // retrieve access token
-      if (!$access_token_str = PluginPreludeConfig::getCurrentAccessToken()) {
+      if (!$access_token_str = self::getCurrentAccessToken()) {
          return false;
       }
 
@@ -175,6 +204,70 @@ class PluginPreludeAPI extends CommonGLPI {
          }
       }
       return $json;
+   }
+
+   /**
+    * Store an outh access token in plugin config
+    * @param  AccessToken $token instance of a token
+    *                            provided by League\OAuth2\Client\Token\AccessToken
+    * @return boolean
+    */
+   static function storeToken(AccessToken $token) {
+      $json = json_encode($token->jsonSerialize());
+      return Config::setConfigurationValues('plugin:Prelude',
+                                            array('api_token' => $json));
+   }
+
+   /**
+    * Retrieve the current access token from the plugin config
+    * @return mixed false if we fail to retrieve the token
+    *               or an instance of League\OAuth2\Client\Token\AccessToken
+    */
+   static function retrieveToken() {
+      $prelude_config = PluginPreludeConfig::getConfig();
+      if (isset($prelude_config['api_token'])
+          && $access_token_array = json_decode($prelude_config['api_token'], true)) {
+         return new AccessToken($access_token_array);
+      }
+
+      return false;
+   }
+
+   /**
+    * delete the oauth token store in db
+    */
+   static function deleteToken() {
+     return Config::setConfigurationValues('plugin:Prelude', array('api_token' => ''));
+   }
+
+   /**
+    * get the access token in string
+    * @return mixed false if we fail to retrieve the token
+    *               of the token in string
+    */
+   static function getCurrentAccessToken() {
+     if ($token = self::retrieveToken()) {
+         return $token->getToken();
+      }
+
+      return false;
+   }
+
+   /**
+    * check if the access token stored in db is valid and not expired
+    * if fail, send a refresh query to get a new access token
+    */
+   static function checkAccessToken() {
+      if ($prev_access_token = self::retrieveToken()) {
+         if ($prev_access_token->hasExpired()) {
+            $provider = PluginPreludeOauthProvider::getInstance();
+            $new_access_token = $provider->getAccessToken('refresh_token', [
+               'refresh_token' => $prev_access_token->getRefreshToken()
+            ]);
+
+            self::storeToken($new_access_token);
+         }
+      }
    }
 
 }
