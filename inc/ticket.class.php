@@ -59,7 +59,7 @@ class PluginPreludeTicket extends CommonDBTM {
       $rand           = mt_rand();
       $url            = Toolbox::getItemTypeFormURL(__CLASS__);
 
-      if (!PluginPreludeAPI::globalStatus()) {
+      if (!PluginPreludeAPIClient::globalStatus()) {
          $message = __("Prelude API is not connected, click to display configuration");
          echo "<a href='".PRELUDE_CONFIG_URL."'>";
          Html::displayTitle($CFG_GLPI['root_doc']."/pics/warning.png", $message, $message);

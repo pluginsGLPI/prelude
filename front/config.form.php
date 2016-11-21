@@ -5,10 +5,10 @@ include ("../../../inc/includes.php");
 $config = new PluginPreludeConfig();
 
 if (isset($_REQUEST["connect_api"])) {
-   PluginPreludeAPI::connect($_REQUEST);
+   PluginPreludeAPIClient::connect($_REQUEST);
 
 } else if (isset($_REQUEST["delete_token"])) {
-   PluginPreludeAPI::deleteToken();
+   PluginPreludeAPIClient::deleteToken();
    Html::back();
 
 }

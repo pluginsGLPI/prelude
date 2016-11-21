@@ -9,7 +9,7 @@ use GuzzleHttp\Psr7;
 use GuzzleHttp\Exception\RequestException;
 use League\OAuth2\Client\Token\AccessToken;
 
-class PluginPreludeAPI extends CommonGLPI {
+class PluginPreludeAPIClient extends CommonGLPI {
 
    /**
     * Return the prelude API base uri

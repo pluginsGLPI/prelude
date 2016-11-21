@@ -96,7 +96,7 @@ class PluginPreludeConfig extends CommonDBTM {
                                             'style'       => 'width: 80%'));
       if ($current_config['prelude_url']) {
          $color_png = "redbutton.png";
-         $status = PluginPreludeAPI::preludeStatus();
+         $status = PluginPreludeAPIClient::preludeStatus();
          if ($status) {
             $color_png = "greenbutton.png";
          }
@@ -130,19 +130,29 @@ class PluginPreludeConfig extends CommonDBTM {
       echo "</tr>";
 
       // token informations
-      if ($token = PluginPreludeAPI::retrieveToken()) {
+      $token = PluginPreludeAPIClient::retrieveToken();
+
+      if (self::checkConfig(false)) {
          echo "<tr class='tab_bg_1'>";
          echo "<td style='width: 15%'>".__("API Access token", 'prelude')."</td>";
-         echo "<td>".$token->getToken();
-         echo Html::image(PRELUDE_ROOTDOC."/pics/delete.png",
-                          array('url' => PRELUDE_ROOTDOC."/front/config.form.php?delete_token"));
+         echo "<td>";
+         if ($token) {
+            echo $token->getToken();
+            echo Html::image(PRELUDE_ROOTDOC."/pics/delete.png",
+                             array('url' => PRELUDE_ROOTDOC."/front/config.form.php?delete_token"));
+         } else {
+            echo "<a href='".Toolbox::getItemTypeFormURL(__CLASS__)."?connect_api'>".
+                 __("Connect to Prelude API", 'prelude')."</a>";
+         }
          echo "</td>";
          echo "</tr>";
 
-         echo "<tr class='tab_bg_1'>";
-         echo "<td style='width: 15%'>".__("API Refresh token", 'prelude')."</td>";
-         echo "<td>".$token->getRefreshToken()."</td>";
-         echo "</tr>";
+         if ($token) {
+            echo "<tr class='tab_bg_1'>";
+            echo "<td style='width: 15%'>".__("API Refresh token", 'prelude')."</td>";
+            echo "<td>".$token->getRefreshToken()."</td>";
+            echo "</tr>";
+         }
       }
 
 
@@ -152,14 +162,14 @@ class PluginPreludeConfig extends CommonDBTM {
       echo "<br><br><br>";
       echo "</td></tr>";
 
-      if (!empty($current_config['prelude_url'])) {
+      if (self::checkConfig()) {
 
          echo "<tr class='headerRow'>";
          echo "<th colspan='4'>".__('API Status')."</th>";
          echo "</tr>";
 
 
-         foreach(PluginPreludeAPI::status() as $status_label => $status) {
+         foreach(PluginPreludeAPIClient::status() as $status_label => $status) {
             echo "<tr class='tab_bg_1'>";
             echo "<td>$status_label</td>";
             echo "<td>";
@@ -171,20 +181,26 @@ class PluginPreludeConfig extends CommonDBTM {
             echo "</td>";
             echo "</tr>";
          }
-
-         if (!$token
-             || !$token->getRefreshToken()) {
-            echo "<tr class='tab_bg_1'>";
-            echo "<td colspan='4'>";
-            echo "<a href='".Toolbox::getItemTypeFormURL(__CLASS__)."?connect_api' class='vsubmit'>".
-                 __("Connect to Prelude API", 'prelude')."</a>";
-            echo "</td>";
-            echo "</tr>";
-         }
       }
 
       echo "</table></div>";
       Html::closeForm();
+   }
+
+   static function checkConfig($with_client = true) {
+      $current_config = self::getConfig();
+
+      if (!empty($current_config['prelude_url'])) {
+         if (!$with_client) {
+            return true;
+         }
+         if(!empty($current_config['api_client_id'])
+            && !empty($current_config['api_client_secret'])) {
+            return true;
+         }
+      }
+
+      return false;
    }
 
    /**

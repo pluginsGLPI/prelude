@@ -85,7 +85,7 @@ class PluginPreludeOauthProvider extends AbstractProvider {
                                                    ['code' => $params['code']]);
 
          // We have an access token, and we can store it
-         PluginPreludeAPI::storeToken($access_token);
+         PluginPreludeAPIClient::storeToken($access_token);
 
       } catch (\League\OAuth2\Client\Provider\Exception\IdentityProviderException $e) {
 
