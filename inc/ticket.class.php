@@ -140,6 +140,10 @@ class PluginPreludeTicket extends CommonDBTM {
       }
    }
 
+   /**
+    * Print a dialog to import alerts for a ticket
+    * @param  integer $tickets_id id of the ticket to link
+    */
    static function importAlertsForm($tickets_id = 0) {
       echo Html::image(PRELUDE_ROOTDOC."/pics/import.png",
                           array('class'   => 'pointer',
@@ -185,7 +189,16 @@ class PluginPreludeTicket extends CommonDBTM {
       echo Html::scriptEnd();
    }
 
-   function importAlerts($params) {
+   /**
+    * Add the input send by self::importAlertsForm
+    * @param  array $params with theses keys:
+    *                       - tickets_id
+    *                       - params_api
+    *                       - name
+    *                       - url
+    * @return boolean
+    */
+   function importAlerts($params = array()) {
       // unsanitize (we'll json_encode this key)
       $params_api = Toolbox::stripslashes_deep(
                        Toolbox::unclean_cross_side_scripting_deep($params['params_api']));
