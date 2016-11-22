@@ -72,74 +72,100 @@ class PluginPreludeAPIClient extends CommonGLPI {
 
    /**
     * Retrieve logs within prelude api
-    * @param  array  $params
-    * @return array  the logs
+    * @param  array  $params with theses possible keys:
+    *                        - limit: restrict the number of answer returned by the api
+    *                        - offset: start the answer collection to the provided offset
+    *                        - path: list of idmef nodes to retrieve.
+    *                          (see https://www.prelude-siem.org/projects/prelude/wiki/IDMEFPath)
+    *                        - criteria: list of criteria to filter the query
+    *                          (see https://www.prelude-siem.org/projects/prelude/wiki/IDMEFCriteria)
+    * @return array  the logs with path in keys and corresponding values
     */
    public static function getLogs($params = array()) {
       self::checkAccessToken();
 
-      $default_params = [
-         'query' => [
-            'action'  => 'retrieve',
-            'request' => ['path'   => ['log.timestamp',
-                                       'log.host',
-                                      ],
-                          'limit'  =>  100,
-                          'offset' => 0],
-         ]
+      // contruct the options sent to the query
+      $default_params =
+         ['limit'   => 100,
+          'offset'  => 0,
+          'path'    => [
+            'log.timestamp',
+            'log.host',
+         ],
+         'criteria' => []
       ];
       $params = array_merge($default_params, $params);
-      $params['query']['request'] = json_encode($params['query']['request']);
+      $query_options = [
+         'query' => [
+            'action'  => 'retrieve',
+            'request' => json_encode($params),
+         ]
+      ];
+
+      // send the query to prelude
       $logs_json = self::sendHttpRequest('GET', '', $params);
       $logs      = json_decode($logs_json, true);
+
+      // merges key for response (otherwise he will have indexed keys)
+      if (isset($alerts['response'])) {
+         foreach($alerts['response'] as &$response) {
+            $response = array_combine($params['path'], $response);
+         }
+      }
 
       return $logs;
    }
 
    /**
     * Retrieve alerts within prelude api
-    * @param  array  $params
-    * @return array  the alerts
+    * @param  array  $params with theses possible keys:
+    *                        - limit: restrict the number of answer returned by the api
+    *                        - offset: start the answer collection to the provided offset
+    *                        - path: list of idmef nodes to retrieve.
+    *                          (see https://www.prelude-siem.org/projects/prelude/wiki/IDMEFPath)
+    *                        - criteria: list of criteria to filter the query
+    *                          (see https://www.prelude-siem.org/projects/prelude/wiki/IDMEFCriteria)
+    * @return array  the alerts with path in keys and corresponding values
     */
    public static function getAlerts($params = array()) {
       self::checkAccessToken();
 
-      $keys = ['alert.create_time',
-               'alert.detect_time',
-               'alert.analyzer_time',
-               'alert.messageid',
-               'alert.classification.text',
-               'alert.assessment.impact.description',
-               'alert.assessment.impact.severity',
-               'alert.assessment.impact.completion',
-               'alert.assessment.impact.type',
-               'alert.source'
-              ];
-
-
-      $default_params = [
-         'query' => [
-            'action'  => 'retrieve',
-            'request' => ['path'     => $keys,
-                          'limit'    =>  100,
-                          'offset'   => 0,
-                          'criteria' => ["alert.messageid = '2062831c-afdc-11e6-9fc8'"]
-                         ],
-         ]
+      // contruct the options sent to the query
+      $default_params =
+         ['limit'   => 100,
+          'offset'  => 0,
+          'path'    => [
+            'alert.create_time',
+            'alert.detect_time',
+            'alert.analyzer_time',
+            'alert.messageid',
+            'alert.classification.text',
+            'alert.assessment.impact.description',
+            'alert.assessment.impact.severity',
+            'alert.assessment.impact.completion',
+            'alert.assessment.impact.type',
+            'alert.source(*).node.address(*).address',
+         ],
+         'criteria' => []
       ];
       $params = array_merge($default_params, $params);
-      $params['query']['request'] = json_encode($params['query']['request']);
-      $alerts_json = self::sendHttpRequest('GET', '', $params);
+      $query_options = [
+         'query' => [
+            'action'  => 'retrieve',
+            'request' => json_encode($params),
+         ]
+      ];
+
+      // send the query to prelude
+      $alerts_json = self::sendHttpRequest('GET', '', $query_options);
       $alerts      = json_decode($alerts_json, true);
 
       // merges key for response (otherwise he will have indexed keys)
       if (isset($alerts['response'])) {
          foreach($alerts['response'] as &$response) {
-            $response = array_combine($keys, $response);
+            $response = array_combine($params['path'], $response);
          }
       }
-
-      Toolbox::logDebug($alerts);
 
       return $alerts;
    }
