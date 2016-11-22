@@ -79,21 +79,54 @@ class PluginPreludeTicket extends CommonDBTM {
       if (count($found) <= 0) {
          _e("No alerts found  for this ticket", 'prelude');
       } else {
+         echo "<h2>".__('Alerts', 'prelude')."</h2>";
          echo "<table class='tab_cadre_fixe'>";
-         echo "<tr class='tab_bg_2'><th colspan='2'>".__('Alerts', 'prelude')."</th></tr>";
 
          foreach ($found as $prelude_tickets_id => $current) {
-            echo "<tr class='tab_bg_2'><th colspan='2'>";
-            echo $current['name']."&nbsp;";
-            echo Html::image(PRELUDE_ROOTDOC."/pics/link.png",
-                             array('class' => 'pointer',
-                                   'title' => __("View theses alerts in prelude", 'prelude'),
-                                   'url'   => $current['condition_url']));
-            echo Html::image(PRELUDE_ROOTDOC."/pics/delete.png",
-                             array('class' => 'pointer prelude-delete-bloc',
-                                   'title' => __("delete this link", 'prelude'),
-                                   'url'   => $url."?delete_link&id=$prelude_tickets_id"));
-            echo "</th></tr>";
+            if ($params_api = json_decode($current['params_api'], true)) {
+               $alerts = PluginPreludeAPIClient::getAlerts($params_api);
+               $nb     = count($alerts);
+
+               echo "<tr><th colspan='2'>";
+               echo "<input type='checkbox' name='toggle'
+                            class='toggle_alert' id='toggle_$prelude_tickets_id' />";
+               echo "<label for='toggle_$prelude_tickets_id'>".$current['name'].
+                    "&nbsp; <sup>$nb<sup></label>";
+               echo Html::image(PRELUDE_ROOTDOC."/pics/link.png",
+                                array('class' => 'pointer',
+                                      'title' => __("View theses alerts in prelude", 'prelude'),
+                                      'url'   => $current['condition_url']));
+               echo Html::image(PRELUDE_ROOTDOC."/pics/delete.png",
+                                array('class' => 'pointer prelude-delete-bloc',
+                                      'title' => __("delete this group of alerts", 'prelude'),
+                                      'url'   => $url."?delete_link&id=$prelude_tickets_id"));
+
+               echo "<table class='tab_cadre_fixehov togglable'>";
+               echo "<tr class='tab_bg_2'>";
+               echo "<th>messageid</th>";
+               echo "<th>".__("Classification", 'prelude')."</th>";
+               echo "<th>".__("Source", 'prelude')."</th>";
+               echo "<th>".__("Target", 'prelude')."</th>";
+               echo "<th>".__("Analyzer", 'prelude')."</th>";
+               echo "<th>".__("Date")."</th>";
+               echo "<th></th>";
+               echo "</tr>";
+
+               foreach($alerts as $messageid => $alert) {
+                  echo "<tr class='tab_bg_1'>";
+                  echo "<td>".$alert['alert.messageid']."</td>";
+                  echo "<td>".$alert['alert.classification.text']."</td>";
+                  echo "<td>".$alert['alert.source(0).node.address(0).address']."</td>";
+                  echo "<td>".$alert['alert.target(0).node.address(0).address']."</td>";
+                  echo "<td>".$alert['alert.analyzer(-1).name']."</td>";
+                  echo "<td>".$alert['alert.create_time']."</td>";
+                  echo "<td><img title='".__("See alert detail", 'prelude')."' src='".
+                       PRELUDE_ROOTDOC."/pics/eye.png' class='pointer'></td>";
+                  echo "</tr>";
+               }
+               echo "</table>";
+               echo "</th></tr>";
+            }
          }
          echo "</table>";
       }
@@ -118,7 +151,7 @@ class PluginPreludeTicket extends CommonDBTM {
                `tickets_id`    INT(11) NOT NULL DEFAULT '0',
                `name`          VARCHAR(255) COLLATE utf8_unicode_ci DEFAULT NULL,
                `condition_url` TEXT COLLATE utf8_unicode_ci,
-               `condition_api` TEXT COLLATE utf8_unicode_ci,
+               `params_api`    TEXT COLLATE utf8_unicode_ci,
                PRIMARY KEY (`id`),
                KEY `tickets_id` (`tickets_id`)
             )

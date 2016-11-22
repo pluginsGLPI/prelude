@@ -84,17 +84,21 @@ class PluginPreludeAPIClient extends CommonGLPI {
    public static function getLogs($params = array()) {
       self::checkAccessToken();
 
+      // what we need at minima in idmef tree
+      $default_paths = [
+         'log.timestamp',
+         'log.host',
+      ];
+
       // contruct the options sent to the query
       $default_params =
-         ['limit'   => 100,
+         ['limit'   => 1000,
           'offset'  => 0,
-          'path'    => [
-            'log.timestamp',
-            'log.host',
-         ],
-         'criteria' => []
+          'path'    => [],
+          'criteria' => []
       ];
       $params = array_merge($default_params, $params);
+      $params['path'] = array_merge($default_paths, $params['path']);
       $query_options = [
          'query' => [
             'action'  => 'retrieve',
@@ -113,7 +117,7 @@ class PluginPreludeAPIClient extends CommonGLPI {
          }
       }
 
-      return $logs;
+      return $logs['response'];
    }
 
    /**
@@ -130,25 +134,25 @@ class PluginPreludeAPIClient extends CommonGLPI {
    public static function getAlerts($params = array()) {
       self::checkAccessToken();
 
+      // what we need at minima in idmef tree
+      $default_paths = [
+         'alert.messageid',
+         'alert.create_time',
+         'alert.classification.text',
+         'alert.source(0).node.address(0).address',
+         'alert.target(0).node.address(0).address',
+         'alert.analyzer(-1).name',
+      ];
+
       // contruct the options sent to the query
       $default_params =
-         ['limit'   => 100,
-          'offset'  => 0,
-          'path'    => [
-            'alert.create_time',
-            'alert.detect_time',
-            'alert.analyzer_time',
-            'alert.messageid',
-            'alert.classification.text',
-            'alert.assessment.impact.description',
-            'alert.assessment.impact.severity',
-            'alert.assessment.impact.completion',
-            'alert.assessment.impact.type',
-            'alert.source(*).node.address(*).address',
-         ],
-         'criteria' => []
+         ['limit'    => 1000,
+          'offset'   => 0,
+          'path'     => [],
+          'criteria' => []
       ];
       $params = array_merge($default_params, $params);
+      $params['path'] = array_merge($default_paths, $params['path']);
       $query_options = [
          'query' => [
             'action'  => 'retrieve',
@@ -167,7 +171,7 @@ class PluginPreludeAPIClient extends CommonGLPI {
          }
       }
 
-      return $alerts;
+      return $alerts['response'];
    }
 
    /**
