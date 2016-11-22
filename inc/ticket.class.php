@@ -92,10 +92,12 @@ class PluginPreludeTicket extends CommonDBTM {
                             class='toggle_alert' id='toggle_$prelude_tickets_id' />";
                echo "<label for='toggle_$prelude_tickets_id'>".$current['name'].
                     "&nbsp; <sup>$nb<sup></label>";
-               echo Html::image(PRELUDE_ROOTDOC."/pics/link.png",
-                                array('class' => 'pointer',
-                                      'title' => __("View theses alerts in prelude", 'prelude'),
-                                      'url'   => $current['condition_url']));
+               if (!empty($current['condition_url'])) {
+                  echo Html::image(PRELUDE_ROOTDOC."/pics/link.png",
+                                   array('class' => 'pointer',
+                                         'title' => __("View theses alerts in prelude", 'prelude'),
+                                         'url'   => $current['condition_url']));
+               }
                echo Html::image(PRELUDE_ROOTDOC."/pics/delete.png",
                                 array('class' => 'pointer prelude-delete-bloc',
                                       'title' => __("delete this group of alerts", 'prelude'),

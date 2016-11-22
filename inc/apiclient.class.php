@@ -11,6 +11,9 @@ use League\OAuth2\Client\Token\AccessToken;
 
 class PluginPreludeAPIClient extends CommonGLPI {
 
+   const DEFAULT_LIMIT  = 1000;
+   const DEFAULT_OFFSET = 0;
+
    /**
     * Return the prelude API base uri
     * @return string the uri
@@ -92,8 +95,8 @@ class PluginPreludeAPIClient extends CommonGLPI {
 
       // contruct the options sent to the query
       $default_params =
-         ['limit'   => 1000,
-          'offset'  => 0,
+         ['limit'   => self::DEFAULT_LIMIT,
+          'offset'  => self::DEFAULT_OFFSET,
           'path'    => [],
           'criteria' => []
       ];
@@ -146,8 +149,8 @@ class PluginPreludeAPIClient extends CommonGLPI {
 
       // contruct the options sent to the query
       $default_params =
-         ['limit'    => 1000,
-          'offset'   => 0,
+         ['limit'    => self::DEFAULT_LIMIT,
+          'offset'   => self::DEFAULT_OFFSET,
           'path'     => [],
           'criteria' => []
       ];
