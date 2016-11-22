@@ -117,7 +117,7 @@ class PluginPreludeTicket extends CommonDBTM {
                echo "<th>".__("Target", 'prelude')."</th>";
                echo "<th>".__("Analyzer", 'prelude')."</th>";
                echo "<th>".__("Date")."</th>";
-               echo "<th></th>";
+               // echo "<th></th>";
                echo "</tr>";
 
                foreach($alerts as $messageid => $alert) {
@@ -128,8 +128,8 @@ class PluginPreludeTicket extends CommonDBTM {
                   echo "<td>".$alert['alert.target(0).node.address(0).address']."</td>";
                   echo "<td>".$alert['alert.analyzer(-1).name']."</td>";
                   echo "<td>".$alert['alert.create_time']."</td>";
-                  echo "<td><img title='".__("See alert detail", 'prelude')."' src='".
-                       PRELUDE_ROOTDOC."/pics/eye.png' class='pointer'></td>";
+                  /*echo "<td><img title='".__("See alert detail", 'prelude')."' src='".
+                       PRELUDE_ROOTDOC."/pics/eye.png' class='pointer'></td>";*/
                   echo "</tr>";
                }
                echo "</table>";
