@@ -144,7 +144,7 @@ class PluginPreludeItem_Ticket extends Item_Ticket{
       $header_end .= "<th>".__('Serial number')."</th>";
       $header_end .= "<th>".__('Inventory number')."</th>";
       if (PluginPreludeConfig::checkOpenVas()) {
-         $header_end .= "<th>".__('Status OpenVAS', 'prelude')."</th>";
+         $header_end .= "<th>".__('OpenVAS Status', 'prelude')."</th>";
       }
       if ($canedit && $number) {
          $header_end .= "<th width='10'>".__('Update the item')."</th>";
