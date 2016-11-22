@@ -103,12 +103,12 @@ class PluginPreludeAPIClient extends CommonGLPI {
       ];
 
       // send the query to prelude
-      $logs_json = self::sendHttpRequest('GET', '', $params);
+      $logs_json = self::sendHttpRequest('GET', '', $query_options);
       $logs      = json_decode($logs_json, true);
 
       // merges key for response (otherwise he will have indexed keys)
-      if (isset($alerts['response'])) {
-         foreach($alerts['response'] as &$response) {
+      if (isset($logs['response'])) {
+         foreach($logs['response'] as &$response) {
             $response = array_combine($params['path'], $response);
          }
       }
