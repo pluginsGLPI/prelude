@@ -84,6 +84,18 @@ class PluginPreludeConfig extends CommonDBTM {
       echo "</td>";
       echo "</tr>";
 
+      if ($plugin->isActivated('openvas')) {
+         echo "<tr class='tab_bg_1'>";
+         echo "<td style='width: 25%'>".__("Enable Openvas plugin integration", 'prelude')."</td>";
+         echo "<td colspan='3'>";
+         Html::showCheckbox(array('name'    => 'openvas_integration',
+                                  'value'   => true,
+                                  'checked' => $current_config['openvas_integration']));
+         echo "</td>";
+         echo "</td>";
+         echo "</tr>";
+      }
+
       echo "<tr class='tab_bg_1'>";
       echo "<th colspan='4'>".__("API Access", 'prelude')."</th>";
       echo "</tr>";
@@ -187,6 +199,18 @@ class PluginPreludeConfig extends CommonDBTM {
       Html::closeForm();
    }
 
+   /**
+    * Check if openvas plugin for glpi is installed and the configuration is enabled
+    * @return boolean
+    */
+   static function checkOpenVas() {
+      $plugin         = new Plugin();
+      $current_config = self::getConfig();
+
+      return $plugin->isActivated('openvas')
+             && $current_config['openvas_integration'];
+   }
+
    static function checkConfig($with_client = true) {
       $current_config = self::getConfig();
 
@@ -228,6 +252,8 @@ class PluginPreludeConfig extends CommonDBTM {
          Config::setConfigurationValues('plugin:Prelude', array('replace_items_tickets' => true));
       if (!isset($current_config['ticket_alerts']))
          Config::setConfigurationValues('plugin:Prelude', array('ticket_alerts' => true));
+      if (!isset($current_config['openvas_integration']))
+         Config::setConfigurationValues('plugin:Prelude', array('openvas_integration' => true));
    }
 
    /**

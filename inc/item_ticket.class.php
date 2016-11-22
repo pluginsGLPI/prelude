@@ -143,6 +143,9 @@ class PluginPreludeItem_Ticket extends Item_Ticket{
       $header_end .= "<th>".__('Name')."</th>";
       $header_end .= "<th>".__('Serial number')."</th>";
       $header_end .= "<th>".__('Inventory number')."</th>";
+      if (PluginPreludeConfig::checkOpenVas()) {
+         $header_end .= "<th>".__('Status OpenVAS', 'prelude')."</th>";
+      }
       if ($canedit && $number) {
          $header_end .= "<th width='10'>".__('Update the item')."</th>";
       }
@@ -221,6 +224,11 @@ class PluginPreludeItem_Ticket extends Item_Ticket{
                     "</td>";
                echo "<td class='center'>".
                       (isset($data["otherserial"])? "".$data["otherserial"]."" :"-")."</td>";
+               if (PluginPreludeConfig::checkOpenVas()) {
+                  echo "<td class='center'>";
+                  echo PluginOpenvasItem::showSeverityForAnAsset($itemtype, $data["id"]);
+                  echo "</td>";
+               }
                if ($canedit) {
                   echo "<td width='10'>";
                   Html::showMassiveActionCheckBox($itemtype, $data["id"]);
