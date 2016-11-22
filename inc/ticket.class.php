@@ -109,30 +109,36 @@ class PluginPreludeTicket extends CommonDBTM {
                                       'title' => __("delete this group of alerts", 'prelude'),
                                       'url'   => $url."?delete_link&id=$prelude_tickets_id"));
 
-               echo "<table class='tab_cadre_fixehov togglable'>";
-               echo "<tr class='tab_bg_2'>";
-               echo "<th>messageid</th>";
-               echo "<th>".__("Classification", 'prelude')."</th>";
-               echo "<th>".__("Source", 'prelude')."</th>";
-               echo "<th>".__("Target", 'prelude')."</th>";
-               echo "<th>".__("Analyzer", 'prelude')."</th>";
-               echo "<th>".__("Date")."</th>";
-               // echo "<th></th>";
-               echo "</tr>";
-
-               foreach($alerts as $messageid => $alert) {
-                  echo "<tr class='tab_bg_1'>";
-                  echo "<td>".$alert['alert.messageid']."</td>";
-                  echo "<td>".$alert['alert.classification.text']."</td>";
-                  echo "<td>".$alert['alert.source(0).node.address(0).address']."</td>";
-                  echo "<td>".$alert['alert.target(0).node.address(0).address']."</td>";
-                  echo "<td>".$alert['alert.analyzer(-1).name']."</td>";
-                  echo "<td>".$alert['alert.create_time']."</td>";
-                  /*echo "<td><img title='".__("See alert detail", 'prelude')."' src='".
-                       PRELUDE_ROOTDOC."/pics/eye.png' class='pointer'></td>";*/
+               if (count($alerts)) {
+                  echo "<table class='tab_cadre_fixehov togglable'>";
+                  echo "<tr class='tab_bg_2'>";
+                  echo "<th>messageid</th>";
+                  echo "<th>".__("Classification", 'prelude')."</th>";
+                  echo "<th>".__("Source", 'prelude')."</th>";
+                  echo "<th>".__("Target", 'prelude')."</th>";
+                  echo "<th>".__("Analyzer", 'prelude')."</th>";
+                  echo "<th>".__("Date")."</th>";
+                  // echo "<th></th>";
                   echo "</tr>";
+
+                  foreach($alerts as $messageid => $alert) {
+                     echo "<tr class='tab_bg_1'>";
+                     echo "<td>".$alert['alert.messageid']."</td>";
+                     echo "<td>".$alert['alert.classification.text']."</td>";
+                     echo "<td>".$alert['alert.source(0).node.address(0).address']."</td>";
+                     echo "<td>".$alert['alert.target(0).node.address(0).address']."</td>";
+                     echo "<td>".$alert['alert.analyzer(-1).name']."</td>";
+                     echo "<td>".$alert['alert.create_time']."</td>";
+                     /*echo "<td><img title='".__("See alert detail", 'prelude')."' src='".
+                          PRELUDE_ROOTDOC."/pics/eye.png' class='pointer'></td>";*/
+                     echo "</tr>";
+                  }
+                  echo "</table>";
+               } else {
+                  echo "<div class='togglable'>";
+                  _e("No alerts found  for theses criteria", 'prelude');
+                  echo "</div>";
                }
-               echo "</table>";
                echo "</th></tr>";
             }
          }
@@ -155,7 +161,7 @@ class PluginPreludeTicket extends CommonDBTM {
 
       echo "<div class='field'>";
       echo "<label>".__("Name").":</label>";
-      echo Html::input('name');
+      echo Html::input('name', array('required' => 'required'));
       echo "</div>";
 
       echo "<div class='field'>";
@@ -165,7 +171,10 @@ class PluginPreludeTicket extends CommonDBTM {
 
       echo "<div class='field'>";
       echo "<label>".__("Prelude criteria", 'prelude').":</label>";
-      echo Html::input('params_api[criteria][]', array('class' => 'criterion'));
+      echo Html::input('params_api[criteria][]', array('required' => 'required',
+                                                       'class'    => 'criterion',
+                                                       'placeholder'
+                                                         => "alert.create_time > 'xxxx-xx-xx'"));
       echo Html::image(PRELUDE_ROOTDOC."/pics/add.png",
                        array('class'   => 'pointer add_criterion',
                              'title'   => __("add prelude criterion", 'prelude'),
@@ -202,6 +211,9 @@ class PluginPreludeTicket extends CommonDBTM {
       // unsanitize (we'll json_encode this key)
       $params_api = Toolbox::stripslashes_deep(
                        Toolbox::unclean_cross_side_scripting_deep($params['params_api']));
+
+      // remove empty criteria
+      $params_api['criteria'] = array_filter($params_api['criteria']);
 
       // filter input
       $params = ['tickets_id' => intval($params['tickets_id']),
