@@ -73,13 +73,19 @@ class PluginPreludeTicket extends CommonDBTM {
       echo "</a>";
       echo "<br><br>";
 
-      echo "<form name='ticket_form$rand' id='ticket_form$rand' method='post'
-             action='".Toolbox::getItemTypeFormURL(__CLASS__)."'>";
       $found = self::getForticket($ticket);
       if (count($found) <= 0) {
          _e("No alerts found  for this ticket", 'prelude');
+         echo "&nbsp;";
+         self::importAlertsForm($ticket->getID());
       } else {
-         echo "<h2>".__('Alerts', 'prelude')."</h2>";
+         echo "<h2>";
+         _e('Alerts', 'prelude');
+         echo "&nbsp;";
+         self::importAlertsForm($ticket->getID());
+         echo "</h2>";
+
+
          echo "<table class='tab_cadre_fixe'>";
 
          foreach ($found as $prelude_tickets_id => $current) {
@@ -92,11 +98,11 @@ class PluginPreludeTicket extends CommonDBTM {
                             class='toggle_alert' id='toggle_$prelude_tickets_id' />";
                echo "<label for='toggle_$prelude_tickets_id'>".$current['name'].
                     "&nbsp; <sup>$nb<sup></label>";
-               if (!empty($current['condition_url'])) {
+               if (!empty($current['url'])) {
                   echo Html::image(PRELUDE_ROOTDOC."/pics/link.png",
                                    array('class' => 'pointer',
                                          'title' => __("View theses alerts in prelude", 'prelude'),
-                                         'url'   => $current['condition_url']));
+                                         'url'   => $current['url']));
                }
                echo Html::image(PRELUDE_ROOTDOC."/pics/delete.png",
                                 array('class' => 'pointer prelude-delete-bloc',
@@ -134,6 +140,66 @@ class PluginPreludeTicket extends CommonDBTM {
       }
    }
 
+   static function importAlertsForm($tickets_id = 0) {
+      echo Html::image(PRELUDE_ROOTDOC."/pics/import.png",
+                          array('class'   => 'pointer',
+                                'title'   => __("Import alerts from prelude", 'prelude'),
+                                'onclick' => "$('#add_alerts').dialog('open');"));
+
+      echo "<div id='add_alerts' class='invisible'>";
+      echo "<form method='post' action='".Toolbox::getItemTypeFormURL(__CLASS__)."'>";
+
+      echo "<div class='field'>";
+      echo "<label>".__("Name").":</label>";
+      echo Html::input('name');
+      echo "</div>";
+
+      echo "<div class='field'>";
+      echo "<label>".__("Url").":</label>";
+      echo Html::input('url');
+      echo "</div>";
+
+      echo "<div class='field'>";
+      echo "<label>".__("Prelude criteria", 'prelude').":</label>";
+      echo Html::input('params_api[criteria][]', array('class' => 'criterion'));
+      echo Html::image(PRELUDE_ROOTDOC."/pics/add.png",
+                       array('class'   => 'pointer add_criterion',
+                             'title'   => __("add prelude criterion", 'prelude'),
+                             'onclick' => "add_criterion();"));
+      echo "</div>";
+
+      echo Html::hidden('tickets_id', array('value' => $tickets_id));
+      echo Html::submit("Import alerts", array('name' => 'import_alerts'));
+
+      Html::closeForm();
+      echo "</div>";
+
+      // init menu in jquery dialog
+      Html::scriptStart();
+      echo Html::jsGetElementbyID('add_alerts').".dialog({
+         height: 'auto',
+         width: 'auto',
+         modal: true,
+         autoOpen: false
+         });";
+      echo Html::scriptEnd();
+   }
+
+   function importAlerts($params) {
+      // unsanitize (we'll json_encode this key)
+      $params_api = Toolbox::stripslashes_deep(
+                       Toolbox::unclean_cross_side_scripting_deep($params['params_api']));
+
+      // filter input
+      $params = ['tickets_id' => intval($params['tickets_id']),
+                 'params_api' => addslashes(json_encode($params_api)),
+                 'name'       => Toolbox::addslashes_deep($params['name']),
+                 'url'        => filter_var($params['name'], FILTER_VALIDATE_URL),
+                 ];
+
+      return $this->add($params);
+   }
+
    /**
     * Database table installation for the item type
     *
@@ -152,7 +218,7 @@ class PluginPreludeTicket extends CommonDBTM {
                `id`            INT(11) NOT NULL AUTO_INCREMENT,
                `tickets_id`    INT(11) NOT NULL DEFAULT '0',
                `name`          VARCHAR(255) COLLATE utf8_unicode_ci DEFAULT NULL,
-               `condition_url` TEXT COLLATE utf8_unicode_ci,
+               `url`           TEXT COLLATE utf8_unicode_ci,
                `params_api`    TEXT COLLATE utf8_unicode_ci,
                PRIMARY KEY (`id`),
                KEY `tickets_id` (`tickets_id`)

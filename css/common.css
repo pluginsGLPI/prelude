@@ -2,6 +2,27 @@
    float:  right;
 }
 
+#add_alerts .field {
+   margin-bottom: 10px;
+}
+
+#add_alerts label {
+   display: block;
+   width: 100%;
+   font-weight: bold;
+}
+
+#add_alerts input[type=text] {
+   width: 250px;
+   margin-bottom: 2px;
+   display: block;
+}
+
+#add_alerts .add_criterion {
+   vertical-align: middle;
+   float: right;
+}
+
 input.toggle_alert {
    position:absolute;
    appearance:none;

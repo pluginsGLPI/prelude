@@ -52,6 +52,7 @@ function plugin_init_prelude() {
    if (isset($_SESSION['glpiID'])
        && $plugin->isActivated('prelude')) {
 
+      $PLUGIN_HOOKS['add_javascript']['prelude'][] = "js/common.js";
       $PLUGIN_HOOKS['add_javascript']['prelude'][] = "js/tabs.js";
       $PLUGIN_HOOKS['add_css']['prelude'][] = "css/common.css";
 
