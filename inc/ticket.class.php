@@ -73,30 +73,156 @@ class PluginPreludeTicket extends CommonDBTM {
       echo "</a>";
       echo "<br><br>";
 
-      echo "<form name='ticket_form$rand' id='ticket_form$rand' method='post'
-             action='".Toolbox::getItemTypeFormURL(__CLASS__)."'>";
       $found = self::getForticket($ticket);
       if (count($found) <= 0) {
          _e("No alerts found  for this ticket", 'prelude');
+         echo "&nbsp;";
+         self::importAlertsForm($ticket->getID());
       } else {
+         echo "<h2>";
+         _e('Alerts', 'prelude');
+         echo "&nbsp;";
+         self::importAlertsForm($ticket->getID());
+         echo "</h2>";
+
+
          echo "<table class='tab_cadre_fixe'>";
-         echo "<tr class='tab_bg_2'><th colspan='2'>".__('Alerts', 'prelude')."</th></tr>";
 
          foreach ($found as $prelude_tickets_id => $current) {
-            echo "<tr class='tab_bg_2'><th colspan='2'>";
-            echo $current['name']."&nbsp;";
-            echo Html::image(PRELUDE_ROOTDOC."/pics/link.png",
-                             array('class' => 'pointer',
-                                   'title' => __("View theses alerts in prelude", 'prelude'),
-                                   'url'   => $current['condition_url']));
-            echo Html::image(PRELUDE_ROOTDOC."/pics/delete.png",
-                             array('class' => 'pointer prelude-delete-bloc',
-                                   'title' => __("delete this link", 'prelude'),
-                                   'url'   => $url."?delete_link&id=$prelude_tickets_id"));
-            echo "</th></tr>";
+            if ($params_api = json_decode($current['params_api'], true)) {
+               $alerts = PluginPreludeAPIClient::getAlerts($params_api);
+               $nb     = count($alerts);
+
+               echo "<tr><th colspan='2'>";
+               echo "<input type='checkbox' name='toggle'
+                            class='toggle_alert' id='toggle_$prelude_tickets_id' />";
+               echo "<label for='toggle_$prelude_tickets_id'>".$current['name'].
+                    "&nbsp; <sup>$nb<sup></label>";
+               if (!empty($current['url'])) {
+                  echo Html::image(PRELUDE_ROOTDOC."/pics/link.png",
+                                   array('class' => 'pointer',
+                                         'title' => __("View theses alerts in prelude", 'prelude'),
+                                         'url'   => $current['url']));
+               }
+               echo Html::image(PRELUDE_ROOTDOC."/pics/delete.png",
+                                array('class' => 'pointer prelude-delete-bloc',
+                                      'title' => __("delete this group of alerts", 'prelude'),
+                                      'url'   => $url."?delete_link&id=$prelude_tickets_id"));
+
+               if (count($alerts)) {
+                  echo "<table class='tab_cadre_fixehov togglable'>";
+                  echo "<tr class='tab_bg_2'>";
+                  echo "<th>messageid</th>";
+                  echo "<th>".__("Classification", 'prelude')."</th>";
+                  echo "<th>".__("Source", 'prelude')."</th>";
+                  echo "<th>".__("Target", 'prelude')."</th>";
+                  echo "<th>".__("Analyzer", 'prelude')."</th>";
+                  echo "<th>".__("Date")."</th>";
+                  // echo "<th></th>";
+                  echo "</tr>";
+
+                  foreach($alerts as $messageid => $alert) {
+                     echo "<tr class='tab_bg_1'>";
+                     echo "<td>".$alert['alert.messageid']."</td>";
+                     echo "<td>".$alert['alert.classification.text']."</td>";
+                     echo "<td>".$alert['alert.source(0).node.address(0).address']."</td>";
+                     echo "<td>".$alert['alert.target(0).node.address(0).address']."</td>";
+                     echo "<td>".$alert['alert.analyzer(-1).name']."</td>";
+                     echo "<td>".$alert['alert.create_time']."</td>";
+                     /*echo "<td><img title='".__("See alert detail", 'prelude')."' src='".
+                          PRELUDE_ROOTDOC."/pics/eye.png' class='pointer'></td>";*/
+                     echo "</tr>";
+                  }
+                  echo "</table>";
+               } else {
+                  echo "<div class='togglable'>";
+                  _e("No alerts found  for theses criteria", 'prelude');
+                  echo "</div>";
+               }
+               echo "</th></tr>";
+            }
          }
          echo "</table>";
       }
+   }
+
+   /**
+    * Print a dialog to import alerts for a ticket
+    * @param  integer $tickets_id id of the ticket to link
+    */
+   static function importAlertsForm($tickets_id = 0) {
+      echo Html::image(PRELUDE_ROOTDOC."/pics/import.png",
+                          array('class'   => 'pointer',
+                                'title'   => __("Import alerts from prelude", 'prelude'),
+                                'onclick' => "$('#add_alerts').dialog('open');"));
+
+      echo "<div id='add_alerts' class='invisible'>";
+      echo "<form method='post' action='".Toolbox::getItemTypeFormURL(__CLASS__)."'>";
+
+      echo "<div class='field'>";
+      echo "<label>".__("Name").":</label>";
+      echo Html::input('name', array('required' => 'required'));
+      echo "</div>";
+
+      echo "<div class='field'>";
+      echo "<label>".__("Url").":</label>";
+      echo Html::input('url');
+      echo "</div>";
+
+      echo "<div class='field'>";
+      echo "<label>".__("Prelude criteria", 'prelude').":</label>";
+      echo Html::input('params_api[criteria][]', array('required' => 'required',
+                                                       'class'    => 'criterion',
+                                                       'placeholder'
+                                                         => "alert.create_time > 'xxxx-xx-xx'"));
+      echo Html::image(PRELUDE_ROOTDOC."/pics/add.png",
+                       array('class'   => 'pointer add_criterion',
+                             'title'   => __("add prelude criterion", 'prelude'),
+                             'onclick' => "add_criterion();"));
+      echo "</div>";
+
+      echo Html::hidden('tickets_id', array('value' => $tickets_id));
+      echo Html::submit("Import alerts", array('name' => 'import_alerts'));
+
+      Html::closeForm();
+      echo "</div>";
+
+      // init menu in jquery dialog
+      Html::scriptStart();
+      echo Html::jsGetElementbyID('add_alerts').".dialog({
+         height: 'auto',
+         width: 'auto',
+         modal: true,
+         autoOpen: false
+         });";
+      echo Html::scriptEnd();
+   }
+
+   /**
+    * Add the input send by self::importAlertsForm
+    * @param  array $params with theses keys:
+    *                       - tickets_id
+    *                       - params_api
+    *                       - name
+    *                       - url
+    * @return boolean
+    */
+   function importAlerts($params = array()) {
+      // unsanitize (we'll json_encode this key)
+      $params_api = Toolbox::stripslashes_deep(
+                       Toolbox::unclean_cross_side_scripting_deep($params['params_api']));
+
+      // remove empty criteria
+      $params_api['criteria'] = array_filter($params_api['criteria']);
+
+      // filter input
+      $params = ['tickets_id' => intval($params['tickets_id']),
+                 'params_api' => addslashes(json_encode($params_api)),
+                 'name'       => Toolbox::addslashes_deep($params['name']),
+                 'url'        => filter_var($params['name'], FILTER_VALIDATE_URL),
+                 ];
+
+      return $this->add($params);
    }
 
    /**
@@ -117,8 +243,8 @@ class PluginPreludeTicket extends CommonDBTM {
                `id`            INT(11) NOT NULL AUTO_INCREMENT,
                `tickets_id`    INT(11) NOT NULL DEFAULT '0',
                `name`          VARCHAR(255) COLLATE utf8_unicode_ci DEFAULT NULL,
-               `condition_url` TEXT COLLATE utf8_unicode_ci,
-               `condition_api` TEXT COLLATE utf8_unicode_ci,
+               `url`           TEXT COLLATE utf8_unicode_ci,
+               `params_api`    TEXT COLLATE utf8_unicode_ci,
                PRIMARY KEY (`id`),
                KEY `tickets_id` (`tickets_id`)
             )
