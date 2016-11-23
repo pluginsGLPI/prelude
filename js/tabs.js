@@ -15,7 +15,8 @@ var refresh_tabs = function(split_view = false) {
 
 var remove_tab = function(tabname) {
    get_tab(tabname)
-      .remove();
+      .addClass('prelude_hidden')
+      .find('a').remove();
 }
 
 var get_tab = function(tabname) {

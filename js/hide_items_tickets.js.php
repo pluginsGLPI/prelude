@@ -27,13 +27,13 @@ $(function() {
                         .replace('$url_base', '')
                         .replace(document.location.search, '');
 
-   // remove item tab in ticket form
    if (current_page == 'front/ticket.form.php') {
-      remove_tab('Item_Ticket');
+      // move prelude tab after element tab
+      /*get_tab('PluginPreludeItem_Ticket')
+         .insertAfter(get_tab('Item_Ticket').first());*/
 
-      // move prelude tab after validation tab
-      get_tab('PluginPreludeItem_Ticket')
-         .insertAfter(get_tab('TicketValidation').first());
+      // remove item tab in ticket form
+      remove_tab('Item_Ticket');
 
       // refresh jquery-ui tabs
       refresh_tabs($split_view);
@@ -44,8 +44,8 @@ $(function() {
       remove_tab('Ticket');
 
       // move prelude tab after antivirus tab
-      get_tab('PluginPreludeItem_Ticket')
-         .insertAfter(get_tab('ComputerAntivirus').first());
+      /*get_tab('PluginPreludeItem_Ticket')
+         .insertAfter(get_tab('ComputerAntivirus').first());*/
 
       // refresh jquery-ui tabs
       refresh_tabs($split_view);

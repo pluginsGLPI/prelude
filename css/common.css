@@ -1,3 +1,9 @@
+.ui-tabs-nav li.prelude_hidden {
+   margin: 0;
+   border: 0 !important;
+   display: none;
+}
+
 .prelude-delete-bloc {
    float:  right;
 }
