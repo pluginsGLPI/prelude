@@ -80,7 +80,7 @@ class PluginPreludeTicket extends CommonDBTM {
          self::importAlertsForm($ticket->getID());
       } else {
          echo "<h2>";
-         _e('Alerts', 'prelude');
+         echo _n('Alert', 'Alerts', 2, 'prelude');
          echo "&nbsp;";
          self::importAlertsForm($ticket->getID());
          echo "</h2>";
