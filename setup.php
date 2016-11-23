@@ -25,8 +25,14 @@
  along with prelude. If not, see <http://www.gnu.org/licenses/>.
  --------------------------------------------------------------------------
  */
+global $CFG_GLPI;
+define('PLUGIN_PRELUDE_VERSION', '0.5.0');
+define('PRELUDE_ROOTDOC', $CFG_GLPI['root_doc']."/plugins/prelude");
+define('PRELUDE_CONFIG_URL', $CFG_GLPI['url_base'].
+                             '/front/config.form.php?forcetab=PluginPreludeConfig$1');
 
-define('PLUGIN_PRELUDE_VERSION', '0.0.1');
+// include composer autoload
+require_once(__DIR__ . '/vendor/autoload.php');
 
 /**
  * Init hooks of the plugin.
@@ -35,9 +41,58 @@ define('PLUGIN_PRELUDE_VERSION', '0.0.1');
  * @return void
  */
 function plugin_init_prelude() {
-   global $PLUGIN_HOOKS;
+   global $PLUGIN_HOOKS, $CFG_GLPI;
 
    $PLUGIN_HOOKS['csrf_compliant']['prelude'] = true;
+
+   // include composer autoload
+   require_once(__DIR__ . '/vendor/autoload.php');
+
+   $plugin = new Plugin();
+   if (isset($_SESSION['glpiID'])
+       && $plugin->isActivated('prelude')) {
+
+      $PLUGIN_HOOKS['add_javascript']['prelude'][] = "js/common.js";
+      $PLUGIN_HOOKS['add_javascript']['prelude'][] = "js/tabs.js";
+      $PLUGIN_HOOKS['add_css']['prelude'][] = "css/common.css";
+
+      // get the plugin config
+      $prelude_config = PluginPreludeConfig::getConfig();
+
+      // Add a link in the main menu plugins for technician and admin panel
+      Plugin::registerClass('PluginPreludeConfig', array('addtabon' => 'Config'));
+      $PLUGIN_HOOKS['config_page']['prelude'] = 'front/config.form.php';
+
+      // add a new tab to tickets who replace item_ticket
+      if ($prelude_config['replace_items_tickets']) {
+         $PLUGIN_HOOKS['add_javascript']['prelude'][] = "js/hide_items_tickets.js.php";
+
+         $PLUGIN_HOOKS['item_add']['prelude'] = array('Item_Ticket' =>
+                                                       array('PluginPreludeItem_Ticket',
+                                                             'item_Ticket_AfterAdd'));
+         $PLUGIN_HOOKS['item_update']['prelude'] = array('Item_Ticket' =>
+                                                          array('PluginPreludeItem_Ticket',
+                                                                'item_Ticket_AfterUpdate'));
+         $PLUGIN_HOOKS['item_delete']['prelude'] = array('Item_Ticket' =>
+                                                          array('PluginPreludeItem_Ticket',
+                                                                'item_Ticket_AfterDelete'));
+         $PLUGIN_HOOKS['item_purge']['prelude'] = array('Item_Ticket' =>
+                                                         array('PluginPreludeItem_Ticket',
+                                                               'item_Ticket_AfterPurge'));
+
+
+
+         Plugin::registerClass('PluginPreludeItem_Ticket', array('addtabon' => 'Ticket'));
+         foreach(Ticket::getAllTypesForHelpdesk() as $itemtype => $label) {
+            Plugin::registerClass('PluginPreludeItem_Ticket', array('addtabon' => $itemtype));
+         }
+      }
+
+      // add a new tab to tickets to perform actions relative to prelude
+      if ($prelude_config['replace_items_tickets']) {
+         Plugin::registerClass('PluginPreludeTicket', array('addtabon' => 'Ticket'));
+      }
+   }
 }
 
 
@@ -49,10 +104,10 @@ function plugin_init_prelude() {
  */
 function plugin_version_prelude() {
    return [
-      'name'           => 'prelude',
+      'name'           => 'Prelude Siem',
       'version'        => PLUGIN_PRELUDE_VERSION,
       'author'         => '<a href="http://www.teclib.com">Teclib\'</a>',
-      'license'        => '',
+      'license'        => 'GPL2',
       'homepage'       => '',
       'minGlpiVersion' => '9.1'
    ];

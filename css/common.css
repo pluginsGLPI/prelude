@@ -1,0 +1,62 @@
+.ui-tabs-nav li.prelude_hidden {
+   margin: 0;
+   border: 0 !important;
+   display: none;
+}
+
+.prelude-delete-bloc {
+   float:  right;
+}
+
+#add_alerts .field {
+   margin-bottom: 10px;
+}
+
+#add_alerts label {
+   display: block;
+   width: 100%;
+   font-weight: bold;
+}
+
+#add_alerts input[type=text] {
+   width: 250px;
+   margin-bottom: 2px;
+   display: block;
+}
+
+#add_alerts .add_criterion {
+   vertical-align: middle;
+   float: right;
+}
+
+input.toggle_alert {
+   position:absolute;
+   appearance:none;
+   left:-100%;
+   top:-100%;
+}
+
+input.toggle_alert ~ label {
+   cursor: pointer;
+   padding-left: 20px;
+   background: url(../../../pics/collapse.png) no-repeat;
+}
+input.toggle_alert ~ label > sup {
+   border-radius: 50%;
+   background-color: #FFF;
+   min-width: 18px;
+   display: inline-block;
+   text-align: center;
+   vertical-align: top;
+   padding: 3px 2px 5px;
+   box-sizing: border-box;
+   margin: 5px 5px 5px 0;
+}
+
+input.toggle_alert:checked ~ label {
+   background: url(../../../pics/expand.png) no-repeat;
+}
+
+input.toggle_alert:checked ~ .togglable {
+   display: none
+}

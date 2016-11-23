@@ -32,6 +32,23 @@
  * @return boolean
  */
 function plugin_prelude_install() {
+   $version   = plugin_version_prelude();
+   $migration = new Migration($version['version']);
+
+   // Parse inc directory
+   foreach (glob(dirname(__FILE__).'/inc/*') as $filepath) {
+      // Load *.class.php files and get the class name
+      if (preg_match("/inc.(.+)\.class.php$/", $filepath, $matches)) {
+         $classname = 'PluginPrelude' . ucfirst($matches[1]);
+         include_once($filepath);
+         // If the install method exists, load it
+         if (method_exists($classname, 'install')) {
+            $classname::install($migration);
+         }
+      }
+   }
+   $migration->executeMigration();
+
    return true;
 }
 
@@ -41,5 +58,28 @@ function plugin_prelude_install() {
  * @return boolean
  */
 function plugin_prelude_uninstall() {
-   return true;
+   // Parse inc directory
+   foreach (glob(dirname(__FILE__).'/inc/*') as $filepath) {
+      // Load *.class.php files and get the class name
+      if (preg_match("/inc.(.+)\.class.php/", $filepath, $matches)) {
+         $classname = 'PluginPrelude' . ucfirst($matches[1]);
+         include_once($filepath);
+         // If the install method exists, load it
+         if (method_exists($classname, 'uninstall')) {
+            $classname::uninstall();
+         }
+      }
+   }
+   return true ;
+}
+
+
+/**
+ * Define Dropdown tables to be manage in GLPI :
+ */
+function plugin_prelude_getDropdown()
+{
+   return array(
+       'PluginPreludeLinktype'   => PluginPreludeLinktype::getTypeName(2),
+   );
 }

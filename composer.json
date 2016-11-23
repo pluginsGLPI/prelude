@@ -1,0 +1,9 @@
+{
+    "require-dev": {
+        "codegyre/robo": "*"
+    },
+    "require": {
+        "league/oauth2-client": "^1.4",
+        "guzzlehttp/guzzle": "^6.2"
+    }
+}
