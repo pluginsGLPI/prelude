@@ -112,7 +112,6 @@ class PluginPreludeTicket extends CommonDBTM {
                if (count($alerts)) {
                   echo "<table class='tab_cadre_fixehov togglable'>";
                   echo "<tr class='tab_bg_2'>";
-                  echo "<th>messageid</th>";
                   echo "<th>".__("Classification", 'prelude')."</th>";
                   echo "<th>".__("Source", 'prelude')."</th>";
                   echo "<th>".__("Target", 'prelude')."</th>";
@@ -123,7 +122,6 @@ class PluginPreludeTicket extends CommonDBTM {
 
                   foreach($alerts as $messageid => $alert) {
                      echo "<tr class='tab_bg_1'>";
-                     echo "<td>".$alert['alert.messageid']."</td>";
                      echo "<td>".$alert['alert.classification.text']."</td>";
                      echo "<td>".$alert['alert.source(0).node.address(0).address']."</td>";
                      echo "<td>".$alert['alert.target(0).node.address(0).address']."</td>";
