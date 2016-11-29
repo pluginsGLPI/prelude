@@ -1,6 +1,6 @@
 # Prelude plugin for glpi
 
-This plugin integrate the [prelude SIEM](https://www.prelude-siem.com/) with GLPI.
+This plugin integrates [prelude SIEM](https://www.prelude-siem.com/) with GLPI.
 
 
 ## Features
@@ -14,17 +14,16 @@ This plugin integrate the [prelude SIEM](https://www.prelude-siem.com/) with GLP
 
 ### Prerequisites
 
-You need the followings components
+You need the followings components:
 - GLPI (at least 9.1 version)
 - Prelude Siem (at least 3.1 version)
 - PHP >= 5.5
-- php-curl extension or 'allow_url_fopen' in your php.ini
+- php-curl extension or `allow_url_fopen` in your php.ini
 
 ### Prelude configuration
 
 We need an oauth client configuration in prelude to connect our plugin.
-At the moment, prelude doesn't support addition of clients graphically.
-So we need to add in postgres database this configuration:
+At the moment, prelude doesn't provide any tool to add clients, so we need to add data directly in the postgres database:
 
 1. Connect to postgres in prelude OVA (default password is 'postgres')
 
@@ -43,9 +42,9 @@ INSERT INTO prewikka_oauth_client
 
 You may need to replace some values in the previous sql query. Here is descriptions for the differents fields:
 
-* **owner_id**: prelude user, you should find the value in the prewikka_user table, userid field.
+* **owner_id**: prelude user, you should find the value in the `userid` field of the `prewikka_user` table.
 * **client_id**: key name of your application, you need to set up this key in the configuration of prelude plugin.
-* **client_secret**: password for your application, you need to set upm this value in the glpi plugin configuration.
+* **client_secret**: password for your application, you need to set up this value in the glpi plugin configuration.
 * **redirect uri**: at the first configuration of the glpi prelude plugin, you will be redirected to prelude application and asked for login/authorize api acces. After this step, the redirect_uri will be called for returning into glpi.
 * **application_name**: name of the authorized application.
 * **description**: description of the authorized application.
@@ -53,9 +52,9 @@ You may need to replace some values in the previous sql query. Here is descripti
 ### Glpi Configuration
 
 Copy the plugin folder into your glpi/plugins directory.
-The folder must be named 'prelude'. Otherwise GLPI framework will fail to initialize the plugin.
+The folder must be named 'prelude' otherwise GLPI framework will fail to initialize the plugin.
 
-After, go to glpi interface, navigate to the _Administatrion > Plugins_ page.
+Next, go to glpi interface, navigate to the _Administatrion > Plugins_ page.
 Find the prelude line, click on _Install_ button, and after refresh, click on _Enable_ button. 
 
 Once the plugin enabled, you may click on this name or go into _Setup > General_ menu to display the plugin configuration.
@@ -95,10 +94,10 @@ A click of this display a mini form to import a group of alerts from prelude API
 
 ![Import alerts form ](https://raw.githubusercontent.com/pluginsGLPI/prelude/develop/screenshots/feature_addalerts.png)
 
-You need to set the followin fields:
+You need to set the following fields:
 * **Name**: a label describing the current group of alerts.
 * **URL**: an url to provide a redirection to prelude (in order to see alerts in the prelude context)
-* **Criteria**: an set of [prelude IODEF criterion](https://www.prelude-siem.org/projects/prelude/wiki/IDMEFCriteria) sent to the API to filter the alerts collection.
+* **Criteria**: a set of [prelude IODEF criteria](https://www.prelude-siem.org/projects/prelude/wiki/IDMEFCriteria) sent to the API to filter the alerts collection.
 
 After submit, you'll see a listing of the alerts.
 
@@ -110,9 +109,9 @@ After submit, you'll see a listing of the alerts.
 The Prelude instance should drive the ticket addition/update etc.
 From their interface, you'll have buttons to do theses actions.
 
-If you still need to control data with our [Rest API](https://github.com/glpi-project/glpi/blob/master/apirest.md), here is some examples.
+If you still need to control data with our [Rest API](https://github.com/glpi-project/glpi/blob/master/apirest.md), here are some examples.
 
-In each provided queries in example, you need to replace some parameters (session_token and glpi http path).
+In each provided queries in example, you need to replace some parameters (`session_token` and `glpi http path`).
 
 ### Items-Tickets association
 
