@@ -51,20 +51,18 @@ class PluginPreludeTicket extends CommonDBTM {
     *
     * @param $ticket Ticket object
     *
-    * @return Nothing (display)
+    * @return null
    **/
    static function showForTicket(Ticket $ticket) {
       global $CFG_GLPI;
 
-      $rand           = mt_rand();
-      $url            = Toolbox::getItemTypeFormURL(__CLASS__);
+      $url = Toolbox::getItemTypeFormURL(__CLASS__);
 
       if (!PluginPreludeAPIClient::globalStatus()) {
          $message = __("Prelude API is not connected, click to display configuration");
          echo "<a href='".PRELUDE_CONFIG_URL."'>";
          Html::displayTitle($CFG_GLPI['root_doc']."/pics/warning.png", $message, $message);
          echo "</a>";
-         return false;
       }
 
       echo "<a class='vsubmit' href='".Toolbox::getItemTypeFormURL('Problem').
@@ -108,6 +106,12 @@ class PluginPreludeTicket extends CommonDBTM {
                                       'title' => __("delete this group of alerts", 'prelude'),
                                       'url'   => $url."?delete_link&id=$prelude_tickets_id"));
 
+               echo "<div class='togglable'>";
+               echo "<div class='prelude_criteria'>";
+               foreach($params_api['criteria'] as $criterion) {
+                  echo "<span class='prelude_criterion'>$criterion</span>";
+               }
+               echo "<div>"; // .prelude_criteria
                if (count($alerts)) {
                   echo "<table class='tab_cadre_fixehov togglable'>";
                   echo "<tr class='tab_bg_2'>";
@@ -139,6 +143,7 @@ class PluginPreludeTicket extends CommonDBTM {
                   _e("No alerts found  for theses criteria", 'prelude');
                   echo "</div>";
                }
+               echo "<div>"; // .togglable
                echo "</th></tr>";
             }
          }
@@ -219,7 +224,7 @@ class PluginPreludeTicket extends CommonDBTM {
       $params = ['tickets_id' => intval($params['tickets_id']),
                  'params_api' => addslashes(json_encode($params_api)),
                  'name'       => Toolbox::addslashes_deep($params['name']),
-                 'url'        => filter_var($params['name'], FILTER_VALIDATE_URL),
+                 'url'        => filter_var($params['url'], FILTER_VALIDATE_URL),
                  ];
 
       return $this->add($params);

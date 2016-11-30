@@ -60,3 +60,16 @@ input.toggle_alert:checked ~ label {
 input.toggle_alert:checked ~ .togglable {
    display: none
 }
+
+.prelude_criterion {
+   display: inline-block;
+   height: 25px;
+   font-size: 10px;
+   color: rgba(0,0,0,0.6);
+   line-height: 25px;
+   padding: 0 12px;
+   border-radius: 16px;
+   background-color: #e4e4e4;
+   margin-bottom: 5px;
+   margin-right: 5px;
+}
