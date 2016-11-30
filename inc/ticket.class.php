@@ -217,7 +217,7 @@ class PluginPreludeTicket extends CommonDBTM {
       $params = ['tickets_id' => intval($params['tickets_id']),
                  'params_api' => addslashes(json_encode($params_api)),
                  'name'       => Toolbox::addslashes_deep($params['name']),
-                 'url'        => filter_var($params['name'], FILTER_VALIDATE_URL),
+                 'url'        => filter_var($params['url'], FILTER_VALIDATE_URL),
                  ];
 
       return $this->add($params);
