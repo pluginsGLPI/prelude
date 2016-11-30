@@ -108,11 +108,11 @@ class PluginPreludeAPIClient extends CommonGLPI {
       ];
 
       // contruct the options sent to the query
-      $default_params =
-         ['limit'   => self::DEFAULT_LIMIT,
-          'offset'  => self::DEFAULT_OFFSET,
-          'path'    => [],
-          'criteria' => []
+      $default_params = [
+         'limit'   => self::DEFAULT_LIMIT,
+         'offset'  => self::DEFAULT_OFFSET,
+         'path'    => [],
+         'criteria' => []
       ];
       $params = array_merge($default_params, $params);
       $params['path'] = array_merge($default_paths, $params['path']);
@@ -161,11 +161,11 @@ class PluginPreludeAPIClient extends CommonGLPI {
       ];
 
       // contruct the options sent to the query
-      $default_params =
-         ['limit'    => self::DEFAULT_LIMIT,
-          'offset'   => self::DEFAULT_OFFSET,
-          'path'     => [],
-          'criteria' => []
+      $default_params = [
+         'limit'    => self::DEFAULT_LIMIT,
+         'offset'   => self::DEFAULT_OFFSET,
+         'path'     => [],
+         'criteria' => []
       ];
       $params = array_merge($default_params, $params);
       $params['path'] = array_merge($default_paths, $params['path']);
@@ -309,7 +309,7 @@ class PluginPreludeAPIClient extends CommonGLPI {
     * delete the oauth token store in db
     */
    static function deleteToken() {
-     return Config::setConfigurationValues('plugin:Prelude', array('api_token' => ''));
+      return Config::setConfigurationValues('plugin:Prelude', array('api_token' => ''));
    }
 
    /**
@@ -318,7 +318,7 @@ class PluginPreludeAPIClient extends CommonGLPI {
     *               of the token in string
     */
    static function getCurrentAccessToken() {
-     if ($token = self::retrieveToken()) {
+      if ($token = self::retrieveToken()) {
          return $token->getToken();
       }
 
