@@ -271,7 +271,7 @@ class PluginPreludeItem_Ticket extends Item_Ticket{
          return '';
       }
       $nb = 0;
-      if ($item->getType() == 'Ticket') {
+      if ($item instanceof Ticket) {
          if (($_SESSION["glpiactiveprofile"]["helpdesk_hardware"] != 0)
              && (count($_SESSION["glpiactiveprofile"]["helpdesk_item_type"]) > 0)) {
             $nb = countElementsInTable(self::getTable(),
@@ -294,7 +294,7 @@ class PluginPreludeItem_Ticket extends Item_Ticket{
     * {@inheritDoc}
     */
    static function displayTabContentForItem(CommonGLPI $item, $tabnum=1, $withtemplate=0) {
-      if ($item->getType() == 'Ticket') {
+      if ($item instanceof Ticket) {
          self::showForTicket($item);
       } else if (array_key_exists($item->getType(), Ticket::getAllTypesForHelpdesk())) {
          self::showForAsset($item);

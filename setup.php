@@ -26,7 +26,7 @@
  --------------------------------------------------------------------------
  */
 global $CFG_GLPI;
-define('PLUGIN_PRELUDE_VERSION', '0.1.1');
+define('PLUGIN_PRELUDE_VERSION', '0.2.0');
 define('PRELUDE_ROOTDOC', $CFG_GLPI['root_doc']."/plugins/prelude");
 define('PRELUDE_CONFIG_URL', $CFG_GLPI['url_base'].
                              '/front/config.form.php?forcetab=PluginPreludeConfig$1');
@@ -89,6 +89,11 @@ function plugin_init_prelude() {
       // add a new tab to tickets to perform actions relative to prelude
       if ($prelude_config['replace_items_tickets']) {
          Plugin::registerClass('PluginPreludeTicket', array('addtabon' => 'Ticket'));
+      }
+
+      // add a new tab in problems to generate iodef
+      if ($prelude_config['problem_iodef']) {
+         Plugin::registerClass('PluginPreludeIODEF', array('addtabon' => 'Problem'));
       }
    }
 }

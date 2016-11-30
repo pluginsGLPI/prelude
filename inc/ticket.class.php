@@ -23,7 +23,7 @@ class PluginPreludeTicket extends CommonDBTM {
       if ($withtemplate) {
          return '';
       }
-      if ($item->getType() == 'Ticket') {
+      if ($item instanceof Ticket) {
          $nb = count(self::getForticket($item));
          return self::createTabEntry(self::getTypeName($nb), $nb);
       }
@@ -35,7 +35,7 @@ class PluginPreludeTicket extends CommonDBTM {
     * {@inheritDoc}
     */
    static function displayTabContentForItem(CommonGLPI $item, $tabnum=1, $withtemplate=0) {
-      if ($item->getType() == 'Ticket') {
+      if ($item instanceof Ticket) {
          self::showForTicket($item);
       }
       return true;

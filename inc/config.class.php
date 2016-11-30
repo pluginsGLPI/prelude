@@ -85,6 +85,15 @@ class PluginPreludeConfig extends CommonDBTM {
       echo "</td>";
       echo "</tr>";
 
+      echo "<tr class='tab_bg_1'>";
+      echo "<td style='width: 25%'>".__("IODEF in problems", 'prelude')."</td>";
+      echo "<td colspan='3'>";
+      Html::showCheckbox(array('name'    => 'problem_iodef',
+                               'value'   => true,
+                               'checked' => $current_config['problem_iodef']));
+      echo "</td>";
+      echo "</tr>";
+
       if ($plugin->isActivated('openvas')) {
          echo "<tr class='tab_bg_1'>";
          echo "<td style='width: 25%'>".__("Enable Openvas plugin integration", 'prelude')."</td>";
@@ -255,6 +264,8 @@ class PluginPreludeConfig extends CommonDBTM {
          Config::setConfigurationValues('plugin:Prelude', array('ticket_alerts' => true));
       if (!isset($current_config['openvas_integration']))
          Config::setConfigurationValues('plugin:Prelude', array('openvas_integration' => true));
+      if (!isset($current_config['problem_iodef']))
+         Config::setConfigurationValues('plugin:Prelude', array('problem_iodef' => true));
    }
 
    /**
