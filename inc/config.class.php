@@ -57,6 +57,7 @@ class PluginPreludeConfig extends CommonDBTM {
          return false;
       }
 
+      $prelude_status = false;
       $current_config = self::getConfig();
 
       echo "<form name='form' action=\"".Toolbox::getItemTypeFormURL('Config')."\" method='post'>";
@@ -108,13 +109,13 @@ class PluginPreludeConfig extends CommonDBTM {
                                             'style'       => 'width: 80%'));
       if ($current_config['prelude_url']) {
          $color_png = "redbutton.png";
-         $status = PluginPreludeAPIClient::preludeStatus();
-         if ($status) {
+         $prelude_status = PluginPreludeAPIClient::preludeStatus();
+         if ($prelude_status) {
             $color_png = "greenbutton.png";
          }
          echo "&nbsp;".Html::image($CFG_GLPI['url_base']."/pics/$color_png");
 
-         if ($status) {
+         if ($prelude_status) {
             echo Html::image(PRELUDE_ROOTDOC."/pics/link.png",
                                       array('class' => 'pointer',
                                             'title' => __("Go to prelude", 'prelude'),
@@ -144,7 +145,8 @@ class PluginPreludeConfig extends CommonDBTM {
       // token informations
       $token = PluginPreludeAPIClient::retrieveToken();
 
-      if (self::checkConfig(false)) {
+      if ($prelude_status
+          && self::checkConfig(false)) {
          echo "<tr class='tab_bg_1'>";
          echo "<td style='width: 15%'>".__("API Access token", 'prelude')."</td>";
          echo "<td>";
@@ -174,7 +176,8 @@ class PluginPreludeConfig extends CommonDBTM {
       echo "<br><br><br>";
       echo "</td></tr>";
 
-      if (self::checkConfig()) {
+      if ($prelude_status
+          && self::checkConfig()) {
 
          echo "<tr class='headerRow'>";
          echo "<th colspan='4'>".__('API Status')."</th>";
