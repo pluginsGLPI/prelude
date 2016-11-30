@@ -123,6 +123,22 @@ function plugin_prelude_check_prerequisites() {
       echo "This plugin requires GLPI >= 9.1";
       return false;
    }
+
+   // check php version
+   if (version_compare(PHP_VERSION, '5.5.0', 'lt')) {
+      echo "PHP 5.5.0 or higher is required";
+      return false;
+   }
+
+   if (!extension_loaded('curl')) {
+      echo "PHP-Curl extension is required";
+      return false;
+   }
+
+   if (ini_get('allow_url_fopen') != 1) {
+      echo "allow_url_fopen=1 is required in your php.ini";
+   }
+
    return true;
 }
 
