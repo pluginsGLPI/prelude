@@ -26,7 +26,7 @@
  --------------------------------------------------------------------------
  */
 global $CFG_GLPI;
-define('PLUGIN_PRELUDE_VERSION', '0.0.7');
+define('PLUGIN_PRELUDE_VERSION', '0.1.0');
 define('PRELUDE_ROOTDOC', $CFG_GLPI['root_doc']."/plugins/prelude");
 define('PRELUDE_CONFIG_URL', $CFG_GLPI['url_base'].
                              '/front/config.form.php?forcetab=PluginPreludeConfig$1');
