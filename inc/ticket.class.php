@@ -51,20 +51,18 @@ class PluginPreludeTicket extends CommonDBTM {
     *
     * @param $ticket Ticket object
     *
-    * @return Nothing (display)
+    * @return null
    **/
    static function showForTicket(Ticket $ticket) {
       global $CFG_GLPI;
 
-      $rand           = mt_rand();
-      $url            = Toolbox::getItemTypeFormURL(__CLASS__);
+      $url = Toolbox::getItemTypeFormURL(__CLASS__);
 
       if (!PluginPreludeAPIClient::globalStatus()) {
          $message = __("Prelude API is not connected, click to display configuration");
          echo "<a href='".PRELUDE_CONFIG_URL."'>";
          Html::displayTitle($CFG_GLPI['root_doc']."/pics/warning.png", $message, $message);
          echo "</a>";
-         return false;
       }
 
       echo "<a class='vsubmit' href='".Toolbox::getItemTypeFormURL('Problem').
