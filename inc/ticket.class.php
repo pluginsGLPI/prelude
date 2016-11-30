@@ -106,6 +106,12 @@ class PluginPreludeTicket extends CommonDBTM {
                                       'title' => __("delete this group of alerts", 'prelude'),
                                       'url'   => $url."?delete_link&id=$prelude_tickets_id"));
 
+               echo "<div class='togglable'>";
+               echo "<div class='prelude_criteria'>";
+               foreach($params_api['criteria'] as $criterion) {
+                  echo "<span class='prelude_criterion'>$criterion</span>";
+               }
+               echo "<div>"; // .prelude_criteria
                if (count($alerts)) {
                   echo "<table class='tab_cadre_fixehov togglable'>";
                   echo "<tr class='tab_bg_2'>";
@@ -137,6 +143,7 @@ class PluginPreludeTicket extends CommonDBTM {
                   _e("No alerts found  for theses criteria", 'prelude');
                   echo "</div>";
                }
+               echo "<div>"; // .togglable
                echo "</th></tr>";
             }
          }
