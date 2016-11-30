@@ -153,7 +153,6 @@ class PluginPreludeAPIClient extends CommonGLPI {
 
       // what we need at minima in idmef tree
       $default_paths = [
-         'alert.messageid',
          'alert.create_time',
          'alert.classification.text',
          'alert.source(0).node.address(0).address',
