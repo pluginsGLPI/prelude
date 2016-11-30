@@ -72,9 +72,9 @@ class PluginPreludeOauthProvider extends AbstractProvider {
          Html::redirect($authorizationUrl);
          exit;
 
-      // Check given state against previously stored one to mitigate CSRF attack
       } else if (empty($params['state'])
                  || ($params['state'] !== $_SESSION['oauth2state'])) {
+         // Check given state against previously stored one to mitigate CSRF attack
 
          unset($_SESSION['oauth2state']);
          exit('Invalid state');

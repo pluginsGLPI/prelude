@@ -169,7 +169,6 @@ class PluginPreludeConfig extends CommonDBTM {
          }
       }
 
-
       echo "<tr class='tab_bg_2'>";
       echo "<td colspan='4' class='center'>";
       echo "<input type='submit' name='update' class='submit' value=\""._sx('button','Save')."\">";
@@ -182,7 +181,6 @@ class PluginPreludeConfig extends CommonDBTM {
          echo "<tr class='headerRow'>";
          echo "<th colspan='4'>".__('API Status')."</th>";
          echo "</tr>";
-
 
          foreach(PluginPreludeAPIClient::status() as $status_label => $status) {
             echo "<tr class='tab_bg_1'>";

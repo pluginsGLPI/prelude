@@ -80,8 +80,6 @@ function plugin_init_prelude() {
                                                          array('PluginPreludeItem_Ticket',
                                                                'item_Ticket_AfterPurge'));
 
-
-
          Plugin::registerClass('PluginPreludeItem_Ticket', array('addtabon' => 'Ticket'));
          foreach(Ticket::getAllTypesForHelpdesk() as $itemtype => $label) {
             Plugin::registerClass('PluginPreludeItem_Ticket', array('addtabon' => $itemtype));
