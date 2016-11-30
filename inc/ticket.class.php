@@ -73,7 +73,7 @@ class PluginPreludeTicket extends CommonDBTM {
 
       $found = self::getForticket($ticket);
       if (count($found) <= 0) {
-         _e("No alerts found  for this ticket", 'prelude');
+         _e("No alerts found for this ticket", 'prelude');
          echo "&nbsp;";
          self::importAlertsForm($ticket->getID());
       } else {
@@ -113,7 +113,7 @@ class PluginPreludeTicket extends CommonDBTM {
                }
                echo "<div>"; // .prelude_criteria
                if (count($alerts)) {
-                  echo "<table class='tab_cadre_fixehov togglable'>";
+                  echo "<table class='tab_cadre_fixehov'>";
                   echo "<tr class='tab_bg_2'>";
                   echo "<th>".__("Classification", 'prelude')."</th>";
                   echo "<th>".__("Source", 'prelude')."</th>";
