@@ -8,157 +8,163 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-11-23 11:34+0100\n"
+"POT-Creation-Date: 2016-11-30 09:53+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: \n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
 
-#: setup.php:144
+#: setup.php:144 dist/src/prelude/setup.php:144
 msgid "Installed / not configured"
 msgstr ""
 
-#: inc/ticket.class.php:15 inc/apiclient.class.php:39
+#: dist/src/prelude/inc/ticket.class.php:15
+#: dist/src/prelude/inc/apiclient.class.php:39 inc/ticket.class.php:15
+#: inc/apiclient.class.php:39
 msgid "Prelude"
 msgstr ""
 
-#: inc/ticket.class.php:78
+#: dist/src/prelude/inc/ticket.class.php:78 inc/ticket.class.php:78
 msgid "No alerts found  for this ticket"
 msgstr ""
 
-#: inc/ticket.class.php:83
+#: dist/src/prelude/inc/ticket.class.php:83 inc/ticket.class.php:83
 msgid "Alert"
 msgid_plural "Alerts"
 msgstr[0] ""
 msgstr[1] ""
 
-#: inc/ticket.class.php:104
+#: dist/src/prelude/inc/ticket.class.php:104 inc/ticket.class.php:104
 msgid "View theses alerts in prelude"
 msgstr ""
 
-#: inc/ticket.class.php:109
+#: dist/src/prelude/inc/ticket.class.php:109 inc/ticket.class.php:109
 msgid "delete this group of alerts"
 msgstr ""
 
-#: inc/ticket.class.php:116
+#: dist/src/prelude/inc/ticket.class.php:115 inc/ticket.class.php:115
 msgid "Classification"
 msgstr ""
 
-#: inc/ticket.class.php:117
+#: dist/src/prelude/inc/ticket.class.php:116 inc/ticket.class.php:116
 msgid "Source"
 msgstr ""
 
-#: inc/ticket.class.php:118
+#: dist/src/prelude/inc/ticket.class.php:117 inc/ticket.class.php:117
 msgid "Target"
 msgstr ""
 
-#: inc/ticket.class.php:119
+#: dist/src/prelude/inc/ticket.class.php:118 inc/ticket.class.php:118
 msgid "Analyzer"
 msgstr ""
 
-#: inc/ticket.class.php:139
+#: dist/src/prelude/inc/ticket.class.php:140 inc/ticket.class.php:140
 msgid "No alerts found  for theses criteria"
 msgstr ""
 
-#: inc/ticket.class.php:156
+#: dist/src/prelude/inc/ticket.class.php:157 inc/ticket.class.php:157
 msgid "Import alerts from prelude"
 msgstr ""
 
-#: inc/ticket.class.php:173
+#: dist/src/prelude/inc/ticket.class.php:174 inc/ticket.class.php:174
 msgid "Prelude criteria"
 msgstr ""
 
-#: inc/ticket.class.php:180
+#: dist/src/prelude/inc/ticket.class.php:181 inc/ticket.class.php:181
 msgid "add prelude criterion"
 msgstr ""
 
-#: inc/ticket.class.php:254 inc/item_ticket.class.php:447
-#: inc/linktype.class.php:51
+#: dist/src/prelude/inc/ticket.class.php:255
+#: dist/src/prelude/inc/item_ticket.class.php:447
+#: dist/src/prelude/inc/linktype.class.php:51 inc/ticket.class.php:255
+#: inc/item_ticket.class.php:447 inc/linktype.class.php:51
 #, php-format
 msgid "Error when creating '%s' table"
 msgstr ""
 
-#: inc/item_ticket.class.php:111 inc/item_ticket.class.php:141
+#: dist/src/prelude/inc/item_ticket.class.php:111
+#: dist/src/prelude/inc/item_ticket.class.php:141 inc/item_ticket.class.php:111
+#: inc/item_ticket.class.php:141
 msgid "Type of link"
 msgstr ""
 
-#: inc/item_ticket.class.php:147
+#: dist/src/prelude/inc/item_ticket.class.php:147 inc/item_ticket.class.php:147
 msgid "OpenVAS Status"
 msgstr ""
 
-#: inc/item_ticket.class.php:453
+#: dist/src/prelude/inc/item_ticket.class.php:453 inc/item_ticket.class.php:453
 #, php-format
 msgid "Error when filling '%s' table"
 msgstr ""
 
-#: inc/apiclient.class.php:41
+#: dist/src/prelude/inc/apiclient.class.php:41 inc/apiclient.class.php:41
 msgid "Prelude access token"
 msgstr ""
 
-#: inc/apiclient.class.php:43
+#: dist/src/prelude/inc/apiclient.class.php:43 inc/apiclient.class.php:43
 msgid "Prelude alerts"
 msgstr ""
 
-#: inc/apiclient.class.php:45
+#: dist/src/prelude/inc/apiclient.class.php:45 inc/apiclient.class.php:45
 msgid "Prelude logs"
 msgstr ""
 
-#: inc/config.class.php:15
+#: dist/src/prelude/inc/config.class.php:15 inc/config.class.php:15
 msgid "Prelude configuration"
 msgstr ""
 
-#: inc/config.class.php:56
+#: dist/src/prelude/inc/config.class.php:56 inc/config.class.php:56
 msgid "Please enable the prelude plugin"
 msgstr ""
 
-#: inc/config.class.php:69
+#: dist/src/prelude/inc/config.class.php:70 inc/config.class.php:70
 msgid "Plugin's features"
 msgstr ""
 
-#: inc/config.class.php:73
+#: dist/src/prelude/inc/config.class.php:74 inc/config.class.php:74
 msgid "Replace ticket's items association"
 msgstr ""
 
-#: inc/config.class.php:79
+#: dist/src/prelude/inc/config.class.php:80 inc/config.class.php:80
 msgid "Show prelude alerts in tickets"
 msgstr ""
 
-#: inc/config.class.php:89
+#: dist/src/prelude/inc/config.class.php:90 inc/config.class.php:90
 msgid "Enable Openvas plugin integration"
 msgstr ""
 
-#: inc/config.class.php:100
+#: dist/src/prelude/inc/config.class.php:101 inc/config.class.php:101
 msgid "API Access"
 msgstr ""
 
-#: inc/config.class.php:104
+#: dist/src/prelude/inc/config.class.php:105 inc/config.class.php:105
 msgid "Prelude URL"
 msgstr ""
 
-#: inc/config.class.php:120
+#: dist/src/prelude/inc/config.class.php:121 inc/config.class.php:121
 msgid "Go to prelude"
 msgstr ""
 
-#: inc/config.class.php:129
+#: dist/src/prelude/inc/config.class.php:130 inc/config.class.php:130
 msgid "API Client ID"
 msgstr ""
 
-#: inc/config.class.php:137
+#: dist/src/prelude/inc/config.class.php:138 inc/config.class.php:138
 msgid "API Client Secret"
 msgstr ""
 
-#: inc/config.class.php:149
+#: dist/src/prelude/inc/config.class.php:151 inc/config.class.php:151
 msgid "API Access token"
 msgstr ""
 
-#: inc/config.class.php:157
+#: dist/src/prelude/inc/config.class.php:159 inc/config.class.php:159
 msgid "Connect to Prelude API"
 msgstr ""
 
-#: inc/config.class.php:164
+#: dist/src/prelude/inc/config.class.php:166 inc/config.class.php:166
 msgid "API Refresh token"
 msgstr ""
