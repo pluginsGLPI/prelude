@@ -70,7 +70,6 @@ class PluginPreludeItem_Ticket extends Item_Ticket{
       $result = $DB->query($query);
       $number = $DB->numrows($result);
 
-
       if ($canedit) {
          echo "<div class='firstbloc'>";
          echo "<form name='ticketitem_form$rand' id='ticketitem_form$rand' method='post'
@@ -106,7 +105,6 @@ class PluginPreludeItem_Ticket extends Item_Ticket{
 
          self::dropdownAllDevices("itemtype", null, 0, 1, $dev_user_id, $ticket->fields["entities_id"], array('tickets_id' => $instID));
          echo "<span id='item_ticket_selection_information'></span>";
-
 
          echo "<label>".__("Type of link", 'prelude')."</label><br>";
          PluginPreludeLinktype::dropdown();

@@ -85,7 +85,6 @@ class PluginPreludeTicket extends CommonDBTM {
          self::importAlertsForm($ticket->getID());
          echo "</h2>";
 
-
          echo "<table class='tab_cadre_fixe'>";
 
          foreach ($found as $prelude_tickets_id => $current) {
