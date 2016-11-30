@@ -59,18 +59,32 @@ class PluginPreludeAPIClient extends CommonGLPI {
     * @return boolean
     */
    static function preludeStatus() {
-      $http_client = new \GuzzleHttp\Client(['base_uri' => self::getAPIBaseUri()]);
-      $params      = [
-         'http_errors' => false,
+      $options = [
+         'timeout'         => 1.0,
+         'connect_timeout' => 1.0,
+         'verify'          => false,
+         'http_errors'     => false
       ];
-      $response    = $http_client->request('', '', $params);
-      $code        = $response->getStatusCode();
 
-      if (!in_array($code, [200, 403])) {
+      $http_client = new \GuzzleHttp\Client();
+      try {
+         $response = $http_client->request('GET',
+                                           self::getAPIBaseUri(),
+                                           $options);
+      } catch(RequestException $e) {
+         if ($e->hasResponse()) {
+            if ($e->getResponse()->getStatusCode() != 404) {
+               return true;
+            }
+         }
          return false;
       }
 
-      return true;
+      if ($response->getStatusCode() != 404) {
+         return true;
+      }
+
+      return false;
    }
 
    /**
@@ -203,6 +217,8 @@ class PluginPreludeAPIClient extends CommonGLPI {
       // declare default params and merge it with provided params
       $default_params = [
          'allow_redirects' => false,
+         'timeout'         => 5,
+         'connect_timeout' => 5,
          'query'           => [], // url parameter
          'body'            => '', // raw data to send in body
          'json'            => '', // json data to send
@@ -314,6 +330,10 @@ class PluginPreludeAPIClient extends CommonGLPI {
     * if fail, send a refresh query to get a new access token
     */
    static function checkAccessToken() {
+      if (!self::preludeStatus()) {
+         return false;
+      }
+
       if ($prev_access_token = self::retrieveToken()) {
          if ($prev_access_token->hasExpired()) {
             $provider = PluginPreludeOauthProvider::getInstance();
