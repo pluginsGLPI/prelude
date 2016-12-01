@@ -53,6 +53,8 @@ class PluginPreludeIODEF extends CommonDBChild {
 
       $url = Toolbox::getItemTypeFormURL(__CLASS__);
 
+      $iodef = self::getDefaultIodefDefinition($problem);
+
       $found = self::getForProblem($problem);
       if (count($found) <= 0) {
          _e("No iodef found for this problem", 'prelude');
@@ -93,79 +95,100 @@ class PluginPreludeIODEF extends CommonDBChild {
       echo "<div class='togglable'>";
       echo "<form class='add_iodef_form' method='POST' action='$url'>";
 
+      // base paths
+      $base_incident  = "Incident[0]";
+      $base_contact   = $base_incident."[Contact][0]";
+      $base_assesment = $base_incident."[Assessment][0]";
+      $base_impact    = $base_assesment."[Impact][0]";
+      $base_timpact   = $base_assesment."[TimeImpact][0]";
+      $base_mimpact   = $base_assesment."[MonetaryImpact][0]";
+      $base_method    = $base_incident."[Method][0]";
+      $base_ref       = $base_method."[Reference][0]";
 
       // == Contact Information block ==
       echo "<h2>".__("Contact Information", 'prelude')."</h2>";
-      $base_contact = "incident[0][contact][0]";
 
       echo "<div class='iodef_field'>";
       echo "<label>".__("Name")."</label>";
-      echo Html::input($base_contact."[contact_name]", ['required' => 'required']);
+      $field = $base_contact."[ContactName][value]";
+      echo Html::input($field, ['required' => 'required',
+                                'value'    => self::getIodefValue($iodef, $field)]);
       echo "</div>";
 
       echo "<div class='iodef_field'>";
       echo "<label>".__("Email")."</label>";
-      echo "<input type='email' name='".$base_contact."[email][0][email]'
-                   value='' required='required'>";
+      $field = $base_contact."[Email][0][value]";
+      echo "<input type='email' name='$field' required='required'
+                   value='".self::getIodefValue($iodef, $field)."'>";
       echo "</div>";
 
       echo "<div class='iodef_field'>";
       echo "<label>".__("Phone")."</label>";
-      echo "<input type='tel' name='".$base_contact."[telephone][0][telephone]'
-                   value='' required='required'>";
+      $field = $base_contact."[Telephone][0][value]";
+      echo "<input type='tel' name='$field' required='required'
+                   value='".self::getIodefValue($iodef, $field)."'>";
       echo "</div>";
 
       echo "<div class='iodef_field'>";
       echo "<label>".__("Description")."</label>";
-      echo "<textarea name='".$base_contact."[description][0]'></textarea>";
+      $field = $base_contact."[Description][0][value]";
+      echo "<textarea name='$field'>".self::getIodefValue($iodef, $field)."</textarea>";
       echo "</div>";
 
       echo "<div class='clearfix'></div>";
 
       // == Incident block ==
       echo "<h2>".__("Incident", 'prelude')."</h2>";
-      $base_incident = "incident[0]";
 
       echo "<div class='iodef_field'>";
       echo "<label>".__("Purpose", 'prelude')."</label>";
-      Dropdown::showFromArray($base_incident."[purpose]", [
+      $field = $base_incident."[_purpose]";
+      Dropdown::showFromArray($field, [
          __("traceback", 'prelude') => 'traceback',
          __("mitigation", 'prelude')=> 'mitigation',
          __("reporting", 'prelude') => 'reporting',
          __("other", 'prelude')     => 'other',
       ], [
          'display_emptychoice' => true,
+         'value'               => self::getIodefValue($iodef, $field)
       ]);
       echo "</div>";
 
       echo "<div class='iodef_field'>";
       echo "<label>".__("Incident ID", 'prelude')."</label>";
-      echo Html::input($base_incident."[incident_id][incident_id]", ['required' => 'required']);
+      $field = $base_incident."[IncidentId][value]";
+      echo Html::input($field, ['required' => 'required',
+                                'value'    => self::getIodefValue($iodef, $field)]);
       echo "</div>";
 
       echo "<div class='iodef_field full_width'>";
       echo "<label>".__("Description")."</label>";
-      echo "<textarea name='".$base_incident."[description][0]'></textarea>";
+      $field = $base_incident."[Description][0][value]";
+      echo "<textarea name='$field'>". self::getIodefValue($iodef, $field)."</textarea>";
       echo "</div>";
 
       echo "<div class='iodef_field'>";
       echo "<label>".__("Start time", 'prelude')."</label>";
-      Html::showDateTimeField($base_incident."[start_time]");
+      $field = $base_incident."[StartTime][value]";
+      Html::showDateTimeField($field, array('value' => self::getIodefValue($iodef, $field)));
       echo "</div>";
 
       echo "<div class='iodef_field'>";
       echo "<label>".__("End time", 'prelude')."</label>";
-      Html::showDateTimeField($base_incident."[end_time]");
+      $field = $base_incident."[EndTime][value]";
+      Html::showDateTimeField($field, array('value' => self::getIodefValue($iodef, $field)));
       echo "</div>";
 
       echo "<div class='iodef_field'>";
       echo "<label>".__("Detect time", 'prelude')."</label>";
-      Html::showDateTimeField($base_incident."[detect_time]");
+      $field = $base_incident."[DetectTime][value]";
+      Html::showDateTimeField($field, array('value' => self::getIodefValue($iodef, $field)));
       echo "</div>";
 
       echo "<div class='iodef_field'>";
       echo "<label>".__("Report time", 'prelude')."</label>";
-      Html::showDateTimeField($base_incident."[report_time]");
+      $field = $base_incident."[ReportTime][value]";
+      Html::showDateTimeField($field, array('value' => self::getIodefValue($iodef, $field)));
       echo "</div>";
 
       echo "<div class='clearfix'></div>";
@@ -173,33 +196,26 @@ class PluginPreludeIODEF extends CommonDBChild {
 
       // == Assessment block ==
       echo "<h2>".__("Assessment", 'prelude')."</h2>";
-      $base_assesment = "incident[0][assesment][0]";
 
       echo "<h3>".__("Impact", 'prelude')."</h3>";
-      $base_impact = $base_assesment."[impact][0]";
 
       echo "<div class='iodef_field'>";
       echo "<label>".__("Severity", 'prelude')."</label>";
-      echo "<div class='radio_group'>";
-      echo "<input type='radio' name='".$base_impact."[severity]'
-                   value='low' id='severity_low'>";
-      echo "<label class='first blue' for='severity_low'>".__("low", 'prelude')."</label>";
-      echo "<input type='radio' name='".$base_impact."[severity]'
-                   value='medium' id='severity_medium'>";
-      echo "<label class='orange' for='severity_medium'>".__("medium", 'prelude')."</label>";
-      echo "<input type='radio' name='".$base_impact."[severity]'
-                   value='high' id='severity_high'>";
-      echo "<label class='last red' for='severity_high'>".__("high", 'prelude')."</label>";
-      echo "</div>";
+      $field = $base_impact."[_severity]";
+      $value = self::getIodefValue($iodef, $field);
+      Toolbox::logDebug($field, $value);
+      self::displaySeverityField($field, self::getIodefValue($iodef, $field));
       echo "</div>";
 
       echo "<div class='iodef_field'>";
       echo "<label>".__("Completion", 'prelude')."</label>";
+      $field = $base_impact."[_completion]";
+      $value = self::getIodefValue($iodef, $field);
       echo "<div class='radio_group'>";
-      echo "<input type='radio' name='".$base_impact."[completion]'
+      echo "<input type='radio' name='$field' ".($value == 'failed' ? "checked='checked'": "") ."
                    value='failed' id='completion_failed'>";
       echo "<label  class='first red' for='completion_failed'>".__("failed", 'prelude')."</label>";
-      echo "<input type='radio' name='".$base_impact."[completion]'
+      echo "<input type='radio' name='$field' ".($value == 'success' ? "checked='checked'": "") ."
                    value='success' id='completion_success'>";
       echo "<label class='last green' for='completion_success'>".__("success", 'prelude')."</label>";
       echo "</div>";
@@ -207,7 +223,8 @@ class PluginPreludeIODEF extends CommonDBChild {
 
       echo "<div class='iodef_field'>";
       echo "<label>".__("Type", 'prelude')."</label>";
-      Dropdown::showFromArray($base_impact."[type]", [
+      $field = $base_impact."[_type]";
+      Dropdown::showFromArray($field, [
          __("dos", 'prelude')                => 'dos',
          __("file", 'prelude')               => 'file',
          __("info-leak", 'prelude')          => 'info-leak',
@@ -220,44 +237,41 @@ class PluginPreludeIODEF extends CommonDBChild {
          __("other", 'prelude')              => 'other',
       ], [
          'display_emptychoice' => true,
+         'value'               => self::getIodefValue($iodef, $field)
       ]);
       echo "</div>";
 
       echo "<div class='clearfix'></div>";
 
       echo "<h3>".__("Time impact", 'prelude')."</h3>";
-      $base_timpact = $base_assesment."[time_impact][0]";
 
       echo "<div class='iodef_field'>";
       echo "<label>".__("Severity", 'prelude')."</label>";
-      echo "<div class='radio_group'>";
-      echo "<input type='radio' name='".$base_timpact."[severity]'
-                   value='low' id='tseverity_low'>";
-      echo "<label class='first blue' for='tseverity_low'>".__("low", 'prelude')."</label>";
-      echo "<input type='radio' name='".$base_timpact."[severity]'
-                   value='medium' id='tseverity_medium'>";
-      echo "<label class='orange' for='tseverity_medium'>".__("medium", 'prelude')."</label>";
-      echo "<input type='radio' name='".$base_timpact."[severity]'
-                   value='high' id='tseverity_high'>";
-      echo "<label class='last red' for='tseverity_high'>".__("high", 'prelude')."</label>";
-      echo "</div>";
+      $field = $base_timpact."[_severity]";
+      Toolbox::logDebug($field, $value);
+      self::displaySeverityField($field, self::getIodefValue($iodef, $field));
       echo "</div>";
 
       echo "<div class='iodef_field'>";
       echo "<label>".__("Metric", 'prelude')."</label>";
-      Dropdown::showFromArray($base_timpact."[metric]", [
+      $field = $base_timpact."[_metric]";
+      Dropdown::showFromArray($field, [
          __("labor", 'prelude')    => 'labor',
          __("elapsed", 'prelude')  => 'elapsed',
          __("downtime", 'prelude') => 'downtime',
       ], [
          'display_emptychoice' => true,
+         'value'               => self::getIodefValue($iodef, $field)
       ]);
       echo "</div>";
 
       echo "<div class='iodef_field'>";
       echo "<label>".__("Duration")."</label>";
-      echo "<input class='main' type='number' name='".$base_timpact."[timeimpact][value]' value=''>";
-      Dropdown::showFromArray($base_timpact."[timeimpact][duration]", [
+      $field = $base_timpact."[value]";
+      echo "<input class='main' type='number' name='$field'
+                   value='".self::getIodefValue($iodef, $field)."'>";
+      $field = $base_timpact."[_duration]";
+      Dropdown::showFromArray($field, [
          __("second", 'prelude')  => 'second',
          __("minute", 'prelude')  => 'minute',
          __("hour", 'prelude')    => 'hour',
@@ -267,38 +281,34 @@ class PluginPreludeIODEF extends CommonDBChild {
          __("year", 'prelude')    => 'year',
       ], [
          'display_emptychoice' => true,
+         'value'               => self::getIodefValue($iodef, $field)
       ]);
       echo "</div>";
 
       echo "<div class='clearfix'></div>";
 
       echo "<h3>".__("Monetary impact", 'prelude')."</h3>";
-      $base_mimpact = $base_assesment."[monetary_impact][0]";
 
       echo "<div class='iodef_field'>";
       echo "<label>".__("Severity", 'prelude')."</label>";
-      echo "<div class='radio_group'>";
-      echo "<input type='radio' name='".$base_mimpact."[severity]'
-                   value='low' id='mseverity_low'>";
-      echo "<label class='first blue' for='mseverity_low'>".__("low", 'prelude')."</label>";
-      echo "<input type='radio' name='".$base_mimpact."[severity]'
-                   value='medium' id='mseverity_medium'>";
-      echo "<label class='orange' for='mseverity_medium'>".__("medium", 'prelude')."</label>";
-      echo "<input type='radio' name='".$base_mimpact."[severity]'
-                   value='high' id='mseverity_high'>";
-      echo "<label class='last red' for='mseverity_high'>".__("high", 'prelude')."</label>";
-      echo "</div>";
+      $field = $base_mimpact."[_severity]";
+      Toolbox::logDebug($field, $value);
+      self::displaySeverityField($field, self::getIodefValue($iodef, $field));
       echo "</div>";
 
       echo "<div class='iodef_field'>";
       echo "<label>".__("Cost")."</label>";
+      $field = $base_mimpact."[value]";
       echo "<input class='main' type='number' step='0.01'
-                   name='".$base_mimpact."[value]' value=''>";
-      Dropdown::showFromArray($base_timpact."[currency]", [
+                   name='$field' value='".self::getIodefValue($iodef, $field)."'>";
+      $field = $base_mimpact."[_currency]";
+      Dropdown::showFromArray($field, [
          __("euros", 'prelude')   => 'euros',
          __("dollars", 'prelude') => 'dollars',
          __("roubles", 'prelude') => 'roubles',
          __("pesos", 'prelude')   => 'pesos',
+      ], [
+         'value' => self::getIodefValue($iodef, $field)
       ]);
       echo "</div>";
 
@@ -307,31 +317,33 @@ class PluginPreludeIODEF extends CommonDBChild {
 
       // == Method block ==
       echo "<h2>".__("Method used", 'prelude')."</h2>";
-      $base_method = "incident[0][method][0]";
 
       echo "<div class='iodef_field full_width'>";
       echo "<label>".__("Description")."</label>";
-      echo "<textarea name='".$base_method."[description][0]'></textarea>";
+      $field = $base_method."[Description][0]";
+      echo "<textarea name='$field'>".self::getIodefValue($iodef, $field)."</textarea>";
       echo "</div>";
 
       echo "<div class='clearfix'></div>";
 
       echo "<h3>".__("Reference", 'prelude')."</h3>";
-      $base_ref = $base_method."[reference][0]";
 
       echo "<div class='iodef_field'>";
       echo "<label>".__("Name")."</label>";
-      echo Html::input($base_ref."[reference_name]");
+      $field = $base_ref."[ReferenceName]['value']";
+      echo Html::input($field, ['value' => self::getIodefValue($iodef, $field)]);
       echo "</div>";
 
       echo "<div class='iodef_field'>";
       echo "<label>".__("URL")."</label>";
-      echo "<input type='url' name='".$base_ref."[url][0]' value=''>";
+      $field = $base_ref."[URL]['value']";
+      echo "<input type='url' name='$field' value='".self::getIodefValue($iodef, $field)."'>";
       echo "</div>";
 
       echo "<div class='iodef_field full_width'>";
       echo "<label>".__("Description")."</label>";
-      echo "<textarea name='".$base_ref."[description][0]'></textarea>";
+      $field = $base_ref."[Description]['value']";
+      echo "<textarea name='$field'>".self::getIodefValue($iodef, $field)."</textarea>";
       echo "</div>";
 
 
@@ -347,27 +359,90 @@ class PluginPreludeIODEF extends CommonDBChild {
       echo "</div>"; // #add_iodef
    }
 
+   static function displaySeverityField($field, $value) {
+      echo "<div class='radio_group'>";
+      echo "<input type='radio' name='$field'
+                   ".($value == 'low' ? "checked='checked'": "") ."
+                   value='low' id='mseverity_low'>";
+      echo "<label class='first blue' for='mseverity_low'>".__("low", 'prelude')."</label>";
+      echo "<input type='radio' name='$field'
+                   ".($value == 'medium' ? "checked='checked'": "") ."
+                   value='medium' id='mseverity_medium'>";
+      echo "<label class='orange' for='mseverity_medium'>".__("medium", 'prelude')."</label>";
+      echo "<input type='radio' name='$field'
+                   ".($value == 'high' ? "checked='checked'": "") ."
+                   value='high' id='mseverity_high'>";
+      echo "<label class='last red' for='mseverity_high'>".__("high", 'prelude')."</label>";
+      echo "</div>";
+   }
+
    static function getDefaultIodefDefinition(Problem $problem) {
       $user = new User;
       $user->getFromDB($_SESSION['glpiID']);
 
-      return [
-         'incident'       => [[
-            'purpose'     => '',
-            'incident_id' => '',
-            'description' => $problem->getField('content'),
-            'start_time'  => '',
-            'end_time'    => '',
-            'detect_time' => '',
-            'report_time' => '',
-            'contact' => [[
-               'contact_name' => $_SESSION['glpirealname']." ".$_SESSION['glpifirstname'],
-               'email'        => [['email'     => $user->getDefaultEmail()]],
-               'telephone'    => [['telephone' => $user->getField('phone')]],
-               'description'  => [[$user->getField('comments')]],
+      $iodef = [
+         'Incident'       => [[
+            '_purpose'    => '',
+            'IncidentId'  => [
+               '_name' => '',
+               'value' => ''
+            ],
+            'Description' => [['value' => $problem->getField('content')]],
+            'StartTime'   => ['value' => ''],
+            'EndTime'     => ['value' => ''],
+            'DetectTime'  => ['value' => ''],
+            'ReportTime'  => ['value' => $problem->getField('date_creation')],
+            'Contact'     => [[
+               'ContactName' => ['value'  => $_SESSION['glpirealname']." ".
+                                             $_SESSION['glpifirstname']],
+               'Email'       => [['value' => $user->getDefaultEmail()]],
+               'Telephone'   => [['value' => $user->getField('phone')]],
+               'Description' => [['value' => $user->getField('comments')]],
             ]],
+            'Assessment' => [[
+               'Impact' => [[
+                  '_severity'   => '',
+                  '_completion' => '',
+                  '_type'       => '',
+               ]],
+               'TimeImpact' => [[
+                  '_severity'   => '',
+                  '_metric'     => '',
+                  '_duration'   => '',
+                  'value'       => '',
+               ]],
+               'MonetaryImpact' => [[
+                   '_severity'  => '',
+                   '_currency'  => '',
+                   'value'      => '',
+               ]]
+            ]],
+            'Method' => [[
+               'Description' => ['value' => ''],
+               'Reference' => [[
+                  'ReferenceName' => ['value' => ''],
+                  'URL'           => ['value' => ''],
+                  'Description'   => ['value' => ''],
+               ]]
+            ]]
          ]]
       ];
+
+      return $iodef;
+   }
+
+   static function getIodefValue($iodef, $path) {
+      $path = rtrim($path, ']');
+      $exploded_path = preg_split("/(\]\[|\[|\])/", $path);
+      $temp = &$iodef;
+      foreach($exploded_path as $key) {
+         if (!isset($temp[$key])) {
+            return '';
+         }
+         $temp = &$temp[$key];
+      }
+
+      return $temp;
    }
 
    static function getForProblem(Problem $problem) {
