@@ -121,7 +121,7 @@ In each provided queries in example, you need to replace some parameters (`sessi
 curl -X POST \
 -H 'session-token: ##my_session_token##' \
 -H 'Content-Type: application/json' \
--d $'{"input": [{"itemtype": "Computer", "items_id": 1, "tickets_id": 25}]' \
+-d '{"input": [{"itemtype": "Computer", "items_id": 1, "tickets_id": 25}]}' \
 'http://path/to/glpi/apirest.php/PluginPreludeItem_Ticket'
 
 < 201 OK
@@ -134,7 +134,7 @@ curl -X POST \
 curl -X PUT \
 -H 'session-token: ##my_session_token##' \
 -H 'Content-Type: application/json' \
--d $'{"input": [{"tickets_id": 20}]' \
+-d '{"input": [{"tickets_id": 20}]}' \
 'http://path/to/glpi/apirest.php/PluginPreludeItem_Ticket/1'
 
 < 200 OK
@@ -174,7 +174,7 @@ curl -X POST \
 curl -X PUT \
 -H 'session-token: ##my_session_token##' \
 -H 'Content-Type: application/json' \
--d $'{"input": {"name": "title renamed"}]' \
+-d '{"input": {"name": "title renamed"}}' \
 'http://path/to/glpi/apirest.php/PluginPreludeTicket/15'
 
 < 200 OK
