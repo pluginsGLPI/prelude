@@ -203,7 +203,6 @@ class PluginPreludeIODEF extends CommonDBChild {
       echo "<label>".__("Severity", 'prelude')."</label>";
       $field = $base_impact."[_severity]";
       $value = self::getIodefValue($iodef, $field);
-      Toolbox::logDebug($field, $value);
       self::displaySeverityField($field, self::getIodefValue($iodef, $field));
       echo "</div>";
 
@@ -248,7 +247,6 @@ class PluginPreludeIODEF extends CommonDBChild {
       echo "<div class='iodef_field'>";
       echo "<label>".__("Severity", 'prelude')."</label>";
       $field = $base_timpact."[_severity]";
-      Toolbox::logDebug($field, $value);
       self::displaySeverityField($field, self::getIodefValue($iodef, $field));
       echo "</div>";
 
@@ -292,7 +290,6 @@ class PluginPreludeIODEF extends CommonDBChild {
       echo "<div class='iodef_field'>";
       echo "<label>".__("Severity", 'prelude')."</label>";
       $field = $base_mimpact."[_severity]";
-      Toolbox::logDebug($field, $value);
       self::displaySeverityField($field, self::getIodefValue($iodef, $field));
       echo "</div>";
 
