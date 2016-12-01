@@ -357,19 +357,21 @@ class PluginPreludeIODEF extends CommonDBChild {
    }
 
    static function displaySeverityField($field, $value) {
+      $rand = mt_rand();
+
       echo "<div class='radio_group'>";
       echo "<input type='radio' name='$field'
                    ".($value == 'low' ? "checked='checked'": "") ."
-                   value='low' id='mseverity_low'>";
-      echo "<label class='first blue' for='mseverity_low'>".__("low", 'prelude')."</label>";
+                   value='low' id='mseverity_low$rand'>";
+      echo "<label class='first blue' for='mseverity_low$rand'>".__("low", 'prelude')."</label>";
       echo "<input type='radio' name='$field'
                    ".($value == 'medium' ? "checked='checked'": "") ."
-                   value='medium' id='mseverity_medium'>";
-      echo "<label class='orange' for='mseverity_medium'>".__("medium", 'prelude')."</label>";
+                   value='medium' id='mseverity_medium$rand'>";
+      echo "<label class='orange' for='mseverity_medium$rand'>".__("medium", 'prelude')."</label>";
       echo "<input type='radio' name='$field'
                    ".($value == 'high' ? "checked='checked'": "") ."
-                   value='high' id='mseverity_high'>";
-      echo "<label class='last red' for='mseverity_high'>".__("high", 'prelude')."</label>";
+                   value='high' id='mseverity_high$rand'>";
+      echo "<label class='last red' for='mseverity_high$rand'>".__("high", 'prelude')."</label>";
       echo "</div>";
    }
 
