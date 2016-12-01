@@ -29,11 +29,15 @@
    float: right;
 }
 
-input.toggle_alert {
+input.toggle_prelude {
    position:absolute;
    appearance:none;
    left:-100%;
    top:-100%;
+}
+
+input.toggle_prelude:checked ~ .togglable {
+   display: none
 }
 
 input.toggle_alert ~ label {
@@ -57,10 +61,6 @@ input.toggle_alert:checked ~ label {
    background: url(../../../pics/expand.png) no-repeat;
 }
 
-input.toggle_alert:checked ~ .togglable {
-   display: none
-}
-
 .prelude_criterion {
    display: inline-block;
    height: 25px;
@@ -72,4 +72,147 @@ input.toggle_alert:checked ~ .togglable {
    background-color: #e4e4e4;
    margin-bottom: 5px;
    margin-right: 5px;
+}
+
+#add_iodef {
+   margin-top: 20px;
+   padding-top: 10px;
+   border-top: 1px solid #DEDEDE;
+   position: relative;
+}
+
+#add_iodef form {
+   text-align: left;
+   width: 600px;
+   margin:  20px auto;
+   overflow: hidden;
+}
+
+#add_iodef h2 {
+   background: #E0E0E0;
+   text-align: center;
+   padding: 5px;
+}
+
+#add_iodef h3 {
+   border-bottom: 1px solid #E0E0E0;
+}
+
+#add_iodef .iodef_field {
+   width: 50%;
+   float: left;
+   padding: 5px 0;
+   min-height: 55px;
+}
+
+#add_iodef .iodef_field.full_width {
+   width: 100%;
+}
+
+#add_iodef .iodef_field input:not(:valid),
+#add_iodef .iodef_field textarea:not(:valid) {
+   border-right: 3px solid red;
+}
+
+#add_iodef .clearfix {
+   clear: left;
+}
+
+#add_iodef label:not([for]) {
+   display: block;
+}
+
+#add_iodef label[for] {
+   cursor: pointer;
+}
+
+#add_iodef label:not([for]) + input,
+#add_iodef label:not([for]) + textarea,
+#add_iodef label:not([for]) + .select2-container {
+   display: block;
+   width: calc(100% - 25px);
+}
+
+#add_iodef label:not([for]) + .main {
+   width: 65%;
+   display: inline-block;
+}
+
+#add_iodef label:not([for]) + .main + .select2-container {
+
+}
+
+#add_iodef label:not([for]) + input,
+#add_iodef label:not([for]) + textarea {
+   background-color: #FCFCFC;
+   color: black;
+   border: 1px solid #D3D3D3;
+   font-size: 11px;
+   border-radius: 3px;
+   padding: 0 5px;
+}
+
+#add_iodef label:not([for]) + textarea {
+   height: 100px;
+}
+
+#add_iodef .radio_group {
+   display: block;
+}
+
+#add_iodef .radio_group input[type=radio] {
+   display: none;
+}
+
+#add_iodef .radio_group label {
+   background-color: #f1f1f1;
+   border: 1px solid #D3D3D3;
+   border-right-width: 0;
+   padding:  5px;
+   box-sizing: border-box;
+   display: inline-block;
+   min-width: 65px;
+   text-align: center;
+   vertical-align: top;
+   height: 30px;
+}
+
+#add_iodef .radio_group input[type=radio]:checked + label {
+   border-style: inset;
+   border-width: 1px 1px 6px 1px;
+   font-weight: bold;
+}
+
+#add_iodef .radio_group label.blue {
+   color: #FFF;
+   background-color: #31b0d5;
+   border-color: #417B8C;
+}
+
+#add_iodef .radio_group label.orange {
+   color: #222;
+   background-color: #ec971f;
+   border-color: #92631F;
+}
+
+#add_iodef .radio_group label.red {
+   color: #FFF;
+   background-color: #d9534f;
+   border-color: #8C3935;
+}
+
+#add_iodef .radio_group label.green {
+   color: #000000;
+   background-color: #5cb85c;
+   border-color: #397639;
+}
+
+#add_iodef .radio_group label.first {
+   border-top-left-radius: 3px;
+   border-bottom-left-radius: 3px;
+}
+#add_iodef .radio_group label.last {
+   border-right-width: 1px;
+   border-top-right-radius: 3px;
+   border-bottom-right-radius: 3px;
 }

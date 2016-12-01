@@ -92,7 +92,7 @@ class PluginPreludeTicket extends CommonDBTM {
 
                echo "<tr><th colspan='2'>";
                echo "<input type='checkbox' name='toggle'
-                            class='toggle_alert' id='toggle_$prelude_tickets_id' />";
+                            class='toggle_prelude toggle_alert' id='toggle_$prelude_tickets_id' />";
                echo "<label for='toggle_$prelude_tickets_id'>".$current['name'].
                     "&nbsp; <sup>$nb<sup></label>";
                if (!empty($current['url'])) {
