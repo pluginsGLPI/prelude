@@ -6,6 +6,7 @@
     },
     "require": {
         "league/oauth2-client": "^1.4",
-        "guzzlehttp/guzzle": "^6.2"
+        "guzzlehttp/guzzle": "^6.2",
+        "marknl/iodef": "^1.0"
     }
 }

@@ -1,7 +1,7 @@
 <?php
 include ('../../../inc/includes.php');
 
-Session ::checkLoginUser();
+Session::checkLoginUser();
 
 $item = new PluginPreludeIODEF();
 

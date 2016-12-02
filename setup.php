@@ -164,3 +164,25 @@ function plugin_prelude_check_config($verbose=false) {
    }
    return false;
 }
+
+
+if (!function_exists("stripcslashes_deep")) {
+   /**
+    * Strip slash  for variable & array
+    *
+    * @param $value     array or string: item to stripslashes (array or string)
+    *
+    * @return stripslashes item
+   **/
+   function stripcslashes_deep($value) {
+
+      $value = ((array) $value === $value)
+                  ? array_map('stripcslashes_deep', $value)
+                  : (is_null($value)
+                        ? NULL : (is_resource($value)
+                                    ? $value :stripcslashes($value)));
+
+      return $value;
+   }
+
+}

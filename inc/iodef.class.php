@@ -59,6 +59,14 @@ class PluginPreludeIODEF extends CommonDBChild {
       if (count($found) <= 0) {
          _e("No iodef found for this problem", 'prelude');
       } else {
+
+         // find last generated iodef
+         $last_iodef = end($found);
+         $iodef['iodef'] = array_replace_recursive($iodef['iodef'],
+                                                   json_decode($last_iodef['json_iodef'], true));
+
+
+         // display list of iodef
          echo "<h2>";
          _e("Previously genereted IODEF", 'prelude');
          echo "</h2>";
@@ -74,12 +82,14 @@ class PluginPreludeIODEF extends CommonDBChild {
          foreach ($found as $id => $current) {
 
             echo "<tr class='tab_bg_1'>";
-            echo "<td>".$current['creation_date']."</td>";
+            echo "<td>".$current['date_creation']."</td>";
             echo "<td>".$current['documents_id']."</td>";
             echo "<td></td>";
             echo "<td></td>";
             echo "</tr>";
          }
+
+         echo "</table>";
       }
 
       echo "<div id='add_iodef'>";
@@ -96,14 +106,14 @@ class PluginPreludeIODEF extends CommonDBChild {
       echo "<form class='add_iodef_form' method='POST' action='$url'>";
 
       // base paths
-      $base_incident  = "Incident[0]";
-      $base_contact   = $base_incident."[Contact][0]";
-      $base_assesment = $base_incident."[Assessment][0]";
-      $base_impact    = $base_assesment."[Impact][0]";
-      $base_timpact   = $base_assesment."[TimeImpact][0]";
-      $base_mimpact   = $base_assesment."[MonetaryImpact][0]";
-      $base_method    = $base_incident."[Method][0]";
-      $base_ref       = $base_method."[Reference][0]";
+      $base_incident  = "iodef[Incident][0]";
+      $base_contact   = $base_incident  ."[Contact][0]";
+      $base_assesment = $base_incident  ."[Assessment][0]";
+      $base_impact    = $base_assesment ."[Impact][0]";
+      $base_timpact   = $base_assesment ."[TimeImpact][0]";
+      $base_mimpact   = $base_assesment ."[MonetaryImpact][0]";
+      $base_method    = $base_incident  ."[Method][0]";
+      $base_ref       = $base_method    ."[Reference][0]";
 
       // == Contact Information block ==
       echo "<h2>".__("Contact Information", 'prelude')."</h2>";
@@ -140,7 +150,7 @@ class PluginPreludeIODEF extends CommonDBChild {
       // == Incident block ==
       echo "<h2>".__("Incident", 'prelude')."</h2>";
 
-      echo "<div class='iodef_field'>";
+      echo "<div class='iodef_field full_width'>";
       echo "<label>".__("Purpose", 'prelude')."</label>";
       $field = $base_incident."[_purpose]";
       Dropdown::showFromArray($field, [
@@ -157,6 +167,13 @@ class PluginPreludeIODEF extends CommonDBChild {
       echo "<div class='iodef_field'>";
       echo "<label>".__("Incident ID", 'prelude')."</label>";
       $field = $base_incident."[IncidentId][value]";
+      echo Html::input($field, ['required' => 'required',
+                                'value'    => self::getIodefValue($iodef, $field)]);
+      echo "</div>";
+
+      echo "<div class='iodef_field'>";
+      echo "<label>".__("Incident name", 'prelude')."</label>";
+      $field = $base_incident."[IncidentId][_name]";
       echo Html::input($field, ['required' => 'required',
                                 'value'    => self::getIodefValue($iodef, $field)]);
       echo "</div>";
@@ -317,7 +334,7 @@ class PluginPreludeIODEF extends CommonDBChild {
 
       echo "<div class='iodef_field full_width'>";
       echo "<label>".__("Description")."</label>";
-      $field = $base_method."[Description][0]";
+      $field = $base_method."[Description][value]";
       echo "<textarea name='$field'>".self::getIodefValue($iodef, $field)."</textarea>";
       echo "</div>";
 
@@ -327,22 +344,23 @@ class PluginPreludeIODEF extends CommonDBChild {
 
       echo "<div class='iodef_field'>";
       echo "<label>".__("Name")."</label>";
-      $field = $base_ref."[ReferenceName]['value']";
+      $field = $base_ref."[ReferenceName][value]";
       echo Html::input($field, ['value' => self::getIodefValue($iodef, $field)]);
       echo "</div>";
 
       echo "<div class='iodef_field'>";
       echo "<label>".__("URL")."</label>";
-      $field = $base_ref."[URL]['value']";
-      echo "<input type='url' name='$field' value='".self::getIodefValue($iodef, $field)."'>";
+      $field = $base_ref."[URL][value]";
+      echo "<input type='url' name='$field'
+                   pattern='^(([^:/?#]+):)?(//([^/?#]*))?([^?#]*)(\?([^#]*))?(#(.*))?'
+                   value='".self::getIodefValue($iodef, $field)."'>";
       echo "</div>";
 
       echo "<div class='iodef_field full_width'>";
       echo "<label>".__("Description")."</label>";
-      $field = $base_ref."[Description]['value']";
+      $field = $base_ref."[Description][value]";
       echo "<textarea name='$field'>".self::getIodefValue($iodef, $field)."</textarea>";
       echo "</div>";
-
 
       echo "<div class='clearfix'></div>";
 
@@ -350,6 +368,7 @@ class PluginPreludeIODEF extends CommonDBChild {
       // == EventData block ==
       echo "<h2>".__("EventData", 'prelude')."</h2>";
 
+      echo Html::hidden(self::$items_id, array('value' => $problem->getID()));
       echo Html::submit(__('add'), array('name' => 'add'));
       Html::closeForm();
       echo "</div>"; // .togglable
@@ -379,7 +398,7 @@ class PluginPreludeIODEF extends CommonDBChild {
       $user = new User;
       $user->getFromDB($_SESSION['glpiID']);
 
-      $iodef = [
+      $iodef = ['iodef' => [
          'Incident'       => [[
             '_purpose'    => '',
             'IncidentId'  => [
@@ -392,6 +411,7 @@ class PluginPreludeIODEF extends CommonDBChild {
             'DetectTime'  => ['value' => ''],
             'ReportTime'  => ['value' => $problem->getField('date_creation')],
             'Contact'     => [[
+               '_role'       => 'creator',
                'ContactName' => ['value'  => $_SESSION['glpirealname']." ".
                                              $_SESSION['glpifirstname']],
                'Email'       => [['value' => $user->getDefaultEmail()]],
@@ -425,7 +445,7 @@ class PluginPreludeIODEF extends CommonDBChild {
                ]]
             ]]
          ]]
-      ];
+      ]];
 
       return $iodef;
    }
@@ -446,7 +466,207 @@ class PluginPreludeIODEF extends CommonDBChild {
 
    static function getForProblem(Problem $problem) {
       $iodef = new self;
-      return $iodef->find("`".self::$items_id."` = ".$problem->getID());
+      return $iodef->find("`".self::$items_id."` = ".$problem->getID(), 'id ASC');
+   }
+
+   /**
+    * {@inheritDoc}
+    */
+   function prepareInputForAdd($input) {
+      global $DB;
+
+      $input['iodef'] = Toolbox::unclean_cross_side_scripting_deep($input['iodef']);
+      $input['iodef'] = stripcslashes_deep($input['iodef']);
+
+      $input['json_iodef'] = $DB->escape(json_encode($input['iodef']));
+
+      return $input;
+   }
+
+   /**
+    * {@inheritDoc}
+    */
+   function post_purgeItem() {
+      $document = new Document;
+      $document->delete(array('id' => $this->getField('documents_id')), true);
+   }
+
+   /**
+    * {@inheritDoc}
+    */
+   function post_addItem() {
+      if ($documents_id = $this->generateDocument()) {
+         $docItem = new Document_Item();
+         $docItemId = $docItem->add(array(
+               'documents_id' => $documents_id,
+               'itemtype'     => 'Problem',
+               'items_id'     => $this->getField('problems_id'),
+         ));
+      }
+   }
+
+   /**
+    * Generate a IODEF XML document into GLPI from the submitted iodef form
+    * @return integer the document id
+    */
+   function generateDocument() {
+      if ($this->isNewItem()) {
+         return false;
+      }
+
+      // retrieve problem
+      $problem = new Problem;
+      $problem->getFromDB($this->getField('problems_id'));
+
+      // construct shortcut
+      $iodef       = array_replace_recursive(self::getDefaultIodefDefinition($problem)['iodef'],
+                                             $this->input['iodef']);
+      $_incident   = $iodef      ['Incident'][0];
+      $_incidentid = $_incident  ['IncidentId'];
+      $_contact    = $_incident  ['Contact'][0];
+      $_assesment  = $_incident  ['Assessment'][0];
+      $_impact     = $_assesment ['Impact'][0];
+      $_timpact    = $_assesment ['TimeImpact'][0];
+      $_mimpact    = $_assesment ['MonetaryImpact'][0];
+      $_method     = $_incident  ['Method'][0];
+      $_reference  = $_method    ['Reference'][0];
+      $_referencen = $_reference ['ReferenceName'];
+
+      // declare IODEF Classes
+      $Document       = new Marknl\Iodef\Elements\IODEFDocument();
+      $Incident       = new Marknl\Iodef\Elements\Incident();
+      $IncidentID     = new Marknl\Iodef\Elements\IncidentID();
+      $StartTime      = new Marknl\Iodef\Elements\StartTime();
+      $EndTime        = new Marknl\Iodef\Elements\EndTime();
+      $DetectTime     = new Marknl\Iodef\Elements\DetectTime();
+      $ReportTime     = new Marknl\Iodef\Elements\ReportTime();
+      $Description    = new Marknl\Iodef\Elements\Description();
+      $Contact        = new Marknl\Iodef\Elements\Contact();
+      $ContactName    = new Marknl\Iodef\Elements\ContactName();
+      $Email          = new Marknl\Iodef\Elements\Email();
+      $Telephone      = new Marknl\Iodef\Elements\Telephone();
+      $Assessment     = new Marknl\Iodef\Elements\Assessment();
+      $Impact         = new Marknl\Iodef\Elements\Impact();
+      $TimeImpact     = new Marknl\Iodef\Elements\TimeImpact();
+      $MonetaryImpact = new Marknl\Iodef\Elements\MonetaryImpact();
+      $Reference      = new Marknl\Iodef\Elements\Reference();
+      $ReferenceName  = new Marknl\Iodef\Elements\ReferenceName();
+      $URL            = new Marknl\Iodef\Elements\URL();
+      $Method         = new Marknl\Iodef\Elements\Method();
+
+      // fill Incident
+      $Incident->setAttributes(['purpose' => $_incident['_purpose']]);
+
+      // add IncidentID to Incident
+      if (isset($_incidentid['_name'])) {
+         $IncidentID->setAttributes(['name' => $_incidentid['_name']]);
+      }
+      $IncidentID->value($_incidentid['value']);
+      $Incident->addChild($IncidentID);
+
+      // add *Times to Incident
+      if (!empty($_incident['StartTime']['value'])) {
+         $StartTime->value(date('c', strtotime($_incident['StartTime']['value'])));
+         $Incident->addChild($StartTime);
+      }
+      if (!empty($_incident['EndTime']['value'])) {
+         $EndTime->value(date('c', strtotime($_incident['EndTime']['value'])));
+         $Incident->addChild($EndTime);
+      }
+      if (!empty($_incident['DetectTime']['value'])) {
+         $DetectTime->value(date('c', strtotime($_incident['DetectTime']['value'])));
+         $Incident->addChild($DetectTime);
+      }
+      if (!empty($_incident['ReportTime']['value'])) {
+         $ReportTime->value(date('c', strtotime($_incident['ReportTime']['value'])));
+         $Incident->addChild($ReportTime);
+      }
+
+      // add Description to Incident
+      if (!empty($_incident['Description'][0]['value'])) {
+         $Description->value($_incident['Description'][0]['value']);
+         $Incident->addChild($Description);
+      }
+
+      // add Contact to Incident
+      Toolbox::logDebug($_contact);
+      $Contact->setAttributes(['type' => 'person']);
+      $Contact->setAttributes(['role' => $_contact['_role']]);
+      $ContactName->value($_contact['ContactName']['value']);
+      $Contact->addChild($ContactName);
+      $Email->value($_contact['Email'][0]['value']);
+      $Contact->addChild($Email);
+      $Telephone->value($_contact['Telephone'][0]['value']);
+      $Contact->addChild($Telephone);
+      if (!empty($_contact['Description'][0]['value'])) {
+         $Description->value($_contact['Description'][0]['value']);
+         $Contact->addChild($Description);
+      }
+      $Incident->addChild($Contact);
+
+      // add Assesment to Incident
+      $Impact->setAttributes(['type'       => $_impact['_type'],
+                              'severity'   => $_impact['_severity'],
+                              'completion' => $_impact['_completion']]);
+      $Assessment->addChild($Impact);
+      $TimeImpact->setAttributes(['severity' => $_timpact['_severity'],
+                                  'metric'   => $_timpact['_metric'],
+                                  'duration' => $_timpact['_duration']]);
+      $TimeImpact->value($_timpact['value']);
+      $Assessment->addChild($TimeImpact);
+      $MonetaryImpact->setAttributes(['severity' => $_mimpact['_severity'],
+                                      'currency' => $_mimpact['_currency']]);
+      $MonetaryImpact->value($_mimpact['value']);
+      $Assessment->addChild($MonetaryImpact);
+      $Incident->addChild($Assessment);
+
+      // Add Method to Incident
+      $ReferenceName->value($_referencen['value']);
+      $Reference->addChild($ReferenceName);
+      $URL->value($_reference['URL']['value']);
+      $Reference->addChild($URL);
+      if (!empty($_reference['Description']['value'])) {
+         $Description->value($_reference['Description']['value']);
+         $Reference->addChild($Description);
+      }
+      $Method->addChild($Reference);
+      if (!empty($_method['Description']['value'])) {
+         $Description->value($_method['Description']['value']);
+         $Method->addChild($Description);
+      }
+      $Incident->addChild($Method);
+
+
+      // Add Incident to Document
+      $Document->addChild($Incident);
+
+      // write iodef xml
+      $writer = new Marknl\Iodef\Writer();
+      $writer->write([['name'      => 'IODEF-Document',
+                      'attributes' => $Document->getAttributes(),
+                      'value'      => $Document,
+                    ]]);
+      $xml_content = $writer->outputMemory();
+      $xml_name    = "iodef_".$_incidentid['value'].".xml";
+      $xml_file    = GLPI_DOC_DIR."/_uploads/".$xml_name;
+      $fd          = fopen($xml_file, 'a');
+      fwrite ($fd, $xml_content);
+      fclose($fd);
+
+      // add xml to Glpi Documents
+      $gdoc    = new Document;
+      $problem = new Problem;
+      $problem->getFromDB($this->getField('problems_id'));
+      $input   = ['name'                  => 'iodef_'.$_incidentid['value'],
+                  'upload_file'           => $xml_name,
+                  'add'                   => __('Add'),
+                  'entities_id'           => $problem->getEntityID(),
+                  'is_recursive'          => $problem->isRecursive(),
+                  'link'                  => "",
+                  'documentcategories_id' => 0];
+      $documents_id = $gdoc->add($input);
+
+      return $documents_id;
    }
 
    /**
@@ -468,7 +688,7 @@ class PluginPreludeIODEF extends CommonDBChild {
                `problems_id`   INT(11) NOT NULL DEFAULT '0',
                `documents_id`  INT(11) NOT NULL DEFAULT '0',
                `date_creation` datetime DEFAULT NULL,
-               `json_content`  TEXT COLLATE utf8_unicode_ci,
+               `json_iodef`   TEXT COLLATE utf8_unicode_ci,
                PRIMARY KEY (`id`),
                KEY `problems_id` (`problems_id`),
                KEY `documents_id` (`documents_id`)
