@@ -51,11 +51,11 @@ class PluginPreludeIODEF extends CommonDBChild {
    static function showForProblem(Problem $problem) {
       global $CFG_GLPI;
 
-      $url = Toolbox::getItemTypeFormURL(__CLASS__);
+      $url      = Toolbox::getItemTypeFormURL(__CLASS__);
+      $document = new Document;
+      $iodef    = self::getDefaultIodefDefinition($problem);
+      $found    = self::getForProblem($problem);
 
-      $iodef = self::getDefaultIodefDefinition($problem);
-
-      $found = self::getForProblem($problem);
       if (count($found) <= 0) {
          _e("No iodef found for this problem", 'prelude');
       } else {
@@ -75,17 +75,35 @@ class PluginPreludeIODEF extends CommonDBChild {
          echo "<tr class='tab_bg_2'>";
          echo "<th>".__("Creation date")."</th>";
          echo "<th>".__("Document")."</th>";
-         echo "<th>".__("Titre")."</th>";
+         echo "<th>".__("Incident ID", 'prelude')."</th>";
          echo "<th></th>";
          echo "</tr>";
 
          foreach ($found as $id => $current) {
 
+            $current_iodef = json_decode($current['json_iodef'], true);
+
             echo "<tr class='tab_bg_1'>";
             echo "<td>".$current['date_creation']."</td>";
-            echo "<td>".$current['documents_id']."</td>";
-            echo "<td></td>";
-            echo "<td></td>";
+            echo "<td>";
+            if ($current['documents_id']) {
+               $document->getFromDB($current['documents_id']);
+               echo $document->getDownloadLink();
+            }
+            echo "</td>";
+            echo "<td>".$current_iodef['Incident'][0]['IncidentId']['value']."</td>";
+            echo "<td>";
+            echo "<a href='$url?email&id=$id'>";
+            echo Html::image(PRELUDE_ROOTDOC."/pics/email.png",
+                             ['class' => 'pointer',
+                              'title' => __("Send IODEF By Email", 'prelude')]);
+            echo "</a>";
+            echo "<a href='$url?purge&id=$id'>";
+            echo Html::image(PRELUDE_ROOTDOC."/pics/delete.png",
+                             ['class' => 'pointer',
+                              'title' => __("Delete IODEF", 'prelude')]);
+            echo "</a>";
+            echo "</td>";
             echo "</tr>";
          }
 
@@ -394,6 +412,71 @@ class PluginPreludeIODEF extends CommonDBChild {
       echo "</div>";
    }
 
+   function showEmailForm($params) {
+      $url = Toolbox::getItemTypeFormURL(__CLASS__);
+
+      echo "<div class='center' id='send_iodef_email'>";
+      echo "<form method='POST' action='$url'>";
+
+      echo "<h2>".__("Send an IODEF by email", 'prelude')."</h2>";
+
+      echo "<div class='iodef_field full_width'>";
+      echo "<label>".__("Document")."</label>";
+      $document = new Document;
+      $document->getFromDB($this->getField('documents_id'));
+      echo $document->getDownloadLink();
+      echo "</div>";
+
+      echo "<div class='iodef_field full_width'>";
+      echo "<label>".__("To", 'prelude')."</label>";
+      echo Html::input('to', ['required' => 'required']);
+      echo "</div>";
+
+      echo "<div class='iodef_field full_width'>";
+      echo "<label>".__("Cc", 'prelude')."</label>";
+      echo Html::input('cc');
+      echo "</div>";
+
+      echo "<div class='iodef_field full_width'>";
+      echo "<label>".__("Subject", 'prelude')."</label>";
+      echo Html::input('subject');
+      echo "</div>";
+
+      echo "<div class='iodef_field full_width'>";
+      echo "<label>".__("Content", 'prelude')."</label>";
+      echo "<textarea name='content'></textarea>";
+      echo "</div>";
+
+      echo Html::hidden('id', ['value' => $this->getID()]);
+      echo Html::submit(__("Send email", 'prelude'), array('name' => 'send_email'));
+      echo "</form>";
+      echo "</div>";
+   }
+
+   function sendEmail($params) {
+      $mail = new GLPIMailer;
+      $user = new User;
+      $doc  = new Document;
+
+      $user->getFromDB($_SESSION['glpiID']);
+      $doc->getFromDB($this->getField('documents_id'));
+
+      $mail->setFrom($user->getDefaultEmail());
+      $mail->addAddress(filter_var($params['to'], FILTER_SANITIZE_EMAIL));
+      $mail->addCC(filter_var($params['cc'], FILTER_SANITIZE_EMAIL));
+
+      $mail->addAttachment(GLPI_DOC_DIR.$doc->getField('filepath'));
+
+      $mail->Subject = filter_var($params['subject'], FILTER_SANITIZE_STRING);
+      $mail->Body    = filter_var($params['content'], FILTER_SANITIZE_STRING);
+
+      if ($mail->send()) {
+         Session::addMessageAfterRedirect(__("mail sent", 'prelude'));
+      } else {
+         Session::addMessageAfterRedirect(__("Fail to send mail", 'prelude'));
+      }
+   }
+
    static function getDefaultIodefDefinition(Problem $problem) {
       $user = new User;
       $user->getFromDB($_SESSION['glpiID']);
@@ -502,6 +585,9 @@ class PluginPreludeIODEF extends CommonDBChild {
                'itemtype'     => 'Problem',
                'items_id'     => $this->getField('problems_id'),
          ));
+
+         $this->update(['id'           => $this->getID(),
+                        'documents_id' => $documents_id]);
       }
    }
 
@@ -589,7 +675,6 @@ class PluginPreludeIODEF extends CommonDBChild {
       }
 
       // add Contact to Incident
-      Toolbox::logDebug($_contact);
       $Contact->setAttributes(['type' => 'person']);
       $Contact->setAttributes(['role' => $_contact['_role']]);
       $ContactName->value($_contact['ContactName']['value']);
