@@ -90,6 +90,10 @@ function plugin_init_prelude() {
       // add a new tab in problems to generate iodef
       if ($prelude_config['problem_iodef']) {
          Plugin::registerClass('PluginPreludeIODEF', ['addtabon' => 'Problem']);
+
+         // when a ticket added to a problem, copy its alerts
+         $PLUGIN_HOOKS['item_add']['prelude'] = ['Problem_Ticket' => ['PluginPreludeAlert',
+                                                                      'ticketAddedToProblem']];
       }
    }
 }

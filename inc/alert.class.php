@@ -238,6 +238,25 @@ class PluginPreludeAlert extends CommonDBTM {
       return $this->add($params);
    }
 
+
+   /**
+    * Copy all alerts from added ticket to its parent problem
+    * @param  Problem_Ticket $prob_tic the link instance between ticket and problem
+    */
+   static function ticketAddedToProblem(Problem_Ticket $prob_tic) {
+      $alert = new self;
+      $found_alerts = $alert->find("`itemtype` = 'Ticket'
+                                    AND `items_id` = ".$prob_tic->getField('tickets_id'));
+
+      foreach($found_alerts as $ticket_alert) {
+         $alert->add(['itemtype'   => 'Problem',
+                      'items_id'   => $prob_tic->getField('problems_id'),
+                      'name'       => $ticket_alert['name'],
+                      'url'        => $ticket_alert['url'],
+                      'params_api' => addslashes($ticket_alert['params_api'])]);
+      }
+   }
+
    /**
     * Database table installation for the item type
     *
