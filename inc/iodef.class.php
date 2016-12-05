@@ -386,6 +386,9 @@ class PluginPreludeIODEF extends CommonDBChild {
       // == EventData block ==
       echo "<h2>".__("EventData", 'prelude')."</h2>";
 
+      PluginPreludeAlert::showForItem($problem, ['show_form' => false,
+                                                 'toggled'   => true,]);
+
       echo Html::hidden(self::$items_id, array('value' => $problem->getID()));
       echo Html::submit(__('add'), array('name' => 'add'));
       Html::closeForm();
@@ -639,6 +642,11 @@ class PluginPreludeIODEF extends CommonDBChild {
       $ReferenceName  = new Marknl\Iodef\Elements\ReferenceName();
       $URL            = new Marknl\Iodef\Elements\URL();
       $Method         = new Marknl\Iodef\Elements\Method();
+      $EventData      = new Marknl\Iodef\Elements\EventData();
+      $Flow           = new Marknl\Iodef\Elements\Flow();
+      $System         = new \Marknl\Iodef\Elements\System();
+      $Node           = new \Marknl\Iodef\Elements\Node();
+      $Address        = new Marknl\Iodef\Elements\Address();
 
       // fill Incident
       $Incident->setAttributes(['purpose' => $_incident['_purpose']]);
@@ -721,6 +729,21 @@ class PluginPreludeIODEF extends CommonDBChild {
       }
       $Incident->addChild($Method);
 
+      // add EventData (alerts) to Incident
+      $alerts_params = PluginPreludeAlert::getForItem($problem);
+      foreach($alerts_params as $current_alert_param) {
+         $alert = PluginPreludeAPIClient::getAlerts($current_alert_param['params_api']);
+
+         $Address->setAttributes(['category' => 'ipv4-addr']);
+         $Address->value('192.0.2.3');
+         $Node->addChild($Address);
+
+         $DateTime->value($alert['alert.create_time']);
+         $Node->addChild($DateTime);
+
+         $System->addChild($Node);
+         $System->setAttributes(['category' => 'source']);
+      }
 
       // Add Incident to Document
       $Document->addChild($Incident);

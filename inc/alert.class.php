@@ -50,15 +50,24 @@ class PluginPreludeAlert extends CommonDBTM {
       return $self->find("`itemtype` = '$itemtype' AND `items_id` = $items_id");
    }
 
+
    /**
     * Print the HTML array for Items linked to a ticket
     *
-    * @param $ticket Ticket object
-    *
-    * @return null
-   **/
-   static function showForItem(CommonDBTM $item) {
+    * @param CommonDBTM  $item    the object where ot diplay alerts
+    * @param  array      $options with theses keys:
+    *                             - show_form boolean (default true)
+    *                             - toggle boolean (default false)
+    */
+   static function showForItem(CommonDBTM $item, $options = []) {
       global $CFG_GLPI;
+
+      $default_options = [
+         'show_form' => true,
+         'toggled'   => false,
+      ];
+      $options = array_merge($default_options, $options);
+
 
       $url = Toolbox::getItemTypeFormURL(__CLASS__);
 
@@ -69,7 +78,8 @@ class PluginPreludeAlert extends CommonDBTM {
          echo "</a>";
       }
 
-      if ($item instanceof Ticket) {
+      if ($options['show_form']
+          && $item instanceof Ticket) {
          echo "<a class='vsubmit' href='".Toolbox::getItemTypeFormURL('Problem').
                                        "?tickets_id=".$item->getID()."'>";
          _e('Create a problem from this ticket');
@@ -81,12 +91,16 @@ class PluginPreludeAlert extends CommonDBTM {
       if (count($found) <= 0) {
          _e("No alerts found for this item", 'prelude');
          echo "&nbsp;";
-         self::importAlertsForm($item->getID(), $item->getType());
+         if ($options['show_form']) {
+            self::importAlertsForm($item->getID(), $item->getType());
+         }
       } else {
          echo "<h2>";
          echo _n('Alert', 'Alerts', 2, 'prelude');
          echo "&nbsp;";
-         self::importAlertsForm($item->getID(), $item->getType());
+         if ($options['show_form']) {
+            self::importAlertsForm($item->getID(), $item->getType());
+         }
          echo "</h2>";
 
          echo "<table class='tab_cadre_fixe'>";
@@ -98,19 +112,23 @@ class PluginPreludeAlert extends CommonDBTM {
 
                echo "<tr><th colspan='2'>";
                echo "<input type='checkbox' name='toggle'
+                            ".($options['toggled'] ? "checked='checked'":"")."
                             class='toggle_prelude toggle_alert' id='toggle_$alerts_id' />";
                echo "<label for='toggle_$alerts_id'>".$current['name'].
                     "&nbsp; <sup>$nb<sup></label>";
-               if (!empty($current['url'])) {
-                  echo Html::image(PRELUDE_ROOTDOC."/pics/link.png",
-                                   array('class' => 'pointer',
-                                         'title' => __("View theses alerts in prelude", 'prelude'),
-                                         'url'   => $current['url']));
+
+               if ($options['show_form']) {
+                  if (!empty($current['url'])) {
+                     echo Html::image(PRELUDE_ROOTDOC."/pics/link.png",
+                                      array('class' => 'pointer',
+                                            'title' => __("View theses alerts in prelude", 'prelude'),
+                                            'url'   => $current['url']));
+                  }
+                  echo Html::image(PRELUDE_ROOTDOC."/pics/delete.png",
+                                   array('class' => 'pointer prelude-delete-bloc',
+                                         'title' => __("delete this group of alerts", 'prelude'),
+                                         'url'   => $url."?delete_link&id=$alerts_id"));
                }
-               echo Html::image(PRELUDE_ROOTDOC."/pics/delete.png",
-                                array('class' => 'pointer prelude-delete-bloc',
-                                      'title' => __("delete this group of alerts", 'prelude'),
-                                      'url'   => $url."?delete_link&id=$alerts_id"));
 
                echo "<div class='togglable'>";
                echo "<div class='prelude_criteria'>";
