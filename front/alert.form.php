@@ -3,7 +3,7 @@ include ('../../../inc/includes.php');
 
 Session ::checkLoginUser();
 
-$item = new PluginPreludeTicket();
+$item = new PluginPreludeAlert();
 
 if (isset($_REQUEST["delete_link"])) {
    $item->delete($_REQUEST);
