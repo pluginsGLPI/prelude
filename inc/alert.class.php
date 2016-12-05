@@ -136,7 +136,7 @@ class PluginPreludeAlert extends CommonDBTM {
                   echo "<span class='prelude_criterion'>$criterion</span>";
                }
                echo "<div>"; // .prelude_criteria
-               if (count($alerts)) {
+               if (count($alerts['response'])) {
                   echo "<table class='tab_cadre_fixehov'>";
                   echo "<tr class='tab_bg_2'>";
                   echo "<th>".__("Classification", 'prelude')."</th>";
@@ -147,7 +147,7 @@ class PluginPreludeAlert extends CommonDBTM {
                   // echo "<th></th>";
                   echo "</tr>";
 
-                  foreach($alerts as $messageid => $alert) {
+                  foreach($alerts['response'] as $messageid => $alert) {
                      $create_time = Html::convDateTime(date("Y-m-d H:i",
                                                             strtotime($alert['alert.create_time'])));
 

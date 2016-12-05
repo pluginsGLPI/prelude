@@ -176,7 +176,21 @@ class PluginPreludeAPIClient extends CommonGLPI {
          ]
       ];
 
-      // send the query to prelude
+      // first, send the query with count path and criteria
+      $query_options_count = [
+         'query' => [
+            'action'  => 'retrieve',
+            'request' => json_encode(
+                           array_merge($params,
+                                       ['path' => [
+                                          'count(alert.messageid)'
+                                       ]])),
+         ]
+      ];
+      $count_json = self::sendHttpRequest('GET', '', $query_options_count);
+      $count      = json_decode($count_json, true)['response'][0][0];
+
+      // send the full query to prelude
       $alerts_json = self::sendHttpRequest('GET', '', $query_options);
       $alerts      = json_decode($alerts_json, true);
 
@@ -187,7 +201,7 @@ class PluginPreludeAPIClient extends CommonGLPI {
          }
       }
 
-      return $alerts['response'];
+      return $alerts;
    }
 
    /**

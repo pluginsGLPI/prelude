@@ -732,17 +732,20 @@ class PluginPreludeIODEF extends CommonDBChild {
       // add EventData (alerts) to Incident
       $alerts_params = PluginPreludeAlert::getForItem($problem);
       foreach($alerts_params as $current_alert_param) {
-         $alert = PluginPreludeAPIClient::getAlerts($current_alert_param['params_api']);
+         $alerts = PluginPreludeAPIClient::getAlerts($current_alert_param['params_api']);
 
-         $Address->setAttributes(['category' => 'ipv4-addr']);
-         $Address->value('192.0.2.3');
-         $Node->addChild($Address);
+         foreach($alerts['response'] as $alert) {
 
-         $DateTime->value($alert['alert.create_time']);
-         $Node->addChild($DateTime);
+            $Address->setAttributes(['category' => 'ipv4-addr']);
+            $Address->value('192.0.2.3');
+            $Node->addChild($Address);
 
-         $System->addChild($Node);
-         $System->setAttributes(['category' => 'source']);
+            $DateTime->value($alert['alert.create_time']);
+            $Node->addChild($DateTime);
+
+            $System->addChild($Node);
+            $System->setAttributes(['category' => 'source']);
+         }
       }
 
       // Add Incident to Document
