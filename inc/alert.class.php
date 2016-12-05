@@ -4,7 +4,7 @@ if (!defined('GLPI_ROOT')) {
    die("Sorry. You can't access directly to this file");
 }
 
-class PluginPreludeTicket extends CommonDBTM {
+class PluginPreludeAlert extends CommonDBTM {
    static $rightname = 'ticket';
 
 
