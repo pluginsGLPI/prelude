@@ -107,7 +107,7 @@ class PluginPreludeAlert extends CommonDBTM {
 
          foreach ($found as $alerts_id => $current) {
             if ($params_api = json_decode($current['params_api'], true)) {
-               $alerts = PluginPreludeAPIClient::getAlerts($params_api);
+               $alerts = PluginPreludeAPIClient::getAlerts($params_api, true);
                $nb     = count($alerts);
 
                echo "<tr><th colspan='2'>";
@@ -136,7 +136,7 @@ class PluginPreludeAlert extends CommonDBTM {
                   echo "<span class='prelude_criterion'>$criterion</span>";
                }
                echo "<div>"; // .prelude_criteria
-               if (count($alerts['response'])) {
+               if (count($alerts)) {
                   echo "<table class='tab_cadre_fixehov'>";
                   echo "<tr class='tab_bg_2'>";
                   echo "<th>".__("Classification", 'prelude')."</th>";
@@ -147,15 +147,16 @@ class PluginPreludeAlert extends CommonDBTM {
                   // echo "<th></th>";
                   echo "</tr>";
 
-                  foreach($alerts['response'] as $messageid => $alert) {
+                  foreach($alerts as $messageid => $alert) {
+                     $alert = $alert['alert'];
                      $create_time = Html::convDateTime(date("Y-m-d H:i",
-                                                            strtotime($alert['alert.create_time'])));
+                                                            strtotime($alert['create_time'])));
 
                      echo "<tr class='tab_bg_1'>";
-                     echo "<td>".$alert['alert.classification.text']."</td>";
-                     echo "<td>".$alert['alert.source(0).node.address(0).address']."</td>";
-                     echo "<td>".$alert['alert.target(0).node.address(0).address']."</td>";
-                     echo "<td>".$alert['alert.analyzer(-1).name']."</td>";
+                     echo "<td>".$alert['classification']['text']."</td>";
+                     echo "<td>".$alert['source'][0]['node']['address'][0]['address']."</td>";
+                     echo "<td>".$alert['target'][0]['node']['address'][0]['address']."</td>";
+                     echo "<td>".$alert['analyzer'][0]['name']."</td>";
                      echo "<td>".$create_time."</td>";
                      /*echo "<td><img title='".__("See alert detail", 'prelude')."' src='".
                           PRELUDE_ROOTDOC."/pics/eye.png' class='pointer'></td>";*/

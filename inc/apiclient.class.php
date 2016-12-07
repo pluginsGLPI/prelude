@@ -11,7 +11,7 @@ use League\OAuth2\Client\Token\AccessToken;
 
 class PluginPreludeAPIClient extends CommonGLPI {
 
-   const DEFAULT_LIMIT  = 1000;
+   const DEFAULT_LIMIT  = 50;
    const DEFAULT_OFFSET = 0;
 
    /**
@@ -148,60 +148,149 @@ class PluginPreludeAPIClient extends CommonGLPI {
     *                          (see https://www.prelude-siem.org/projects/prelude/wiki/IDMEFCriteria)
     * @return array  the alerts with path in keys and corresponding values
     */
-   public static function getAlerts($params = array()) {
+   public static function getAlerts($params = array(), $full = false) {
       self::checkAccessToken();
 
-      // what we need at minima in idmef tree
-      $default_paths = [
-         'alert.create_time',
-         'alert.classification.text',
-         'alert.source(0).node.address(0).address',
-         'alert.target(0).node.address(0).address',
-         'alert.analyzer(-1).name',
-      ];
+      $data = [];
 
       // contruct the options sent to the query
       $default_params = [
          'limit'    => self::DEFAULT_LIMIT,
          'offset'   => self::DEFAULT_OFFSET,
-         'path'     => [],
          'criteria' => []
       ];
       $params = array_merge($default_params, $params);
-      $params['path'] = array_merge($default_paths, $params['path']);
-      $query_options = [
+
+
+      $single_path = ['alert.messageid',
+                      'alert.create_time',
+                      'alert.detect_time',
+                      'alert.analyzer_time',
+                      'alert.classification.text',
+                      'alert.assessment.impact.severity',
+                      'alert.assessment.impact.completion',
+                      'alert.assessment.impact.type',
+                      'alert.assessment.impact.description',
+                      'alert.assessment.confidence.rating',
+                      'alert.assessment.confidence.confidence',
+                      ];
+
+      // first, get all single data
+      $single_params = self::constructParams($params, $single_path);
+      if (!$raw_messageid = json_decode(self::sendHttpRequest('GET', '', $single_params), true)) {
+         return false;
+      }
+      foreach($raw_messageid['response'] as $current) {
+         $messageid = $current[0];
+         $data[$messageid] = self::unflattenData($current, $single_path);
+      }
+
+      if ($full) {
+         // for each messageid if retieve data
+         foreach($data as $messageid => &$current) {
+            //get source addresses
+            $current = self::getAlertAddressesNode($params, $current, 'source');
+
+            //get target addresses
+            $current = self::getAlertAddressesNode($params, $current, 'target');
+
+            //get analyser multiple node
+            $current = self::getAlertAnalyserNode($params, $current);
+
+         }
+      }
+
+      return $data;
+   }
+
+
+   private static function getAlertAddressesNode($params, $data, $type = 'source') {
+      $path = ["alert.$type(*).node.address(*).address",
+               "alert.$type(*).node.address(*).category"];
+
+      $criteria = array_merge($params['criteria'],
+                              ["alert.messageid = '{$data['alert']['messageid']}'"]);
+      $params = self::constructParams(array_merge($params,
+                                                  ['criteria' => $criteria]),
+                                                  $path);
+      if (!$response = json_decode(self::sendHttpRequest('GET', '', $params), true)) {
+         return false;
+      }
+
+      $index = 0;
+      foreach($response['response'] as $adress) {
+         $data = array_merge_recursive($data, self::unflattenData($adress, $path, $index));
+         $index++;
+      }
+
+      return $data;
+   }
+
+   private static function getAlertAnalyserNode($params, $data) {
+      $path = ["alert.analyzer(*).analyzerid",
+               "alert.analyzer(*).name",
+               "alert.analyzer(*).manufacturer",
+               "alert.analyzer(*).model",
+               "alert.analyzer(*).version",
+               "alert.analyzer(*).class",
+               "alert.analyzer(*).ostype",
+               "alert.analyzer(*).osversion",
+               "alert.analyzer(-1).node.category",
+               "alert.analyzer(-1).node.name",
+               ];
+
+      $criteria = array_merge($params['criteria'],
+                              ["alert.messageid = '{$data['alert']['messageid']}'"]);
+      $params = self::constructParams(array_merge($params,
+                                                  ['criteria' => $criteria]),
+                                                  $path);
+      if (!$response = json_decode(self::sendHttpRequest('GET', '', $params), true)) {
+         return false;
+      }
+
+      $index = 0;
+      foreach($response['response'] as $adress) {
+         $data = array_merge_recursive($data, self::unflattenData($adress, $path, $index));
+         $index++;
+      }
+
+      return $data;
+   }
+
+   private static function constructParams($params = [], $path = []) {
+      if (count($path)) {
+         $params['path'] = $path;
+      }
+
+      return [
          'query' => [
             'action'  => 'retrieve',
             'request' => json_encode($params),
          ]
       ];
+   }
 
-      // first, send the query with count path and criteria
-      $query_options_count = [
-         'query' => [
-            'action'  => 'retrieve',
-            'request' => json_encode(
-                           array_merge($params,
-                                       ['path' => [
-                                          'count(alert.messageid)'
-                                       ]])),
-         ]
-      ];
-      $count_json = self::sendHttpRequest('GET', '', $query_options_count);
-      $count      = json_decode($count_json, true)['response'][0][0];
-
-      // send the full query to prelude
-      $alerts_json = self::sendHttpRequest('GET', '', $query_options);
-      $alerts      = json_decode($alerts_json, true);
-
-      // merges key for response (otherwise he will have indexed keys)
-      if (isset($alerts['response'])) {
-         foreach($alerts['response'] as &$response) {
-            $response = array_combine($params['path'], $response);
+   private static function unflattenData($data, $path, $index = 0) {
+      $data = array_combine($path, $data);
+      $udata = [];
+      foreach ($data as $key => $value) {
+         $tmp_array = [];
+         $tmp_array2 = &$tmp_array;
+         foreach (preg_split("/(\)|\(|\.)/", $key) as $current_key) {
+            if ($current_key == "") {
+               continue;
+            }
+            if ($current_key == "*"
+                || $current_key == "-1") {
+               $current_key = $index;
+            }
+            $tmp_array2 = &$tmp_array2[$current_key];
          }
+         $tmp_array2 = $value;
+         $udata = array_replace_recursive($udata, $tmp_array);
       }
 
-      return $alerts;
+      return $udata;
    }
 
    /**
