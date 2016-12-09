@@ -154,8 +154,16 @@ class PluginPreludeAlert extends CommonDBTM {
 
                      echo "<tr class='tab_bg_1'>";
                      echo "<td>".$alert['classification']['text']."</td>";
-                     echo "<td>".$alert['source'][0]['node']['address'][0]['address']."</td>";
-                     echo "<td>".$alert['target'][0]['node']['address'][0]['address']."</td>";
+                     echo "<td>";
+                     foreach($alert['source'][0]['node']['address'] as $address) {
+                        echo "<div>{$address['address']}</div>";
+                     }
+                     echo "</td>";
+                     echo "<td>";
+                     foreach($alert['target'][0]['node']['address'] as $address) {
+                        echo "<div>{$address['address']}</div>";
+                     }
+                     echo "</td>";
                      echo "<td>".$alert['analyzer'][0]['name']."</td>";
                      echo "<td>".$create_time."</td>";
                      /*echo "<td><img title='".__("See alert detail", 'prelude')."' src='".
