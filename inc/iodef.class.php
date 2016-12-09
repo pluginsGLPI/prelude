@@ -629,7 +629,6 @@ class PluginPreludeIODEF extends CommonDBChild {
       $EndTime        = new Marknl\Iodef\Elements\EndTime();
       $DetectTime     = new Marknl\Iodef\Elements\DetectTime();
       $ReportTime     = new Marknl\Iodef\Elements\ReportTime();
-      $Description    = new Marknl\Iodef\Elements\Description();
       $Contact        = new Marknl\Iodef\Elements\Contact();
       $ContactName    = new Marknl\Iodef\Elements\ContactName();
       $Email          = new Marknl\Iodef\Elements\Email();
@@ -642,11 +641,6 @@ class PluginPreludeIODEF extends CommonDBChild {
       $ReferenceName  = new Marknl\Iodef\Elements\ReferenceName();
       $URL            = new Marknl\Iodef\Elements\URL();
       $Method         = new Marknl\Iodef\Elements\Method();
-      $EventData      = new Marknl\Iodef\Elements\EventData();
-      $Flow           = new Marknl\Iodef\Elements\Flow();
-      $System         = new \Marknl\Iodef\Elements\System();
-      $Node           = new \Marknl\Iodef\Elements\Node();
-      $Address        = new Marknl\Iodef\Elements\Address();
 
       // fill Incident
       $Incident->setAttributes(['purpose' => $_incident['_purpose']]);
@@ -678,6 +672,7 @@ class PluginPreludeIODEF extends CommonDBChild {
 
       // add Description to Incident
       if (!empty($_incident['Description'][0]['value'])) {
+         $Description = new Marknl\Iodef\Elements\Description();
          $Description->value($_incident['Description'][0]['value']);
          $Incident->addChild($Description);
       }
@@ -692,6 +687,7 @@ class PluginPreludeIODEF extends CommonDBChild {
       $Telephone->value($_contact['Telephone'][0]['value']);
       $Contact->addChild($Telephone);
       if (!empty($_contact['Description'][0]['value'])) {
+         $Description = new Marknl\Iodef\Elements\Description();
          $Description->value($_contact['Description'][0]['value']);
          $Contact->addChild($Description);
       }
@@ -719,11 +715,13 @@ class PluginPreludeIODEF extends CommonDBChild {
       $URL->value($_reference['URL']['value']);
       $Reference->addChild($URL);
       if (!empty($_reference['Description']['value'])) {
+         $Description = new Marknl\Iodef\Elements\Description();
          $Description->value($_reference['Description']['value']);
          $Reference->addChild($Description);
       }
       $Method->addChild($Reference);
       if (!empty($_method['Description']['value'])) {
+         $Description = new Marknl\Iodef\Elements\Description();
          $Description->value($_method['Description']['value']);
          $Method->addChild($Description);
       }
@@ -732,19 +730,94 @@ class PluginPreludeIODEF extends CommonDBChild {
       // add EventData (alerts) to Incident
       $alerts_params = PluginPreludeAlert::getForItem($problem);
       foreach($alerts_params as $current_alert_param) {
-         $alerts = PluginPreludeAPIClient::getAlerts($current_alert_param['params_api']);
+         $current_alert_param = json_decode($current_alert_param['params_api'], true);
+         $alerts = PluginPreludeAPIClient::getAlerts($current_alert_param, true);
 
-         foreach($alerts['response'] as $alert) {
+         foreach($alerts as $messageid => $alert) {
+            $EventData = new Marknl\Iodef\Elements\EventData();
+            $Flow      = new Marknl\Iodef\Elements\Flow();
+            $alert     = $alert['alert'];
 
-            $Address->setAttributes(['category' => 'ipv4-addr']);
-            $Address->value('192.0.2.3');
-            $Node->addChild($Address);
+            // add source addresses nodes
+            if (count($alert['source'])) {
+               $System = new \Marknl\Iodef\Elements\System();
+               $nb_nodes = 0;
+               foreach($alert['source'] as $source) {
+                  $Node = new \Marknl\Iodef\Elements\Node();
+                  $nb_addresses = 0;
+                  foreach($source['node']['address'] as $address) {
+                     if (!empty($address['address'])) {
+                        $Address = new Marknl\Iodef\Elements\Address();
+                        $Address->setAttributes(['category' => $address['category']]);
+                        $Address->value($address['address']);
+                        $Node->addChild($Address);
+                        $nb_addresses++;
+                     }
+                  }
+                  if ($nb_addresses) {
+                     $System->addChild($Node);
+                     $nb_nodes++;
+                  }
+               }
+               $System->setAttributes(['category' => 'source']);
+            }
+            if ($nb_nodes) {
+               $Flow->addChild($System);
+            }
 
-            $DateTime->value($alert['alert.create_time']);
-            $Node->addChild($DateTime);
 
-            $System->addChild($Node);
-            $System->setAttributes(['category' => 'source']);
+            // add target addresses nodes
+            if (count($alert['target'])) {
+               $System = new \Marknl\Iodef\Elements\System();
+               $nb_nodes = 0;
+               foreach($alert['target'] as $target) {
+                  $Node = new \Marknl\Iodef\Elements\Node();
+                  $nb_addresses = 0;
+                  foreach($target['node']['address'] as $address) {
+                     if (!empty($address['address'])) {
+                        $Address = new Marknl\Iodef\Elements\Address();
+                        $Address->setAttributes(['category' => $address['category']]);
+                        $Address->value($address['address']);
+                        $Node->addChild($Address);
+                        $nb_addresses++;
+                     }
+                  }
+                  if ($nb_addresses) {
+                     $System->addChild($Node);
+                     $nb_nodes++;
+                  }
+               }
+               $System->setAttributes(['category' => 'target']);
+            }
+            if ($nb_nodes) {
+               $Flow->addChild($System);
+            }
+
+
+            // add analyser nodes
+            if (count($alert['analyzer'])) {
+               foreach($alert['analyzer'] as $analyzer) {
+                  $System = new \Marknl\Iodef\Elements\System();
+                  $System->setAttributes(['category'     => 'ext-value',
+                                          'ext-category' => 'analyzer']);
+
+                  $OperatingSystem = new \Marknl\Iodef\Elements\OperatingSystem;
+                  $OperatingSystem->setAttributes(['configid' => $analyzer['analyzerid'],
+                                                   'version'  => $analyzer['version'],
+                                                   'vendor'   => $analyzer['manufacturer'],
+                                                   'family'   => $analyzer['class']]);
+
+                  $System->addChild($OperatingSystem);
+
+                  $Node = new \Marknl\Iodef\Elements\Node();
+                  $System->addChild($Node);
+
+                  $Flow->addChild($System);
+               }
+            }
+
+            $EventData->addChild($Flow);
+            $Incident->addChild($EventData);
          }
       }
 
