@@ -746,7 +746,9 @@ class PluginPreludeIODEF extends CommonDBChild {
       $alerts_params = PluginPreludeAlert::getForItem($problem);
       foreach($alerts_params as $current_alert_param) {
          $current_alert_param = json_decode($current_alert_param['params_api'], true);
-         $alerts = PluginPreludeAPIClient::getAlerts($current_alert_param, true);
+         if (!$alerts = PluginPreludeAPIClient::getAlerts($current_alert_param, true)) {
+            continue;
+         }
 
          foreach($alerts as $messageid => $alert) {
             $EventData = new Marknl\Iodef\Elements\EventData();
