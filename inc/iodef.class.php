@@ -461,6 +461,16 @@ class PluginPreludeIODEF extends CommonDBChild {
       echo "</div>";
    }
 
+
+   /**
+    * @see CommonDBTM::getForbiddenStandardMassiveAction
+    */
+   function getForbiddenStandardMassiveAction() {
+      $forbidden   = parent::getForbiddenStandardMassiveAction();
+      $forbidden[] = 'update';
+      return $forbidden;
+   }
+
    function sendEmail($params) {
       $mail = new GLPIMailer;
       $user = new User;
