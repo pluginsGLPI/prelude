@@ -111,6 +111,8 @@ class PluginPreludeIODEF extends CommonDBChild {
          }
 
          echo "</table>";
+
+         Html::closeForm();
       }
 
       echo "<div id='add_iodef'>";
