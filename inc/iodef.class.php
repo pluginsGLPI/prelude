@@ -182,8 +182,7 @@ class PluginPreludeIODEF extends CommonDBChild {
          __("reporting", 'prelude') => 'reporting',
          __("other", 'prelude')     => 'other',
       ], [
-         'display_emptychoice' => true,
-         'value'               => self::getIodefValue($iodef, $field)
+         'value' => self::getIodefValue($iodef, $field)
       ]);
       echo "</div>";
 
@@ -709,32 +708,47 @@ class PluginPreludeIODEF extends CommonDBChild {
       $Incident->addChild($Contact);
 
       // add Assesment to Incident
-      $Impact->setAttributes(['type'       => $_impact['_type'],
-                              'severity'   => $_impact['_severity'],
-                              'completion' => $_impact['_completion']]);
-      $Assessment->addChild($Impact);
-      $TimeImpact->setAttributes(['severity' => $_timpact['_severity'],
-                                  'metric'   => $_timpact['_metric'],
-                                  'duration' => $_timpact['_duration']]);
-      $TimeImpact->value($_timpact['value']);
-      $Assessment->addChild($TimeImpact);
-      $MonetaryImpact->setAttributes(['severity' => $_mimpact['_severity'],
-                                      'currency' => $_mimpact['_currency']]);
-      $MonetaryImpact->value($_mimpact['value']);
-      $Assessment->addChild($MonetaryImpact);
+      $empty_impact = true;
+      if (!empty($_impact['_type'])) {
+         $Impact->setAttributes(['type'       => $_impact['_type']]);
+      }
+      if (!empty($_impact['_severity'])) {
+         $Impact->setAttributes(['severity'   => $_impact['_severity']]);
+      }
+      if (!empty($_impact['_completion'])) {
+         $Impact->setAttributes(['completion' => $_impact['_completion']]);
+      }
+      if (!$empty_impact) {
+         $Assessment->addChild($Impact);
+      }
+      if (!empty($_timpact['value'])) {
+         $TimeImpact->setAttributes(['severity' => $_timpact['_severity'],
+                                     'metric'   => $_timpact['_metric'],
+                                     'duration' => $_timpact['_duration']]);
+         $TimeImpact->value($_timpact['value']);
+         $Assessment->addChild($TimeImpact);
+      }
+      if (!empty($_mimpact['value'])) {
+         $MonetaryImpact->setAttributes(['severity' => $_mimpact['_severity'],
+                                         'currency' => $_mimpact['_currency']]);
+         $MonetaryImpact->value($_mimpact['value']);
+         $Assessment->addChild($MonetaryImpact);
+      }
       $Incident->addChild($Assessment);
 
       // Add Method to Incident
-      $ReferenceName->value($_referencen['value']);
-      $Reference->addChild($ReferenceName);
-      $URL->value($_reference['URL']['value']);
-      $Reference->addChild($URL);
-      if (!empty($_reference['Description']['value'])) {
-         $Description = new Marknl\Iodef\Elements\Description();
-         $Description->value($_reference['Description']['value']);
-         $Reference->addChild($Description);
+      if (!empty($_referencen['value'])) {
+         $ReferenceName->value($_referencen['value']);
+         $Reference->addChild($ReferenceName);
+         $URL->value($_reference['URL']['value']);
+         $Reference->addChild($URL);
+         if (!empty($_reference['Description']['value'])) {
+            $Description = new Marknl\Iodef\Elements\Description();
+            $Description->value($_reference['Description']['value']);
+            $Reference->addChild($Description);
+         }
+         $Method->addChild($Reference);
       }
-      $Method->addChild($Reference);
       if (!empty($_method['Description']['value'])) {
          $Description = new Marknl\Iodef\Elements\Description();
          $Description->value($_method['Description']['value']);
