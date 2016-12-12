@@ -62,6 +62,10 @@ class PluginPreludeAlert extends CommonDBTM {
    static function showForItem(CommonDBTM $item, $options = []) {
       global $CFG_GLPI;
 
+      if (!PluginPreludeAPIClient::status()) {
+         return false;
+      }
+
       $default_options = [
          'show_form' => true,
          'toggled'   => false,
@@ -107,8 +111,10 @@ class PluginPreludeAlert extends CommonDBTM {
 
          foreach ($found as $alerts_id => $current) {
             if ($params_api = json_decode($current['params_api'], true)) {
-               $alerts = PluginPreludeAPIClient::getAlerts($params_api, true);
-               $nb     = count($alerts);
+               if (!$alerts = PluginPreludeAPIClient::getAlerts($params_api)) {
+                  break;
+               }
+               $nb = count($alerts);
 
                echo "<tr><th colspan='2'>";
                echo "<input type='checkbox' name='toggle'

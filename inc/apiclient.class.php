@@ -149,7 +149,9 @@ class PluginPreludeAPIClient extends CommonGLPI {
     * @return array  the alerts with path in keys and corresponding values
     */
    public static function getAlerts($params = array(), $full = false) {
-      self::checkAccessToken();
+      if (!self::checkAccessToken()) {
+         return false;
+      }
 
       $data = [];
 
@@ -173,6 +175,9 @@ class PluginPreludeAPIClient extends CommonGLPI {
                       'alert.assessment.impact.description',
                       'alert.assessment.confidence.rating',
                       'alert.assessment.confidence.confidence',
+                      'alert.source(-1).node.address(-1).address',
+                      'alert.target(-1).node.address(-1).address',
+                      'alert.analyzer(-1).name',
                       ];
 
       // first, get all single data

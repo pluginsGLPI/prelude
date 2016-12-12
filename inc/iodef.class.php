@@ -113,8 +113,6 @@ class PluginPreludeIODEF extends CommonDBChild {
          echo "</table>";
       }
 
-      return;
-
       echo "<div id='add_iodef'>";
 
       echo "<input type='checkbox' name='toggle'
