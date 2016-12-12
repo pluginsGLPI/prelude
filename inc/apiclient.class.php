@@ -50,8 +50,12 @@ class PluginPreludeAPIClient extends CommonGLPI {
     * check api status
     * @return boolean true if all endpoints success to connect
     */
-   static function globalStatus() {
-      return !in_array(false, self::status());
+   static function globalStatus($full = true) {
+      if ($full) {
+         return !in_array(false, self::status());
+      } else {
+         return self::preludeStatus();
+      }
    }
 
    /**

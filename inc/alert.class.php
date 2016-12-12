@@ -62,7 +62,7 @@ class PluginPreludeAlert extends CommonDBTM {
    static function showForItem(CommonDBTM $item, $options = []) {
       global $CFG_GLPI;
 
-      if (!PluginPreludeAPIClient::status()) {
+      if (!PluginPreludeAPIClient::globalStatus(false)) {
          return false;
       }
 
