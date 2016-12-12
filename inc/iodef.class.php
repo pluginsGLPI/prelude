@@ -55,6 +55,7 @@ class PluginPreludeIODEF extends CommonDBChild {
       $document = new Document;
       $iodef    = self::getDefaultIodefDefinition($problem);
       $found    = self::getForProblem($problem);
+      $rand     = mt_rand();
 
       if (count($found) <= 0) {
          _e("No iodef found for this problem", 'prelude');
@@ -71,8 +72,13 @@ class PluginPreludeIODEF extends CommonDBChild {
          _e("Previously genereted IODEF", 'prelude');
          echo "</h2>";
 
+         Html::openMassiveActionsForm('mass'.__CLASS__.$rand);
+         $massiveactionparams = array('container' => 'mass'.__CLASS__.$rand);
+         Html::showMassiveActions($massiveactionparams);
+
          echo "<table class='tab_cadre_fixehov'>";
          echo "<tr class='tab_bg_2'>";
+         echo "<th width='10'>".Html::getCheckAllAsCheckbox('mass'.__CLASS__.$rand)."</th>";
          echo "<th>".__("Creation date")."</th>";
          echo "<th>".__("Document")."</th>";
          echo "<th>".__("Incident ID", 'prelude')."</th>";
@@ -80,10 +86,12 @@ class PluginPreludeIODEF extends CommonDBChild {
          echo "</tr>";
 
          foreach ($found as $id => $current) {
-
             $current_iodef = json_decode($current['json_iodef'], true);
 
             echo "<tr class='tab_bg_1'>";
+            echo "<td>";
+            Html::showMassiveActionCheckBox(__CLASS__, $id);
+            echo "</td>";
             echo "<td>".$current['date_creation']."</td>";
             echo "<td>";
             if ($current['documents_id']) {
@@ -98,17 +106,14 @@ class PluginPreludeIODEF extends CommonDBChild {
                              ['class' => 'pointer',
                               'title' => __("Send IODEF By Email", 'prelude')]);
             echo "</a>";
-            echo "<a href='$url?purge&id=$id'>";
-            echo Html::image(PRELUDE_ROOTDOC."/pics/delete.png",
-                             ['class' => 'pointer',
-                              'title' => __("Delete IODEF", 'prelude')]);
-            echo "</a>";
             echo "</td>";
             echo "</tr>";
          }
 
          echo "</table>";
       }
+
+      return;
 
       echo "<div id='add_iodef'>";
 
