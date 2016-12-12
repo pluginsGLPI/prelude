@@ -453,8 +453,12 @@ class PluginPreludeAPIClient extends CommonGLPI {
                'refresh_token' => $prev_access_token->getRefreshToken()
             ]);
 
-            self::storeToken($new_access_token);
+            return self::storeToken($new_access_token);
+         } else {
+            return true;
          }
+      } else {
+         return false;
       }
    }
 
