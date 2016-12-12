@@ -115,8 +115,8 @@ input.toggle_alert:checked ~ label {
    width: 100%;
 }
 
-.iodef_field input:not(:valid),
-.iodef_field textarea:not(:valid) {
+.iodef_field label:not([for]) + input:not(:valid),
+.iodef_field label:not([for]) + textarea:not(:valid) {
    border-right: 3px solid red;
 }
 
