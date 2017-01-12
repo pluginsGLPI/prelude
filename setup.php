@@ -31,8 +31,6 @@ define('PRELUDE_ROOTDOC', $CFG_GLPI['root_doc']."/plugins/prelude");
 define('PRELUDE_CONFIG_URL', $CFG_GLPI['url_base'].
                              '/front/config.form.php?forcetab=PluginPreludeConfig$1');
 
-// include composer autoload
-require_once(__DIR__ . '/vendor/autoload.php');
 
 /**
  * Init hooks of the plugin.
@@ -46,7 +44,9 @@ function plugin_init_prelude() {
    $PLUGIN_HOOKS['csrf_compliant']['prelude'] = true;
 
    // include composer autoload
-   require_once(__DIR__ . '/vendor/autoload.php');
+   if (!defined(TU_USER)) {
+      require_once(__DIR__ . '/vendor/autoload.php');
+   }
 
    $plugin = new Plugin();
    if (isset($_SESSION['glpiID'])
