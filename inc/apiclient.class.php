@@ -64,7 +64,7 @@ class PluginPreludeAPIClient extends CommonGLPI {
     */
    static function preludeStatus() {
       $options = [
-         'timeout'         => 1.0,
+         'timeout'         => 4.0,
          'connect_timeout' => 1.0,
          'verify'          => false,
          'http_errors'     => false
