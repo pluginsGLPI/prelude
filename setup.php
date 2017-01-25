@@ -44,7 +44,7 @@ function plugin_init_prelude() {
    $PLUGIN_HOOKS['csrf_compliant']['prelude'] = true;
 
    // include composer autoload
-   if (!defined(TU_USER)) {
+   if (!defined("TU_USER")) {
       require_once(__DIR__ . '/vendor/autoload.php');
    }
 
