@@ -81,7 +81,7 @@ function plugin_init_prelude() {
                                                                'item_Ticket_AfterPurge'));
 
          Plugin::registerClass('PluginPreludeItem_Ticket', array('addtabon' => 'Ticket'));
-         foreach(Ticket::getAllTypesForHelpdesk() as $itemtype => $label) {
+         foreach (Ticket::getAllTypesForHelpdesk() as $itemtype => $label) {
             Plugin::registerClass('PluginPreludeItem_Ticket', array('addtabon' => $itemtype));
          }
       }
@@ -119,7 +119,7 @@ function plugin_version_prelude() {
  */
 function plugin_prelude_check_prerequisites() {
    // Strict version check (could be less strict, or could allow various version)
-   if (version_compare(GLPI_VERSION,'9.1','lt')) {
+   if (version_compare(GLPI_VERSION, '9.1', 'lt')) {
       echo "This plugin requires GLPI >= 9.1";
       return false;
    }

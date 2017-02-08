@@ -151,7 +151,7 @@ class PluginPreludeItem_Ticket extends Item_Ticket{
       echo $header_begin.$header_top.$header_end;
 
       $totalnb = 0;
-      for ($i=0 ; $i<$number ; $i++) {
+      for ($i=0; $i<$number; $i++) {
          $itemtype = $DB->result($result, $i, "itemtype");
          if (!($item = getItemForItemtype($itemtype))) {
             continue;
@@ -186,13 +186,13 @@ class PluginPreludeItem_Ticket extends Item_Ticket{
             $result_linked = $DB->query($query);
             $nb            = $DB->numrows($result_linked);
 
-            for ($prem=true ; $data=$DB->fetch_assoc($result_linked) ; $prem=false) {
+            for ($prem=true; $data=$DB->fetch_assoc($result_linked); $prem=false) {
                $name = $data["name"];
                if ($_SESSION["glpiis_ids_visible"]
                    || empty($data["name"])) {
                   $name = sprintf(__('%1$s (%2$s)'), $name, $data["id"]);
                }
-               if($_SESSION['glpiactiveprofile']['interface'] != 'helpdesk') {
+               if ($_SESSION['glpiactiveprofile']['interface'] != 'helpdesk') {
                   $link     = $itemtype::getFormURLWithID($data['id']);
                   $namelink = "<a href=\"".$link."\">".$name."</a>";
                } else {
@@ -390,7 +390,7 @@ class PluginPreludeItem_Ticket extends Item_Ticket{
                                          AND `items_id`   = '".$old_fields['items_id']."'
                                          AND `tickets_id` = '".$old_fields['tickets_id']."'");
 
-      foreach($found as $current) {
+      foreach ($found as $current) {
          $fields = $new_item->fields;
          $fields['id'] = $current;
          $new_item->update($fields, $history);
@@ -408,7 +408,7 @@ class PluginPreludeItem_Ticket extends Item_Ticket{
       $found = $new_item->find("`itemtype`       = '".$old_item->fields['itemtype']."'
                                 AND `items_id`   = '".$old_item->fields['items_id']."'
                                 AND `tickets_id` = '".$old_item->fields['tickets_id']."'");
-      foreach($found as $current) {
+      foreach ($found as $current) {
          $new_item->delete($current, $forced);
       }
    }

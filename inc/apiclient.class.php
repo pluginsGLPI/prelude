@@ -71,7 +71,7 @@ class PluginPreludeAPIClient extends CommonGLPI {
          $response = $http_client->request('GET',
                                            self::getAPIBaseUri(),
                                            $options);
-      } catch(RequestException $e) {
+      } catch (RequestException $e) {
          if ($e->hasResponse()) {
             if ($e->getResponse()->getStatusCode() != 404) {
                return true;
@@ -129,7 +129,7 @@ class PluginPreludeAPIClient extends CommonGLPI {
 
       // merges key for response (otherwise he will have indexed keys)
       if (isset($logs['response'])) {
-         foreach($logs['response'] as &$response) {
+         foreach ($logs['response'] as &$response) {
             $response = array_combine($params['path'], $response);
          }
       }
@@ -182,7 +182,7 @@ class PluginPreludeAPIClient extends CommonGLPI {
 
       // merges key for response (otherwise he will have indexed keys)
       if (isset($alerts['response'])) {
-         foreach($alerts['response'] as &$response) {
+         foreach ($alerts['response'] as &$response) {
             $response = array_combine($params['path'], $response);
          }
       }
@@ -264,7 +264,7 @@ class PluginPreludeAPIClient extends CommonGLPI {
       // check prelude error
       $prelude_error = false;
       if (isset($prelude_res['logs'])) {
-         foreach($prelude_res['logs'] as $log) {
+         foreach ($prelude_res['logs'] as $log) {
             if (isset($log['errno'])) {
                $prelude_error = true;
             }

@@ -171,7 +171,7 @@ class PluginPreludeConfig extends CommonDBTM {
 
       echo "<tr class='tab_bg_2'>";
       echo "<td colspan='4' class='center'>";
-      echo "<input type='submit' name='update' class='submit' value=\""._sx('button','Save')."\">";
+      echo "<input type='submit' name='update' class='submit' value=\""._sx('button', 'Save')."\">";
       echo "<br><br><br>";
       echo "</td></tr>";
 
@@ -182,7 +182,7 @@ class PluginPreludeConfig extends CommonDBTM {
          echo "<th colspan='4'>".__('API Status')."</th>";
          echo "</tr>";
 
-         foreach(PluginPreludeAPIClient::status() as $status_label => $status) {
+         foreach (PluginPreludeAPIClient::status() as $status_label => $status) {
             echo "<tr class='tab_bg_1'>";
             echo "<td>$status_label</td>";
             echo "<td>";
@@ -219,7 +219,7 @@ class PluginPreludeConfig extends CommonDBTM {
          if (!$with_client) {
             return true;
          }
-         if(!empty($current_config['api_client_id'])
+         if (!empty($current_config['api_client_id'])
             && !empty($current_config['api_client_secret'])) {
             return true;
          }
@@ -239,22 +239,29 @@ class PluginPreludeConfig extends CommonDBTM {
 
       $current_config = self::getConfig();
       // api access
-      if (!isset($current_config['prelude_url']))
+      if (!isset($current_config['prelude_url'])) {
          Config::setConfigurationValues('plugin:Prelude', array('prelude_url' => ''));
-      if (!isset($current_config['api_client_id']))
+      }
+      if (!isset($current_config['api_client_id'])) {
          Config::setConfigurationValues('plugin:Prelude', array('api_client_id' => ''));
-      if (!isset($current_config['api_client_secret']))
+      }
+      if (!isset($current_config['api_client_secret'])) {
          Config::setConfigurationValues('plugin:Prelude', array('api_client_secret' => ''));
-      if (!isset($current_config['api_token']))
+      }
+      if (!isset($current_config['api_token'])) {
          Config::setConfigurationValues('plugin:Prelude', array('api_token' => ''));
+      }
 
       // plugin features
-      if (!isset($current_config['replace_items_tickets']))
+      if (!isset($current_config['replace_items_tickets'])) {
          Config::setConfigurationValues('plugin:Prelude', array('replace_items_tickets' => true));
-      if (!isset($current_config['ticket_alerts']))
+      }
+      if (!isset($current_config['ticket_alerts'])) {
          Config::setConfigurationValues('plugin:Prelude', array('ticket_alerts' => true));
-      if (!isset($current_config['openvas_integration']))
+      }
+      if (!isset($current_config['openvas_integration'])) {
          Config::setConfigurationValues('plugin:Prelude', array('openvas_integration' => true));
+      }
    }
 
    /**
