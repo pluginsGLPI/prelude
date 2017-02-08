@@ -1,11 +1,14 @@
 {
     "require-dev": {
-        "consolidation/robo": "dev-master@dev",
-        "patchwork/jsqueeze": "~1.0",
-        "natxet/CssMin": "~3.0"
+        "glpi-project/tools": "^0.1"
     },
     "require": {
         "league/oauth2-client": "^1.4",
         "guzzlehttp/guzzle": "^6.2"
+    },
+    "config": {
+        "platform": {
+            "php": "5.6"
+        }
     }
 }
