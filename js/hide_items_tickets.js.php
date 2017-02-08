@@ -16,7 +16,7 @@ $split_view       = CommonGLPI::isLayoutWithMain()
                         : "false";
 $url_base         = $CFG_GLPI['url_base'];
 $url_ticket_types = array();
-foreach(Ticket::getAllTypesForHelpdesk() as $itemtype => $label) {
+foreach (Ticket::getAllTypesForHelpdesk() as $itemtype => $label) {
    $url_ticket_types[] = Toolbox::getItemTypeFormURL($itemtype, false);
 }
 $url_ticket_types = json_encode($url_ticket_types);

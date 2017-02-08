@@ -108,7 +108,7 @@ class PluginPreludeTicket extends CommonDBTM {
 
                echo "<div class='togglable'>";
                echo "<div class='prelude_criteria'>";
-               foreach($params_api['criteria'] as $criterion) {
+               foreach ($params_api['criteria'] as $criterion) {
                   echo "<span class='prelude_criterion'>$criterion</span>";
                }
                echo "<div>"; // .prelude_criteria
@@ -123,7 +123,7 @@ class PluginPreludeTicket extends CommonDBTM {
                   // echo "<th></th>";
                   echo "</tr>";
 
-                  foreach($alerts as $messageid => $alert) {
+                  foreach ($alerts as $messageid => $alert) {
                      $create_time = Html::convDateTime(date("Y-m-d H:i",
                                                             strtotime($alert['alert.create_time'])));
 
