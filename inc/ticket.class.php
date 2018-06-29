@@ -67,13 +67,13 @@ class PluginPreludeTicket extends CommonDBTM {
 
       echo "<a class='vsubmit' href='".Toolbox::getItemTypeFormURL('Problem').
                                     "?tickets_id=".$ticket->getID()."'>";
-      _e('Create a problem from this ticket');
+      echo __('Create a problem from this ticket');
       echo "</a>";
       echo "<br><br>";
 
       $found = self::getForticket($ticket);
       if (count($found) <= 0) {
-         _e("No alerts found  for this ticket", 'prelude');
+         echo __("No alerts found  for this ticket", 'prelude');
          echo "&nbsp;";
          self::importAlertsForm($ticket->getID());
       } else {
@@ -140,7 +140,7 @@ class PluginPreludeTicket extends CommonDBTM {
                   echo "</table>";
                } else {
                   echo "<div class='togglable'>";
-                  _e("No alerts found  for theses criteria", 'prelude');
+                  echo __("No alerts found  for theses criteria", 'prelude');
                   echo "</div>";
                }
                echo "<div>"; // .togglable
@@ -241,7 +241,7 @@ class PluginPreludeTicket extends CommonDBTM {
 
       $table = self::getTable();
 
-      if (!TableExists($table)) {
+      if (!$DB->tableExists($table)) {
          $migration->displayMessage("Installing $table");
 
          $query = "CREATE TABLE IF NOT EXISTS `$table` (

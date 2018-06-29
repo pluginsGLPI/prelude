@@ -107,7 +107,7 @@ function plugin_version_prelude() {
       'author'         => '<a href="http://www.teclib.com">Teclib\'</a>',
       'license'        => 'GPL2',
       'homepage'       => '',
-      'minGlpiVersion' => '9.1'
+      'minGlpiVersion' => '9.2'
    ];
 }
 
@@ -119,8 +119,8 @@ function plugin_version_prelude() {
  */
 function plugin_prelude_check_prerequisites() {
    // Strict version check (could be less strict, or could allow various version)
-   if (version_compare(GLPI_VERSION,'9.1','lt')) {
-      echo "This plugin requires GLPI >= 9.1";
+   if (version_compare(GLPI_VERSION,'9.2','lt')) {
+      echo "This plugin requires GLPI >= 9.2";
       return false;
    }
 
@@ -150,12 +150,6 @@ function plugin_prelude_check_prerequisites() {
  * @return boolean
  */
 function plugin_prelude_check_config($verbose=false) {
-   if (true) { // Your configuration check
-      return true;
-   }
 
-   if ($verbose) {
-      _e('Installed / not configured', 'prelude');
-   }
-   return false;
+   return true;
 }
