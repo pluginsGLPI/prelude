@@ -425,7 +425,7 @@ class PluginPreludeItem_Ticket extends Item_Ticket{
 
       $table = self::getTable();
 
-      if (!TableExists($table)) {
+      if (!$DB->tableExists($table)) {
          $migration->displayMessage("Installing $table");
 
          $query = "CREATE TABLE IF NOT EXISTS `$table` (
