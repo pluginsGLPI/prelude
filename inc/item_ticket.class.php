@@ -24,7 +24,7 @@ class PluginPreludeItem_Ticket extends Item_Ticket{
    /**
     * {@inheritDoc}
     */
-   static function getTypeName($nb=0) {
+   static function getTypeName($nb = 0) {
       return _n('Item', 'Items', $nb);
    }
 
@@ -41,7 +41,7 @@ class PluginPreludeItem_Ticket extends Item_Ticket{
                    AND `$table`.`itemtype` = '".$item->getType()."'".
                    getEntitiesRestrictRequest(" AND ", "glpi_tickets", '', '', true);
 
-      return countElementsInTable(array($table, 'glpi_tickets'), $restrict);
+      return countElementsInTable([$table, 'glpi_tickets'], $restrict);
    }
 
    /**
@@ -92,18 +92,18 @@ class PluginPreludeItem_Ticket extends Item_Ticket{
 
          if ($dev_user_id > 0) {
             echo "<label>".__("My devices")."</label><br>";
-            self::dropdownMyDevices($dev_user_id, $ticket->fields["entities_id"], null, 0, array('tickets_id' => $instID));
+            self::dropdownMyDevices($dev_user_id, $ticket->fields["entities_id"], null, 0, ['tickets_id' => $instID]);
          }
 
          $data =  array_keys(getAllDatasFromTable($table));
-         $used = array();
+         $used = [];
          if (!empty($data)) {
             foreach ($data as $val) {
                $used[$val['itemtype']] = $val['id'];
             }
          }
 
-         self::dropdownAllDevices("itemtype", null, 0, 1, $dev_user_id, $ticket->fields["entities_id"], array('tickets_id' => $instID));
+         self::dropdownAllDevices("itemtype", null, 0, 1, $dev_user_id, $ticket->fields["entities_id"], ['tickets_id' => $instID]);
          echo "<span id='item_ticket_selection_information'></span>";
 
          echo "<label>".__("Type of link", 'prelude')."</label><br>";
@@ -121,7 +121,7 @@ class PluginPreludeItem_Ticket extends Item_Ticket{
       echo "<div class='spaced'>";
       if ($canedit && $number) {
          Html::openMassiveActionsForm('mass'.__CLASS__.$rand);
-         $massiveactionparams = array('container' => 'mass'.__CLASS__.$rand);
+         $massiveactionparams = ['container' => 'mass'.__CLASS__.$rand];
          Html::showMassiveActions($massiveactionparams);
       }
       echo "<table class='tab_cadre_fixehov'>";
@@ -151,7 +151,7 @@ class PluginPreludeItem_Ticket extends Item_Ticket{
       echo $header_begin.$header_top.$header_end;
 
       $totalnb = 0;
-      for ($i=0 ; $i<$number ; $i++) {
+      for ($i=0; $i<$number; $i++) {
          $itemtype = $DB->result($result, $i, "itemtype");
          if (!($item = getItemForItemtype($itemtype))) {
             continue;
@@ -186,13 +186,13 @@ class PluginPreludeItem_Ticket extends Item_Ticket{
             $result_linked = $DB->query($query);
             $nb            = $DB->numrows($result_linked);
 
-            for ($prem=true ; $data=$DB->fetch_assoc($result_linked) ; $prem=false) {
+            for ($prem=true; $data=$DB->fetch_assoc($result_linked); $prem=false) {
                $name = $data["name"];
                if ($_SESSION["glpiis_ids_visible"]
                    || empty($data["name"])) {
                   $name = sprintf(__('%1$s (%2$s)'), $name, $data["id"]);
                }
-               if($_SESSION['glpiactiveprofile']['interface'] != 'helpdesk') {
+               if ($_SESSION['glpiactiveprofile']['interface'] != 'helpdesk') {
                   $link     = $itemtype::getFormURLWithID($data['id']);
                   $namelink = "<a href=\"".$link."\">".$name."</a>";
                } else {
@@ -265,7 +265,7 @@ class PluginPreludeItem_Ticket extends Item_Ticket{
    /**
     * {@inheritDoc}
     */
-   function getTabNameForItem(CommonGLPI $item, $withtemplate=0) {
+   function getTabNameForItem(CommonGLPI $item, $withtemplate = 0) {
 
       if ($withtemplate) {
          return '';
@@ -293,7 +293,7 @@ class PluginPreludeItem_Ticket extends Item_Ticket{
    /**
     * {@inheritDoc}
     */
-   static function displayTabContentForItem(CommonGLPI $item, $tabnum=1, $withtemplate=0) {
+   static function displayTabContentForItem(CommonGLPI $item, $tabnum = 1, $withtemplate = 0) {
       if ($item->getType() == 'Ticket') {
          self::showForTicket($item);
       } else if (array_key_exists($item->getType(), Ticket::getAllTypesForHelpdesk())) {
@@ -313,7 +313,7 @@ class PluginPreludeItem_Ticket extends Item_Ticket{
    /**
     * When updating a prelude_item_ticket, replicate to glpi_item_ticket
     */
-   function post_updateItem($history=1) {
+   function post_updateItem($history = 1) {
       $item_ticket = new Item_Ticket;
       self::updateItem($this, $item_ticket, $history);
    }
@@ -390,7 +390,7 @@ class PluginPreludeItem_Ticket extends Item_Ticket{
                                          AND `items_id`   = '".$old_fields['items_id']."'
                                          AND `tickets_id` = '".$old_fields['tickets_id']."'");
 
-      foreach($found as $current) {
+      foreach ($found as $current) {
          $fields = $new_item->fields;
          $fields['id'] = $current;
          $new_item->update($fields, $history);
@@ -408,7 +408,7 @@ class PluginPreludeItem_Ticket extends Item_Ticket{
       $found = $new_item->find("`itemtype`       = '".$old_item->fields['itemtype']."'
                                 AND `items_id`   = '".$old_item->fields['items_id']."'
                                 AND `tickets_id` = '".$old_item->fields['tickets_id']."'");
-      foreach($found as $current) {
+      foreach ($found as $current) {
          $new_item->delete($current, $forced);
       }
    }

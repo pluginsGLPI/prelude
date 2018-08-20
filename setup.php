@@ -60,35 +60,35 @@ function plugin_init_prelude() {
       $prelude_config = PluginPreludeConfig::getConfig();
 
       // Add a link in the main menu plugins for technician and admin panel
-      Plugin::registerClass('PluginPreludeConfig', array('addtabon' => 'Config'));
+      Plugin::registerClass('PluginPreludeConfig', ['addtabon' => 'Config']);
       $PLUGIN_HOOKS['config_page']['prelude'] = 'front/config.form.php';
 
       // add a new tab to tickets who replace item_ticket
       if ($prelude_config['replace_items_tickets']) {
          $PLUGIN_HOOKS['add_javascript']['prelude'][] = "js/hide_items_tickets.js.php";
 
-         $PLUGIN_HOOKS['item_add']['prelude'] = array('Item_Ticket' =>
-                                                       array('PluginPreludeItem_Ticket',
-                                                             'item_Ticket_AfterAdd'));
-         $PLUGIN_HOOKS['item_update']['prelude'] = array('Item_Ticket' =>
-                                                          array('PluginPreludeItem_Ticket',
-                                                                'item_Ticket_AfterUpdate'));
-         $PLUGIN_HOOKS['item_delete']['prelude'] = array('Item_Ticket' =>
-                                                          array('PluginPreludeItem_Ticket',
-                                                                'item_Ticket_AfterDelete'));
-         $PLUGIN_HOOKS['item_purge']['prelude'] = array('Item_Ticket' =>
-                                                         array('PluginPreludeItem_Ticket',
-                                                               'item_Ticket_AfterPurge'));
+         $PLUGIN_HOOKS['item_add']['prelude'] = [
+            'Item_Ticket' => ['PluginPreludeItem_Ticket', 'item_Ticket_AfterAdd']
+         ];
+         $PLUGIN_HOOKS['item_update']['prelude'] = [
+            'Item_Ticket' => ['PluginPreludeItem_Ticket', 'item_Ticket_AfterUpdate']
+         ];
+         $PLUGIN_HOOKS['item_delete']['prelude'] = [
+            'Item_Ticket' => ['PluginPreludeItem_Ticket', 'item_Ticket_AfterDelete']
+         ];
+         $PLUGIN_HOOKS['item_purge']['prelude'] = [
+            'Item_Ticket' => ['PluginPreludeItem_Ticket', 'item_Ticket_AfterPurge']
+         ];
 
-         Plugin::registerClass('PluginPreludeItem_Ticket', array('addtabon' => 'Ticket'));
-         foreach(Ticket::getAllTypesForHelpdesk() as $itemtype => $label) {
-            Plugin::registerClass('PluginPreludeItem_Ticket', array('addtabon' => $itemtype));
+         Plugin::registerClass('PluginPreludeItem_Ticket', ['addtabon' => 'Ticket']);
+         foreach (Ticket::getAllTypesForHelpdesk() as $itemtype => $label) {
+            Plugin::registerClass('PluginPreludeItem_Ticket', ['addtabon' => $itemtype]);
          }
       }
 
       // add a new tab to tickets to perform actions relative to prelude
       if ($prelude_config['replace_items_tickets']) {
-         Plugin::registerClass('PluginPreludeTicket', array('addtabon' => 'Ticket'));
+         Plugin::registerClass('PluginPreludeTicket', ['addtabon' => 'Ticket']);
       }
    }
 }
@@ -119,7 +119,7 @@ function plugin_version_prelude() {
  */
 function plugin_prelude_check_prerequisites() {
    // Strict version check (could be less strict, or could allow various version)
-   if (version_compare(GLPI_VERSION,'9.2','lt')) {
+   if (version_compare(GLPI_VERSION, '9.2', 'lt')) {
       echo "This plugin requires GLPI >= 9.2";
       return false;
    }
@@ -149,7 +149,7 @@ function plugin_prelude_check_prerequisites() {
  *
  * @return boolean
  */
-function plugin_prelude_check_config($verbose=false) {
+function plugin_prelude_check_config($verbose = false) {
 
    return true;
 }
