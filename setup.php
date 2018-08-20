@@ -26,7 +26,14 @@
  --------------------------------------------------------------------------
  */
 global $CFG_GLPI;
+
 define('PLUGIN_PRELUDE_VERSION', '0.1.1');
+
+// Minimal GLPI version, inclusive
+define('PLUGIN_PRELUDE_MIN_GLPI', '9.2');
+// Maximum GLPI version, exclusive
+define('PLUGIN_PRELUDE_MAX_GLPI', '9.4');
+
 define('PRELUDE_ROOTDOC', $CFG_GLPI['root_doc']."/plugins/prelude");
 define('PRELUDE_CONFIG_URL', $CFG_GLPI['url_base'].
                              '/front/config.form.php?forcetab=PluginPreludeConfig$1');
@@ -101,13 +108,29 @@ function plugin_init_prelude() {
  * @return array
  */
 function plugin_version_prelude() {
+
    return [
       'name'           => 'Prelude Siem',
       'version'        => PLUGIN_PRELUDE_VERSION,
       'author'         => '<a href="http://www.teclib.com">Teclib\'</a>',
       'license'        => 'GPL2',
       'homepage'       => '',
-      'minGlpiVersion' => '9.2'
+      'requirements'   => [
+         'glpi' => [
+            'min' => PLUGIN_PRELUDE_MIN_GLPI,
+            'max' => PLUGIN_PRELUDE_MAX_GLPI,
+         ],
+         'php' => [
+            'exts' => [
+               'curl' => [
+                  'required' => true,
+               ]
+            ],
+            'params' => [
+               'allow_url_fopen',
+            ],
+         ]
+      ]
    ];
 }
 
@@ -118,25 +141,33 @@ function plugin_version_prelude() {
  * @return boolean
  */
 function plugin_prelude_check_prerequisites() {
-   // Strict version check (could be less strict, or could allow various version)
-   if (version_compare(GLPI_VERSION, '9.2', 'lt')) {
-      echo "This plugin requires GLPI >= 9.2";
-      return false;
-   }
 
-   // check php version
-   if (version_compare(PHP_VERSION, '5.5.0', 'lt')) {
-      echo "PHP 5.5.0 or higher is required";
-      return false;
-   }
+   //Requirements check is not done by core in GLPI < 9.2 but has to be delegated to core in GLPI >= 9.2.
+   if (!method_exists('Plugin', 'checkGlpiVersion')) {
+      $version = preg_replace('/^((\d+\.?)+).*$/', '$1', GLPI_VERSION);
+      $matchMinGlpiReq = version_compare($version, PLUGIN_PRELUDE_MIN_GLPI, '>=');
+      $matchMaxGlpiReq = version_compare($version, PLUGIN_PRELUDE_MAX_GLPI, '<');
 
-   if (!extension_loaded('curl')) {
-      echo "PHP-Curl extension is required";
-      return false;
-   }
+      if (!$matchMinGlpiReq || !$matchMaxGlpiReq) {
+         echo vsprintf(
+            'This plugin requires GLPI >= %1$s and < %2$s.',
+            [
+               PLUGIN_PRELUDE_MIN_GLPI,
+               PLUGIN_PRELUDE_MAX_GLPI,
+            ]
+         );
+         return false;
+      }
 
-   if (ini_get('allow_url_fopen') != 1) {
-      echo "allow_url_fopen=1 is required in your php.ini";
+      if (!extension_loaded('curl')) {
+         echo "PHP-Curl extension is required";
+         return false;
+      }
+
+      if (ini_get('allow_url_fopen') != 1) {
+         echo "allow_url_fopen=1 is required in your php.ini";
+         return false;
+      }
    }
 
    return true;
