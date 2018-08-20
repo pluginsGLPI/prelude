@@ -36,12 +36,17 @@ class PluginPreludeItem_Ticket extends Item_Ticket{
 
       $table = self::getTable();
 
-      $restrict = "`$table`.`tickets_id` = `glpi_tickets`.`id`
-                   AND `$table`.`items_id` = '".$item->getField('id')."'
-                   AND `$table`.`itemtype` = '".$item->getType()."'".
-                   getEntitiesRestrictRequest(" AND ", "glpi_tickets", '', '', true);
-
-      return countElementsInTable([$table, 'glpi_tickets'], $restrict);
+      return countElementsInTable(
+         [
+            $table,
+            'glpi_tickets'
+         ],
+         [
+            "$table.tickets_id" => new \QueryExpression(DB::quoteName('glpi_tickets.id')),
+            "$table.items_id"   => $item->getField('id'),
+            "$table.itemtype"   => $item->getType(),
+         ] + getEntitiesRestrictCriteria('glpi_tickets', '', '', true)
+      );
    }
 
    /**
@@ -274,15 +279,18 @@ class PluginPreludeItem_Ticket extends Item_Ticket{
       if ($item->getType() == 'Ticket') {
          if (($_SESSION["glpiactiveprofile"]["helpdesk_hardware"] != 0)
              && (count($_SESSION["glpiactiveprofile"]["helpdesk_item_type"]) > 0)) {
-            $nb = countElementsInTable(self::getTable(),
-                                       "`tickets_id` = '".$item->getID()."'");
+            $nb = countElementsInTable(self::getTable(), ['tickets_id' => $item->getID()]);
             return self::createTabEntry(self::getTypeName($nb), $nb);
          }
 
       } else if (array_key_exists($item->getType(), Ticket::getAllTypesForHelpdesk())) {
-         $nb = countElementsInTable(self::getTable(),
-                                    "`items_id` = '".$item->getID()."'
-                                     AND `itemtype` = '".$item->getType()."'");
+         $nb = countElementsInTable(
+            self::getTable(),
+            [
+               'items_id' => $item->getID(),
+               'itemtype' => $item->getType(),
+            ]
+         );
          return self::createTabEntry(_n("Ticket", "Tickets", $nb), $nb);
       }
 

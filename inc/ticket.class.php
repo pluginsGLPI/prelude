@@ -192,14 +192,16 @@ class PluginPreludeTicket extends CommonDBTM {
       echo "</div>";
 
       // init menu in jquery dialog
-      Html::scriptStart();
-      echo Html::jsGetElementbyID('add_alerts').".dialog({
-         height: 'auto',
-         width: 'auto',
-         modal: true,
-         autoOpen: false
-         });";
-      echo Html::scriptEnd();
+      echo Html::scriptBlock("
+         $(document).ready(function() {
+            $('#add_alerts').dialog({
+               height: 'auto',
+               width: 'auto',
+               modal: true,
+               autoOpen: false
+            });
+         });
+      ");
    }
 
    /**
