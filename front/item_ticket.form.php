@@ -1,4 +1,6 @@
 <?php
+use Glpi\Event;
+
 include ('../../../inc/includes.php');
 
 Session ::checkLoginUser();
@@ -14,7 +16,7 @@ if (isset($_POST["add"])) {
       $_POST['items_id'] = $_POST['add_items_id'];
    }
 
-   if(!isset($_POST['items_id']) || empty($_POST['items_id'])){
+   if (!isset($_POST['items_id']) || empty($_POST['items_id'])) {
       $message = sprintf(__('Mandatory fields are not filled. Please correct: %s'),
                          _n('Associated element', 'Associated elements', 1));
       Session::addMessageAfterRedirect($message, false, ERROR);
@@ -32,9 +34,9 @@ if (isset($_POST["add"])) {
 
 } else if (isset($_POST["delete"])) {
    $item_ticket = new Item_Ticket();
-   $deleted = $item_ticket->deleteByCriteria(array('tickets_id' => $_POST['tickets_id'],
-                                                   'items_id'   => $_POST['items_id'],
-                                                   'itemtype'   => $_POST['itemtype']));
+   $deleted = $item_ticket->deleteByCriteria(['tickets_id' => $_POST['tickets_id'],
+                                              'items_id'   => $_POST['items_id'],
+                                              'itemtype'   => $_POST['itemtype']]);
    Html::back();
 }
 

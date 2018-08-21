@@ -27,7 +27,7 @@ class PluginPreludeAPIClient extends CommonGLPI {
     * Connect to prelude API
     * @param  array $params [description]
     */
-   static function connect($params = array()) {
+   static function connect($params = []) {
       return PluginPreludeOauthProvider::connect($params);
    }
 
@@ -71,7 +71,7 @@ class PluginPreludeAPIClient extends CommonGLPI {
          $response = $http_client->request('GET',
                                            self::getAPIBaseUri(),
                                            $options);
-      } catch(RequestException $e) {
+      } catch (RequestException $e) {
          if ($e->hasResponse()) {
             if ($e->getResponse()->getStatusCode() != 404) {
                return true;
@@ -98,7 +98,7 @@ class PluginPreludeAPIClient extends CommonGLPI {
     *                          (see https://www.prelude-siem.org/projects/prelude/wiki/IDMEFCriteria)
     * @return array  the logs with path in keys and corresponding values
     */
-   public static function getLogs($params = array()) {
+   public static function getLogs($params = []) {
       self::checkAccessToken();
 
       // what we need at minima in idmef tree
@@ -129,7 +129,7 @@ class PluginPreludeAPIClient extends CommonGLPI {
 
       // merges key for response (otherwise he will have indexed keys)
       if (isset($logs['response'])) {
-         foreach($logs['response'] as &$response) {
+         foreach ($logs['response'] as &$response) {
             $response = array_combine($params['path'], $response);
          }
       }
@@ -148,7 +148,7 @@ class PluginPreludeAPIClient extends CommonGLPI {
     *                          (see https://www.prelude-siem.org/projects/prelude/wiki/IDMEFCriteria)
     * @return array  the alerts with path in keys and corresponding values
     */
-   public static function getAlerts($params = array()) {
+   public static function getAlerts($params = []) {
       self::checkAccessToken();
 
       // what we need at minima in idmef tree
@@ -182,7 +182,7 @@ class PluginPreludeAPIClient extends CommonGLPI {
 
       // merges key for response (otherwise he will have indexed keys)
       if (isset($alerts['response'])) {
-         foreach($alerts['response'] as &$response) {
+         foreach ($alerts['response'] as &$response) {
             $response = array_combine($params['path'], $response);
          }
       }
@@ -205,7 +205,7 @@ class PluginPreludeAPIClient extends CommonGLPI {
     *                              - headers: parameters to send in http query headers
     * @return mixed               the output returned by the http query
     */
-   private static function sendHttpRequest($method = 'GET', $ressource = '', $http_params = array()) {
+   private static function sendHttpRequest($method = 'GET', $ressource = '', $http_params = []) {
       // init stuff
       $http_client = new \GuzzleHttp\Client(['base_uri' => self::getAPIBaseUri()]);
 
@@ -264,7 +264,7 @@ class PluginPreludeAPIClient extends CommonGLPI {
       // check prelude error
       $prelude_error = false;
       if (isset($prelude_res['logs'])) {
-         foreach($prelude_res['logs'] as $log) {
+         foreach ($prelude_res['logs'] as $log) {
             if (isset($log['errno'])) {
                $prelude_error = true;
             }
@@ -287,7 +287,7 @@ class PluginPreludeAPIClient extends CommonGLPI {
    static function storeToken(AccessToken $token) {
       $json = json_encode($token->jsonSerialize());
       return Config::setConfigurationValues('plugin:Prelude',
-                                            array('api_token' => $json));
+                                            ['api_token' => $json]);
    }
 
    /**
@@ -309,7 +309,7 @@ class PluginPreludeAPIClient extends CommonGLPI {
     * delete the oauth token store in db
     */
    static function deleteToken() {
-      return Config::setConfigurationValues('plugin:Prelude', array('api_token' => ''));
+      return Config::setConfigurationValues('plugin:Prelude', ['api_token' => '']);
    }
 
    /**
