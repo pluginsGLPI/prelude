@@ -45,7 +45,7 @@ class PluginPreludeLinktype extends CommonDropdown {
                `date_creation` DATETIME DEFAULT NULL,
                PRIMARY KEY (`id`)
             )
-            ENGINE = MyISAM
+            ENGINE = InnoDB
             DEFAULT CHARACTER SET = utf8
             COLLATE = utf8_unicode_ci;";
          $DB->queryOrDie($query, sprintf(__("Error when creating '%s' table", 'prelude'), $table).

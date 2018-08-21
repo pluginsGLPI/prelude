@@ -447,7 +447,7 @@ class PluginPreludeItem_Ticket extends Item_Ticket{
                KEY `tickets_id` (`tickets_id`),
                KEY `plugin_prelude_linktypes_id` (`plugin_prelude_linktypes_id`)
             )
-            ENGINE = MyISAM
+            ENGINE = InnoDB
             DEFAULT CHARACTER SET = utf8
             COLLATE = utf8_unicode_ci;";
          $DB->queryOrDie($query, sprintf(__("Error when creating '%s' table", 'prelude'), $table).
