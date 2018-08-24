@@ -10,151 +10,151 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2018-08-24 14:35+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: Johan Cwiklinski <jcwiklinski@teclib.com>, 2016\n"
-"Language-Team: French (France) (https://www.transifex.com/pluginsGLPI/teams/73419/fr_FR/)\n"
+"Last-Translator: Alexander Salas Bastidas <alexander.salas@gmail.com>, 2017\n"
+"Language-Team: Catalan (Spain) (https://www.transifex.com/pluginsGLPI/teams/73419/ca_ES/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: fr_FR\n"
-"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"Language: ca_ES\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #: inc/config.class.php:15
 msgid "Prelude configuration"
-msgstr "Configuration de Prelude"
+msgstr "Configuració de preludi"
 
 #: inc/config.class.php:56
 msgid "Please enable the prelude plugin"
-msgstr "Merci d'active le plugin prelude"
+msgstr "Activi el plugin de preludi"
 
 #: inc/config.class.php:70
 msgid "Plugin's features"
-msgstr "Fonctionnalités du plugin"
+msgstr "Característiques del plugin"
 
 #: inc/config.class.php:74
 msgid "Replace ticket's items association"
-msgstr "Remplace l’association des éléments avec les tickets"
+msgstr "Substituir l'Associació d'elements de bitllet"
 
 #: inc/config.class.php:80
 msgid "Show prelude alerts in tickets"
-msgstr "Afficher les alertes de prelude dans les tickets"
+msgstr "Mostra el preludi alertes en entrades"
 
 #: inc/config.class.php:90
 msgid "Enable Openvas plugin integration"
-msgstr "Active l'intégration du plugin OpenVAS"
+msgstr "Permetre Openvas plugin integració"
 
 #: inc/config.class.php:101
 msgid "API Access"
-msgstr "Accès à l'API"
+msgstr "API d'accés"
 
 #: inc/config.class.php:105
 msgid "Prelude URL"
-msgstr "URL de Prelude"
+msgstr "Preludi adreça URL"
 
 #: inc/config.class.php:121
 msgid "Go to prelude"
-msgstr "Aller dans prelude"
+msgstr "Anar a preludi"
 
 #: inc/config.class.php:130
 msgid "API Client ID"
-msgstr "'Client ID' de l'API"
+msgstr "ID de Client d'API"
 
 #: inc/config.class.php:138
 msgid "API Client Secret"
-msgstr "'Client Secret' de l'API"
+msgstr "Secret de Client d'API"
 
 #: inc/config.class.php:151
 msgid "API Access token"
-msgstr "'Access token' de l'API"
+msgstr "Testimoni d'accés d'API"
 
 #: inc/config.class.php:159
 msgid "Connect to Prelude API"
-msgstr "Connecter l'API de Prelude"
+msgstr "Connectar-se a preludi API"
 
 #: inc/config.class.php:166
 msgid "API Refresh token"
-msgstr "'Refresh token' de l'API"
+msgstr "Fitxa de refresc d'API"
 
 #: inc/apiclient.class.php:39 inc/ticket.class.php:15
 msgid "Prelude"
-msgstr "Prelude"
+msgstr "Preludi"
 
 #: inc/apiclient.class.php:41
 msgid "Prelude access token"
-msgstr "'access token' de Prelude"
+msgstr "Testimoni d'accés de preludi"
 
 #: inc/apiclient.class.php:43
 msgid "Prelude alerts"
-msgstr "Alertes de prelude"
+msgstr "Preludi alertes"
 
 #: inc/apiclient.class.php:45
 msgid "Prelude logs"
-msgstr "Logs de Prelude"
+msgstr "Preludi registres"
 
 #: inc/item_ticket.class.php:114 inc/item_ticket.class.php:144
 msgid "Type of link"
-msgstr "Type de lien"
+msgstr "Tipus d'enllaç"
 
 #: inc/item_ticket.class.php:150
 msgid "OpenVAS Status"
-msgstr "Status d'OpenVAS"
+msgstr "OpenVAS estatus"
 
 #: inc/item_ticket.class.php:453 inc/ticket.class.php:260
 #: inc/linktype.class.php:51
 #, php-format
 msgid "Error when creating '%s' table"
-msgstr "Erreur en créant la table '%s'"
+msgstr "Error en crear la taula \"%s\""
 
 #: inc/item_ticket.class.php:459
 #, php-format
 msgid "Error when filling '%s' table"
-msgstr "Erreur en remplissant la table '%s'"
+msgstr "Error en omplir la taula \"%s\""
 
 #: inc/ticket.class.php:76
 msgid "No alerts found  for this ticket"
-msgstr "Aucune alerte trouvée pour ce ticket"
+msgstr "No hi ha avisos he trobat aquesta entrada"
 
 #: inc/ticket.class.php:81
 msgid "Alert"
 msgid_plural "Alerts"
-msgstr[0] "Alerte"
+msgstr[0] "Alerta"
 msgstr[1] "Alertes"
 
 #: inc/ticket.class.php:101
 msgid "View theses alerts in prelude"
-msgstr "Voir ces alertes dans prelude"
+msgstr "Vista tesis alertes de preludi"
 
 #: inc/ticket.class.php:106
 msgid "delete this group of alerts"
-msgstr "Supprimer ce groupe d'alertes"
+msgstr "suprimir aquest grup d'alertes"
 
 #: inc/ticket.class.php:118
 msgid "Classification"
-msgstr "Classification"
+msgstr "Classificació"
 
 #: inc/ticket.class.php:119
 msgid "Source"
-msgstr "Source"
+msgstr "Font"
 
 #: inc/ticket.class.php:120
 msgid "Target"
-msgstr "Cible"
+msgstr "Objectiu"
 
 #: inc/ticket.class.php:121
 msgid "Analyzer"
-msgstr "Analyseur"
+msgstr "Analitzador"
 
 #: inc/ticket.class.php:143
 msgid "No alerts found  for theses criteria"
-msgstr "Aucune alerte trouvée pour ces critères"
+msgstr "No hi ha avisos trobats per criteris de tesis"
 
 #: inc/ticket.class.php:161
 msgid "Import alerts from prelude"
-msgstr "Importer les alertes depuis prelude"
+msgstr "Alertes d'importació de preludi"
 
 #: inc/ticket.class.php:178
 msgid "Prelude criteria"
-msgstr "Critères de prelude"
+msgstr "Preludi criteris"
 
 #: inc/ticket.class.php:184
 msgid "add prelude criterion"
-msgstr "Ajoute un critère de prelude"
+msgstr "afegir el criteri de preludi"
