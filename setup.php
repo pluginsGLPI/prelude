@@ -27,7 +27,7 @@
  */
 global $CFG_GLPI;
 
-define('PLUGIN_PRELUDE_VERSION', '0.1.1');
+define('PLUGIN_PRELUDE_VERSION', '0.2.0');
 
 // Minimal GLPI version, inclusive
 define('PLUGIN_PRELUDE_MIN_GLPI', '9.2');
