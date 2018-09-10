@@ -19,7 +19,7 @@ class PluginPreludeLinktype extends CommonDropdown {
    /**
     * {@inheritDoc}
     */
-   static function getTypeName($nb=0) {
+   static function getTypeName($nb = 0) {
       return _n('Link type', 'Link types', $nb);
    }
 
@@ -34,7 +34,7 @@ class PluginPreludeLinktype extends CommonDropdown {
 
       $table = self::getTable();
 
-      if (!TableExists($table)) {
+      if (!$DB->tableExists($table)) {
          $migration->displayMessage("Installing $table");
 
          $query = "CREATE TABLE IF NOT EXISTS `$table` (
@@ -45,7 +45,7 @@ class PluginPreludeLinktype extends CommonDropdown {
                `date_creation` DATETIME DEFAULT NULL,
                PRIMARY KEY (`id`)
             )
-            ENGINE = MyISAM
+            ENGINE = InnoDB
             DEFAULT CHARACTER SET = utf8
             COLLATE = utf8_unicode_ci;";
          $DB->queryOrDie($query, sprintf(__("Error when creating '%s' table", 'prelude'), $table).

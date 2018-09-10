@@ -55,7 +55,7 @@ class PluginPreludeOauthProvider extends AbstractProvider {
       return $provider;
    }
 
-   static function connect($params = array()) {
+   static function connect($params = []) {
       $provider = self::getInstance();
 
       // If we don't have an authorization code then get one
@@ -79,19 +79,23 @@ class PluginPreludeOauthProvider extends AbstractProvider {
          unset($_SESSION['oauth2state']);
          exit('Invalid state');
 
-      } else try {
-         // Try to get an access token using the authorization code grant.
-         $access_token = $provider->getAccessToken('authorization_code',
-                                                   ['code' => $params['code']]);
+      } else {
+         try {
+            // Try to get an access token using the authorization code grant.
+            $access_token = $provider->getAccessToken(
+               'authorization_code',
+               ['code' => $params['code']]
+            );
 
-         // We have an access token, and we can store it
-         PluginPreludeAPIClient::storeToken($access_token);
+            // We have an access token, and we can store it
+            PluginPreludeAPIClient::storeToken($access_token);
 
-      } catch (\League\OAuth2\Client\Provider\Exception\IdentityProviderException $e) {
+         } catch (\League\OAuth2\Client\Provider\Exception\IdentityProviderException $e) {
 
-         // Failed to get the access token or user details.
-         exit($e->getMessage());
+            // Failed to get the access token or user details.
+            exit($e->getMessage());
 
+         }
       }
    }
 

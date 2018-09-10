@@ -6,7 +6,7 @@ This plugin integrates [prelude SIEM](https://www.prelude-siem.com/) with GLPI.
 ## Features
 
 * Override Ticket-Assets association by adding a _type of link_ dropdown.
-* Add a _Prelude_ tab in tickets form to see associated IODEF alerts
+* Add a _Prelude_ tab in tickets form to see associated IDMEF alerts
 * Integrate also with GLPI [OpenVAS plugin](https://github.com/pluginsGLPI/openvas). When this plugin is present, an openvas status will be added in Ticket' items list.
 
 
@@ -84,7 +84,7 @@ A new dropdown (and column) to set the _type of link_ between and an asset and t
 
 ![Items Ticket association ](https://raw.githubusercontent.com/pluginsGLPI/prelude/develop/screenshots/feature_itemticket.png)
 
-### IODEF alerts in tickets
+### IDMEF alerts in tickets
 
 In ticket form, a _prelude_ tab is added and displays:
 - A button to transform the ticket in problem
@@ -97,11 +97,11 @@ A click of this display a mini form to import a group of alerts from prelude API
 You need to set the following fields:
 * **Name**: a label describing the current group of alerts.
 * **URL**: an url to provide a redirection to prelude (in order to see alerts in the prelude context)
-* **Criteria**: a set of [prelude IODEF criteria](https://www.prelude-siem.org/projects/prelude/wiki/IDMEFCriteria) sent to the API to filter the alerts collection.
+* **Criteria**: a set of [prelude IDMEF criteria](https://www.prelude-siem.org/projects/prelude/wiki/IDMEFCriteria) sent to the API to filter the alerts collection.
 
 After submit, you'll see a listing of the alerts.
 
-![IODEF Alerts ](https://raw.githubusercontent.com/pluginsGLPI/prelude/develop/screenshots/feature_alerts.png)
+![IDMEF Alerts ](https://raw.githubusercontent.com/pluginsGLPI/prelude/develop/screenshots/feature_alerts.png)
 
 
 ## GLPI API
@@ -153,7 +153,7 @@ curl -X DELETE \
 < [{"1":true, "message": ""}]
 ```
 
-### IODEF alerts in tickets
+### IDMEF alerts in tickets
 
 * Add a group of alerts
 

@@ -26,7 +26,14 @@
  --------------------------------------------------------------------------
  */
 global $CFG_GLPI;
-define('PLUGIN_PRELUDE_VERSION', '0.1.1');
+
+define('PLUGIN_PRELUDE_VERSION', '0.2.0');
+
+// Minimal GLPI version, inclusive
+define('PLUGIN_PRELUDE_MIN_GLPI', '9.2');
+// Maximum GLPI version, exclusive
+define('PLUGIN_PRELUDE_MAX_GLPI', '9.4');
+
 define('PRELUDE_ROOTDOC', $CFG_GLPI['root_doc']."/plugins/prelude");
 define('PRELUDE_CONFIG_URL', $CFG_GLPI['url_base'].
                              '/front/config.form.php?forcetab=PluginPreludeConfig$1');
@@ -60,35 +67,35 @@ function plugin_init_prelude() {
       $prelude_config = PluginPreludeConfig::getConfig();
 
       // Add a link in the main menu plugins for technician and admin panel
-      Plugin::registerClass('PluginPreludeConfig', array('addtabon' => 'Config'));
+      Plugin::registerClass('PluginPreludeConfig', ['addtabon' => 'Config']);
       $PLUGIN_HOOKS['config_page']['prelude'] = 'front/config.form.php';
 
       // add a new tab to tickets who replace item_ticket
       if ($prelude_config['replace_items_tickets']) {
          $PLUGIN_HOOKS['add_javascript']['prelude'][] = "js/hide_items_tickets.js.php";
 
-         $PLUGIN_HOOKS['item_add']['prelude'] = array('Item_Ticket' =>
-                                                       array('PluginPreludeItem_Ticket',
-                                                             'item_Ticket_AfterAdd'));
-         $PLUGIN_HOOKS['item_update']['prelude'] = array('Item_Ticket' =>
-                                                          array('PluginPreludeItem_Ticket',
-                                                                'item_Ticket_AfterUpdate'));
-         $PLUGIN_HOOKS['item_delete']['prelude'] = array('Item_Ticket' =>
-                                                          array('PluginPreludeItem_Ticket',
-                                                                'item_Ticket_AfterDelete'));
-         $PLUGIN_HOOKS['item_purge']['prelude'] = array('Item_Ticket' =>
-                                                         array('PluginPreludeItem_Ticket',
-                                                               'item_Ticket_AfterPurge'));
+         $PLUGIN_HOOKS['item_add']['prelude'] = [
+            'Item_Ticket' => ['PluginPreludeItem_Ticket', 'item_Ticket_AfterAdd']
+         ];
+         $PLUGIN_HOOKS['item_update']['prelude'] = [
+            'Item_Ticket' => ['PluginPreludeItem_Ticket', 'item_Ticket_AfterUpdate']
+         ];
+         $PLUGIN_HOOKS['item_delete']['prelude'] = [
+            'Item_Ticket' => ['PluginPreludeItem_Ticket', 'item_Ticket_AfterDelete']
+         ];
+         $PLUGIN_HOOKS['item_purge']['prelude'] = [
+            'Item_Ticket' => ['PluginPreludeItem_Ticket', 'item_Ticket_AfterPurge']
+         ];
 
-         Plugin::registerClass('PluginPreludeItem_Ticket', array('addtabon' => 'Ticket'));
-         foreach(Ticket::getAllTypesForHelpdesk() as $itemtype => $label) {
-            Plugin::registerClass('PluginPreludeItem_Ticket', array('addtabon' => $itemtype));
+         Plugin::registerClass('PluginPreludeItem_Ticket', ['addtabon' => 'Ticket']);
+         foreach (Ticket::getAllTypesForHelpdesk() as $itemtype => $label) {
+            Plugin::registerClass('PluginPreludeItem_Ticket', ['addtabon' => $itemtype]);
          }
       }
 
       // add a new tab to tickets to perform actions relative to prelude
       if ($prelude_config['replace_items_tickets']) {
-         Plugin::registerClass('PluginPreludeTicket', array('addtabon' => 'Ticket'));
+         Plugin::registerClass('PluginPreludeTicket', ['addtabon' => 'Ticket']);
       }
    }
 }
@@ -101,13 +108,29 @@ function plugin_init_prelude() {
  * @return array
  */
 function plugin_version_prelude() {
+
    return [
       'name'           => 'Prelude Siem',
       'version'        => PLUGIN_PRELUDE_VERSION,
       'author'         => '<a href="http://www.teclib.com">Teclib\'</a>',
       'license'        => 'GPL2',
       'homepage'       => '',
-      'minGlpiVersion' => '9.1'
+      'requirements'   => [
+         'glpi' => [
+            'min' => PLUGIN_PRELUDE_MIN_GLPI,
+            'max' => PLUGIN_PRELUDE_MAX_GLPI,
+         ],
+         'php' => [
+            'exts' => [
+               'curl' => [
+                  'required' => true,
+               ]
+            ],
+            'params' => [
+               'allow_url_fopen',
+            ],
+         ]
+      ]
    ];
 }
 
@@ -118,11 +141,35 @@ function plugin_version_prelude() {
  * @return boolean
  */
 function plugin_prelude_check_prerequisites() {
-   // Strict version check (could be less strict, or could allow various version)
-   if (version_compare(GLPI_VERSION,'9.1','lt')) {
-      echo "This plugin requires GLPI >= 9.1";
-      return false;
+
+   //Requirements check is not done by core in GLPI < 9.2 but has to be delegated to core in GLPI >= 9.2.
+   if (!method_exists('Plugin', 'checkGlpiVersion')) {
+      $version = preg_replace('/^((\d+\.?)+).*$/', '$1', GLPI_VERSION);
+      $matchMinGlpiReq = version_compare($version, PLUGIN_PRELUDE_MIN_GLPI, '>=');
+      $matchMaxGlpiReq = version_compare($version, PLUGIN_PRELUDE_MAX_GLPI, '<');
+
+      if (!$matchMinGlpiReq || !$matchMaxGlpiReq) {
+         echo vsprintf(
+            'This plugin requires GLPI >= %1$s and < %2$s.',
+            [
+               PLUGIN_PRELUDE_MIN_GLPI,
+               PLUGIN_PRELUDE_MAX_GLPI,
+            ]
+         );
+         return false;
+      }
+
+      if (!extension_loaded('curl')) {
+         echo "PHP-Curl extension is required";
+         return false;
+      }
+
+      if (ini_get('allow_url_fopen') != 1) {
+         echo "allow_url_fopen=1 is required in your php.ini";
+         return false;
+      }
    }
+
    return true;
 }
 
@@ -133,13 +180,7 @@ function plugin_prelude_check_prerequisites() {
  *
  * @return boolean
  */
-function plugin_prelude_check_config($verbose=false) {
-   if (true) { // Your configuration check
-      return true;
-   }
+function plugin_prelude_check_config($verbose = false) {
 
-   if ($verbose) {
-      _e('Installed / not configured', 'prelude');
-   }
-   return false;
+   return true;
 }

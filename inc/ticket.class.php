@@ -11,14 +11,14 @@ class PluginPreludeTicket extends CommonDBTM {
    /**
     * {@inheritDoc}
     */
-   static function getTypeName($nb=0) {
+   static function getTypeName($nb = 0) {
       return __("Prelude", 'prelude');
    }
 
    /**
     * {@inheritDoc}
     */
-   function getTabNameForItem(CommonGLPI $item, $withtemplate=0) {
+   function getTabNameForItem(CommonGLPI $item, $withtemplate = 0) {
 
       if ($withtemplate) {
          return '';
@@ -34,7 +34,7 @@ class PluginPreludeTicket extends CommonDBTM {
    /**
     * {@inheritDoc}
     */
-   static function displayTabContentForItem(CommonGLPI $item, $tabnum=1, $withtemplate=0) {
+   static function displayTabContentForItem(CommonGLPI $item, $tabnum = 1, $withtemplate = 0) {
       if ($item->getType() == 'Ticket') {
          self::showForTicket($item);
       }
@@ -51,31 +51,29 @@ class PluginPreludeTicket extends CommonDBTM {
     *
     * @param $ticket Ticket object
     *
-    * @return Nothing (display)
+    * @return null
    **/
    static function showForTicket(Ticket $ticket) {
       global $CFG_GLPI;
 
-      $rand           = mt_rand();
-      $url            = Toolbox::getItemTypeFormURL(__CLASS__);
+      $url = Toolbox::getItemTypeFormURL(__CLASS__);
 
       if (!PluginPreludeAPIClient::globalStatus()) {
          $message = __("Prelude API is not connected, click to display configuration");
          echo "<a href='".PRELUDE_CONFIG_URL."'>";
          Html::displayTitle($CFG_GLPI['root_doc']."/pics/warning.png", $message, $message);
          echo "</a>";
-         return false;
       }
 
       echo "<a class='vsubmit' href='".Toolbox::getItemTypeFormURL('Problem').
                                     "?tickets_id=".$ticket->getID()."'>";
-      _e('Create a problem from this ticket');
+      echo __('Create a problem from this ticket');
       echo "</a>";
       echo "<br><br>";
 
       $found = self::getForticket($ticket);
       if (count($found) <= 0) {
-         _e("No alerts found  for this ticket", 'prelude');
+         echo __("No alerts found  for this ticket", 'prelude');
          echo "&nbsp;";
          self::importAlertsForm($ticket->getID());
       } else {
@@ -99,15 +97,21 @@ class PluginPreludeTicket extends CommonDBTM {
                     "&nbsp; <sup>$nb<sup></label>";
                if (!empty($current['url'])) {
                   echo Html::image(PRELUDE_ROOTDOC."/pics/link.png",
-                                   array('class' => 'pointer',
-                                         'title' => __("View theses alerts in prelude", 'prelude'),
-                                         'url'   => $current['url']));
+                                   ['class' => 'pointer',
+                                    'title' => __("View theses alerts in prelude", 'prelude'),
+                                    'url'   => $current['url']]);
                }
                echo Html::image(PRELUDE_ROOTDOC."/pics/delete.png",
-                                array('class' => 'pointer prelude-delete-bloc',
-                                      'title' => __("delete this group of alerts", 'prelude'),
-                                      'url'   => $url."?delete_link&id=$prelude_tickets_id"));
+                                ['class' => 'pointer prelude-delete-bloc',
+                                 'title' => __("delete this group of alerts", 'prelude'),
+                                 'url'   => $url."?delete_link&id=$prelude_tickets_id"]);
 
+               echo "<div class='togglable'>";
+               echo "<div class='prelude_criteria'>";
+               foreach ($params_api['criteria'] as $criterion) {
+                  echo "<span class='prelude_criterion'>$criterion</span>";
+               }
+               echo "<div>"; // .prelude_criteria
                if (count($alerts)) {
                   echo "<table class='tab_cadre_fixehov togglable'>";
                   echo "<tr class='tab_bg_2'>";
@@ -119,7 +123,7 @@ class PluginPreludeTicket extends CommonDBTM {
                   // echo "<th></th>";
                   echo "</tr>";
 
-                  foreach($alerts as $messageid => $alert) {
+                  foreach ($alerts as $messageid => $alert) {
                      $create_time = Html::convDateTime(date("Y-m-d H:i",
                                                             strtotime($alert['alert.create_time'])));
 
@@ -136,9 +140,10 @@ class PluginPreludeTicket extends CommonDBTM {
                   echo "</table>";
                } else {
                   echo "<div class='togglable'>";
-                  _e("No alerts found  for theses criteria", 'prelude');
+                  echo __("No alerts found  for theses criteria", 'prelude');
                   echo "</div>";
                }
+               echo "<div>"; // .togglable
                echo "</th></tr>";
             }
          }
@@ -152,16 +157,16 @@ class PluginPreludeTicket extends CommonDBTM {
     */
    static function importAlertsForm($tickets_id = 0) {
       echo Html::image(PRELUDE_ROOTDOC."/pics/import.png",
-                          array('class'   => 'pointer',
-                                'title'   => __("Import alerts from prelude", 'prelude'),
-                                'onclick' => "$('#add_alerts').dialog('open');"));
+                          ['class'   => 'pointer',
+                           'title'   => __("Import alerts from prelude", 'prelude'),
+                           'onclick' => "$('#add_alerts').dialog('open');"]);
 
       echo "<div id='add_alerts' class='invisible'>";
       echo "<form method='post' action='".Toolbox::getItemTypeFormURL(__CLASS__)."'>";
 
       echo "<div class='field'>";
       echo "<label>".__("Name").":</label>";
-      echo Html::input('name', array('required' => 'required'));
+      echo Html::input('name', ['required' => 'required']);
       echo "</div>";
 
       echo "<div class='field'>";
@@ -171,31 +176,32 @@ class PluginPreludeTicket extends CommonDBTM {
 
       echo "<div class='field'>";
       echo "<label>".__("Prelude criteria", 'prelude').":</label>";
-      echo Html::input('params_api[criteria][]', array('required' => 'required',
-                                                       'class'    => 'criterion',
-                                                       'placeholder'
-                                                         => "alert.create_time > 'xxxx-xx-xx'"));
+      echo Html::input('params_api[criteria][]', ['required' => 'required',
+                                                  'class'    => 'criterion',
+                                                  'placeholder' => "alert.create_time > 'xxxx-xx-xx'"]);
       echo Html::image(PRELUDE_ROOTDOC."/pics/add.png",
-                       array('class'   => 'pointer add_criterion',
-                             'title'   => __("add prelude criterion", 'prelude'),
-                             'onclick' => "add_criterion();"));
+                       ['class'   => 'pointer add_criterion',
+                        'title'   => __("add prelude criterion", 'prelude'),
+                        'onclick' => "add_criterion();"]);
       echo "</div>";
 
-      echo Html::hidden('tickets_id', array('value' => $tickets_id));
-      echo Html::submit("Import alerts", array('name' => 'import_alerts'));
+      echo Html::hidden('tickets_id', ['value' => $tickets_id]);
+      echo Html::submit("Import alerts", ['name' => 'import_alerts']);
 
       Html::closeForm();
       echo "</div>";
 
       // init menu in jquery dialog
-      Html::scriptStart();
-      echo Html::jsGetElementbyID('add_alerts').".dialog({
-         height: 'auto',
-         width: 'auto',
-         modal: true,
-         autoOpen: false
-         });";
-      echo Html::scriptEnd();
+      echo Html::scriptBlock("
+         $(document).ready(function() {
+            $('#add_alerts').dialog({
+               height: 'auto',
+               width: 'auto',
+               modal: true,
+               autoOpen: false
+            });
+         });
+      ");
    }
 
    /**
@@ -207,7 +213,7 @@ class PluginPreludeTicket extends CommonDBTM {
     *                       - url
     * @return boolean
     */
-   function importAlerts($params = array()) {
+   function importAlerts($params = []) {
       // unsanitize (we'll json_encode this key)
       $params_api = Toolbox::stripslashes_deep(
                        Toolbox::unclean_cross_side_scripting_deep($params['params_api']));
@@ -219,7 +225,7 @@ class PluginPreludeTicket extends CommonDBTM {
       $params = ['tickets_id' => intval($params['tickets_id']),
                  'params_api' => addslashes(json_encode($params_api)),
                  'name'       => Toolbox::addslashes_deep($params['name']),
-                 'url'        => filter_var($params['name'], FILTER_VALIDATE_URL),
+                 'url'        => filter_var($params['url'], FILTER_VALIDATE_URL),
                  ];
 
       return $this->add($params);
@@ -236,7 +242,7 @@ class PluginPreludeTicket extends CommonDBTM {
 
       $table = self::getTable();
 
-      if (!TableExists($table)) {
+      if (!$DB->tableExists($table)) {
          $migration->displayMessage("Installing $table");
 
          $query = "CREATE TABLE IF NOT EXISTS `$table` (
@@ -248,7 +254,7 @@ class PluginPreludeTicket extends CommonDBTM {
                PRIMARY KEY (`id`),
                KEY `tickets_id` (`tickets_id`)
             )
-            ENGINE = MyISAM
+            ENGINE = InnoDB
             DEFAULT CHARACTER SET = utf8
             COLLATE = utf8_unicode_ci;";
          $DB->queryOrDie($query, sprintf(__("Error when creating '%s' table", 'prelude'), $table).

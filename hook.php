@@ -70,16 +70,15 @@ function plugin_prelude_uninstall() {
          }
       }
    }
-   return true ;
+   return true;
 }
 
 
 /**
  * Define Dropdown tables to be manage in GLPI :
  */
-function plugin_prelude_getDropdown()
-{
-   return array(
+function plugin_prelude_getDropdown() {
+   return [
        'PluginPreludeLinktype'   => PluginPreludeLinktype::getTypeName(2),
-   );
+   ];
 }
